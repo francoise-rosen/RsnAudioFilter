@@ -21,15 +21,15 @@ public:
     // constructor
     ReferenceCountedBuffer (const String& nameToUse,
                             int numChannels,
-                            int numSamples
-    )
-                            :name(nameToUse),
-                            buffer(numChannels, numSamples)
+                            int numSamples)
+    :name(nameToUse),
+    buffer(numChannels, numSamples)
+    
     {
         DBG(String("Buffer named '" ) + name + " '. Its numChannels = " + String(numChannels) + " and numSamples = " + String(numSamples));
     }
     
-    ~ReferenceCountedBuffer
+    ~ReferenceCountedBuffer()
     {
         DBG(String("Buffer named ' ") + name + " ' has been destroyed.");
     }
@@ -41,11 +41,9 @@ public:
     {
         return &buffer;
     }
-    
 private:
     String name;
     AudioSampleBuffer buffer;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReferenceCountedBuffer)
-    
 };

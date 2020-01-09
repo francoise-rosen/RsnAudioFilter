@@ -18,7 +18,7 @@ class MainComponent   : public AudioAppComponent,
 {
 public:
     //==============================================================================
-    MainComponent() : Thread ("Background Thread");
+    MainComponent();
     ~MainComponent();
 
     //==============================================================================
@@ -38,6 +38,16 @@ private:
     
     void run() override;
     void checkForBuffersToFree();
+    
+    ReferenceCountedArray<ReferenceCountedBuffer> buffers;
+    ReferenceCountedBuffer::Ptr currentBuffer;
+    
+    void openButtonClicked();
+    void clearButtonClicked();
+    
+    TextButton openButton;
+    TextButton clearButton;
+    AudioFormatManager formatManager;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

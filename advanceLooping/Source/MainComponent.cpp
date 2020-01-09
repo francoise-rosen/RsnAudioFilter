@@ -14,6 +14,17 @@ MainComponent::MainComponent() : Thread ("Background Thread")
     // Make sure you set the size of the component after
     // you add any child components.
     setSize (800, 600);
+    
+    addAndMakeVisible(&openButton);
+    openButton.setButtonText("Open...");
+    openButton.onClick = [this]{openButtonClicked();};
+    
+    addAndMakeVisible(&clearButton);
+    clearButton.setButtonText("Clear");
+    clearButton.onClick = [this]{clearButtonClicked();};
+    
+    formatManager.registerBasicFormats();
+    
 
     setAudioChannels (0, 2);
     startThread();
@@ -69,7 +80,7 @@ void MainComponent::getNextAudioBlock (const AudioSourceChannelInfo& bufferToFil
 
 void MainComponent::releaseResources()
 {
-
+    currentBuffer = nullptr;
 }
 
 //==============================================================================
@@ -82,6 +93,47 @@ void MainComponent::paint (Graphics& g)
 
 void MainComponent::resized()
 {
+    openButton.setBounds(10, 10, getWidth()-20, 40);
+    clearButton.setBounds(10, 55, getWidth()-20, 40);
 
+}
+
+void MainComponent::openButtonClicked()
+{
+    FileChooser chooser ("Open a file for playing back ",
+                         {},
+                         "*.wav");
+    if (chooser.browseForFileToOpen())
+    {
+        File file = chooser.getResult();
+        std::unique_ptr<AudioFormatReader> reader (formatManager.createReaderFor(file));
+        
+        if (reader.get() != nullptr)
+        {
+            auto duration = reader->lengthInSamples / reader->sampleRate;
+            if (duration < 2)
+            {
+                ReferenceCountedBuffer::Ptr newBuffer = new ReferenceCountedBuffer(file.getFileName(),
+                    (int)reader->numChannels,
+                    (int)reader->lengthInSamples);
+                
+                reader->read(newBuffer->getAudioSampleBuffer(),
+                             0,
+                             (int)reader->lengthInSamples,
+                             0,
+                             true, true);
+            }
+            
+            else
+            {
+                std::cout << "Please choose a shorter file\n";
+            }
+        }
+    }
+}
+
+void MainComponent::clearButtonClicked()
+{
+    currentBuffer = nullptr;
 }
 
