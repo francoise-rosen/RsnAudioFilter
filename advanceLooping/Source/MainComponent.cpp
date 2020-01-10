@@ -74,8 +74,31 @@ void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRat
 
 void MainComponent::getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill)
 {
-
-    bufferToFill.clearActiveBufferRegion();
+    
+    // I'm here
+    // first retain a current buffer
+    ReferenceCountedBuffer::Ptr retainedBuffer (currentBuffer);
+    if(retainedBuffer == nullptr){
+        bufferToFill.clearActiveBufferRegion();
+        return;
+    }
+    
+    // set I/O
+    AudioSampleBuffer* currentAudioSampleBuffer = retainedBuffer->getAudioSampleBuffer();
+    auto numInputChannels = currentAudioSampleBuffer->getNumChannels();
+    auto numOutputChannels = bufferToFill.buffer->getNumChannels();
+    
+    auto position = retainedBuffer->position;
+    
+    auto outputSamplesRemaining = bufferToFill.numSamples;
+    auto outputSamplesOffset = 0;
+    
+    while(outputSamplesRemaining > 0)
+    {
+        auto bufferSamplesRemaining = currentAudioSampleBuffer->getNumSamples();
+        // iterate over channles
+    }
+    
 }
 
 void MainComponent::releaseResources()
@@ -122,6 +145,8 @@ void MainComponent::openButtonClicked()
                              (int)reader->lengthInSamples,
                              0,
                              true, true);
+                currentBuffer = newBuffer;
+                buffers.add(newBuffer);
             }
             
             else
