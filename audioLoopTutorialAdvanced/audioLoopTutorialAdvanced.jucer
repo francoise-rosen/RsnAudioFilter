@@ -4,6 +4,8 @@
               jucerVersion="5.4.5">
   <MAINGROUP id="b4JcVb" name="audioLoopTutorialAdvanced">
     <GROUP id="{2107ECD6-6BAD-8E29-7168-D73F2DFA2768}" name="Source">
+      <FILE id="QAlwi9" name="audioLoopSmoothLevel.h" compile="0" resource="0"
+            file="Source/audioLoopSmoothLevel.h"/>
       <FILE id="TARFYR" name="audioLoopTutorialFilePath.h" compile="0" resource="0"
             file="Source/audioLoopTutorialFilePath.h"/>
       <FILE id="jBlFjz" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>

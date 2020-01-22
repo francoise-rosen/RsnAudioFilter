@@ -9,7 +9,8 @@
 */
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "audioLoopTutorialFilePath.h"
+//#include "audioLoopTutorialFilePath.h"
+#include "audioLoopSmoothLevel.h"
 
 //==============================================================================
 class audioLoopTutorialAdvancedApplication  : public JUCEApplication

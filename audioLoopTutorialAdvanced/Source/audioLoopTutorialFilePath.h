@@ -7,7 +7,7 @@
         4. Open file using FileOpener, AudioSourceReader. Buffer - done
         4.1 Open path on background thread - done
         5. Signal processing block - done
-        5.1 Volume control - done
+        5.1 Volume control, smooth it!
         6. Playing backwards
         7. Change speed / pitch shift
         8. LFO on speed
@@ -154,6 +154,8 @@ public:
         // first retain an active buffer
         ReferenceCountedBuffer::Ptr retainedBuffer (currentBuffer);
         
+        auto localTargetLevel = targetOutputLevel;
+        
         // check if its a null
         if(retainedBuffer == nullptr)
         {
@@ -173,6 +175,7 @@ public:
         // we need to keep track of remaining samples in output buffer (block size)
         // and in input buffers
         // so we know if there're less samples in input buffer left
+        // is this relevant if loop is on? probably not
         auto outputSamplesRemaining = bufferToFill.numSamples;
         auto outputSamplesOffset = 0;
         
@@ -184,6 +187,8 @@ public:
             // if we run out of samples in the buffer before the block ends
             // we need to know how many samples to proceed with
             auto samplesThisTime = jmin(bufferSamplesRemaining, outputSamplesRemaining);
+            
+            auto levelChangeIncrement = (localTargetLevel - currentOutputLevel) / outputSamplesRemaining;
             
             // copy data from buffer into outputBuffer
             for(auto channel = 0; channel < numOutputChannels; ++channel)
@@ -398,6 +403,8 @@ private:
     TextButton openButton;
     TextButton clearButton;
     double outputLevel;
+    double currentOutputLevel;
+    double targetOutputLevel;
     Slider mainGain;
     Label fileLabel;
     Font fileLabelFont;

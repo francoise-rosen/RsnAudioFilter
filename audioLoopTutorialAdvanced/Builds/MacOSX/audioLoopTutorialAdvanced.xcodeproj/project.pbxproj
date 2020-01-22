@@ -278,6 +278,13 @@
 			path = System/Library/Frameworks/Accelerate.framework;
 			sourceTree = SDKROOT;
 		};
+		6A6B8225D6DA70ACD2296167 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = audioLoopSmoothLevel.h;
+			path = ../../Source/audioLoopSmoothLevel.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		72C55B749F83629B862117B9 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
@@ -449,6 +456,7 @@
 		0EEF2E9FFB0E060DC201B483 = {
 			isa = PBXGroup;
 			children = (
+				6A6B8225D6DA70ACD2296167,
 				3DBD1CC92612FA908B8573F7,
 				0AD0BF71FEC60D256EDFC80E,
 				8EE623FF603DA7719D73EAA4,
