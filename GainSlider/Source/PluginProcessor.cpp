@@ -135,7 +135,7 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
     
-    mainGain = 0.015;
+    //mainGain = 0.015;
 
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
@@ -194,4 +194,11 @@ void GainSliderAudioProcessor::setStateInformation (const void* data, int sizeIn
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new GainSliderAudioProcessor();
+}
+
+//===========================================================
+
+void GainSliderAudioProcessor::setGain(double gain)
+{
+    mainGain = gain;
 }
