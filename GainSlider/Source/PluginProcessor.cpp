@@ -21,8 +21,21 @@ GainSliderAudioProcessor::GainSliderAudioProcessor()
                       #endif
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ),
+
 #endif
+        mainGain(0.0),
+        treeState(*this,  // add to this processor
+                  nullptr, // ?
+                  "PARAMETER", // identifier
+                  {std::make_unique<AudioParameterFloat> ( GAIN_ID,
+                                                          GAIN_NAME,
+                                                          -100.0f,
+                                                          0.0f,
+                                                          -16.0f)
+                  }
+                  )
+
 {
 }
 
@@ -95,14 +108,12 @@ void GainSliderAudioProcessor::changeProgramName (int index, const String& newNa
 //==============================================================================
 void GainSliderAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    targetGain = mainGain;
 }
 
 void GainSliderAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -131,11 +142,11 @@ bool GainSliderAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 
 void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    ScopedNoDenormals noDenormals;
+    ScopedNoDenormals noDenormals; // ?
+    
+    // consider mono -> stereo, stereo -> stereo
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-    
-    //mainGain = 0.015;
 
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
@@ -152,14 +163,67 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    
+    
+//    for (int channel = 0; channel < totalNumOutputChannels; ++channel)
+//    {
+//        auto* channelData = buffer.getWritePointer (channel);
+//
+//        auto localTargetGain = targetGain; // instantiated for ever output channels
+//
+//        // no change from the gain slider
+//        if(localTargetGain != mainGain)
+//            {
+//                auto gainIncrementPerSample = (localTargetGain - mainGain) / buffer.getNumSamples();
+//
+//                for ( int sample = 0; sample < buffer.getNumSamples(); ++sample)
+//                    {
+//                        mainGain += gainIncrementPerSample;
+//                        channelData[sample] = buffer.getSample(channel, sample) * mainGain;
+//                    }
+//            }
+//        else
+//        {
+//            for ( int sample = 0; sample < buffer.getNumSamples(); ++sample)
+//            {
+//                channelData[sample] = buffer.getSample(channel, sample) * mainGain;
+//            }
+//        }
+//    }
+    
+    
+    auto localTargetGain = targetGain;
+    
+    // blows the output!
+   // mainGain = *treeState.getRawParameterValue(GAIN_ID);
+    
+    if ( localTargetGain != mainGain)
     {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
-        for ( int sample = 0; sample < buffer.getNumSamples(); ++sample)
+        auto gainRateOfChange = (localTargetGain - mainGain) / buffer.getNumSamples();
+        
+        for ( int channel = 0; channel < totalNumOutputChannels; ++ channel)
         {
-            channelData[sample] = buffer.getSample(channel, sample) * mainGain;
+            auto* channelData = buffer.getWritePointer(channel);
+            auto localMainGain = mainGain;
+            
+            for( int sample = 0;  sample < buffer.getNumSamples(); ++sample)
+            {
+                localMainGain += gainRateOfChange;
+                channelData[sample] = buffer.getSample(channel, sample) * localMainGain;
+            }
+        }
+        mainGain = localTargetGain;
+    }
+    else
+    {
+        for ( int channel = 0; channel < totalNumOutputChannels; ++channel)
+        {
+            auto* channelData = buffer.getWritePointer(channel);
+            for ( int sample = 0; sample < buffer.getNumSamples(); ++sample)
+            {
+                channelData[sample] = buffer.getSample(channel, sample) * mainGain;
+            }
+            
         }
     }
 }
@@ -200,5 +264,15 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 void GainSliderAudioProcessor::setGain(double gain)
 {
-    mainGain = gain;
+    targetGain = gain;
+}
+
+double GainSliderAudioProcessor::getGain() const
+{
+    return mainGain;
+}
+
+AudioProcessorValueTreeState& GainSliderAudioProcessor::accessTreeState()
+{
+    return treeState;
 }

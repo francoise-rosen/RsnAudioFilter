@@ -3,6 +3,7 @@
 <JUCERPROJECT id="PkQhTX" name="GainSlider" projectType="audioplug" jucerVersion="5.4.5">
   <MAINGROUP id="UBuE5F" name="GainSlider">
     <GROUP id="{10892174-7B7B-11BF-3C3E-2CC66A203AAB}" name="Source">
+      <FILE id="SKEhlW" name="DecibelSlider.h" compile="0" resource="0" file="Source/DecibelSlider.h"/>
       <FILE id="YlJF0w" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="q7wJBD" name="PluginProcessor.h" compile="0" resource="0"

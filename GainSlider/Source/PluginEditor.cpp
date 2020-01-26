@@ -13,18 +13,27 @@
 
 //==============================================================================
 GainSliderAudioProcessorEditor::GainSliderAudioProcessorEditor (GainSliderAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p)
+    : AudioProcessorEditor (&p), processor (p),
+    level(processor.getGain()) // upon startup read the value off the processor?
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (400, 300);
-    addAndMakeVisible(&gainSlider);
-    gainSlider.setSliderStyle(Slider::SliderStyle::LinearVertical);
-    gainSlider.setTextBoxStyle(Slider::TextBoxBelow, true, 100, 40);
-    gainSlider.setSkewFactor(0.5);
-    gainSlider.setRange(0.0, 1.0);
-    gainSlider.setValue(0.25);
-    gainSlider.addListener(this);
+    addAndMakeVisible(&gainSliderdB);
+    gainSliderdB.setSliderStyle(Slider::SliderStyle::LinearVertical);
+    gainSliderdB.setTextBoxStyle(Slider::TextBoxBelow, true, 100, 40);
+    gainSliderdB.setRange(-100.0, 0.0);
+    // you must set skew factor after the range is defined!
+    gainSliderdB.setSkewFactorFromMidPoint(-16.0);
+    gainSliderdB.setValue(Decibels::gainToDecibels((float)level));
+    gainSliderdB.addListener(this);
+    
+    addAndMakeVisible(&dBLabel);
+    dBLabel.setText("GAIN", dontSendNotification);
+    dBLabel.attachToComponent(&gainSliderdB, false);
+    
+    // tree state
+    sliderAttachment.reset(new AudioProcessorValueTreeState::SliderAttachment(processor.accessTreeState(), GAIN_ID, gainSliderdB));
 }
 
 GainSliderAudioProcessorEditor::~GainSliderAudioProcessorEditor()
@@ -41,13 +50,15 @@ void GainSliderAudioProcessorEditor::paint (Graphics& g)
 
 void GainSliderAudioProcessorEditor::resized()
 {
-    gainSlider.setBounds(getLocalBounds());
+    gainSliderdB.setBounds(getLocalBounds().removeFromRight(70).removeFromBottom(220));
 }
 
 void GainSliderAudioProcessorEditor::sliderValueChanged(Slider* slider)
 {
-    if (slider == &gainSlider)
+    if (slider == &gainSliderdB)
     {
-        processor.setGain(gainSlider.getValue());
+        // convert db to magnitude
+        level = Decibels::decibelsToGain(gainSliderdB.getValue());
+        processor.setGain(level);
     }
 }
