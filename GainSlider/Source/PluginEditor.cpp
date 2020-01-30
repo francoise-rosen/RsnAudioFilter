@@ -13,8 +13,7 @@
 
 //==============================================================================
 GainSliderAudioProcessorEditor::GainSliderAudioProcessorEditor (GainSliderAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p),
-    level(processor.getGain()) // upon startup read the value off the processor?
+    : AudioProcessorEditor (&p), processor (p) // upon startup read the value off the processor?
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
@@ -24,9 +23,9 @@ GainSliderAudioProcessorEditor::GainSliderAudioProcessorEditor (GainSliderAudioP
     gainSliderdB.setTextBoxStyle(Slider::TextBoxBelow, true, 100, 40);
     gainSliderdB.setRange(-100.0, 0.0);
     // you must set skew factor after the range is defined!
-    gainSliderdB.setSkewFactorFromMidPoint(-16.0);
     gainSliderdB.setValue(Decibels::gainToDecibels((float)level));
-    gainSliderdB.addListener(this);
+    gainSliderdB.setSkewFactor(4.0);
+    //gainSliderdB.addListener(this);
     
     addAndMakeVisible(&dBLabel);
     dBLabel.setText("GAIN", dontSendNotification);
@@ -53,12 +52,12 @@ void GainSliderAudioProcessorEditor::resized()
     gainSliderdB.setBounds(getLocalBounds().removeFromRight(70).removeFromBottom(220));
 }
 
-void GainSliderAudioProcessorEditor::sliderValueChanged(Slider* slider)
-{
-    if (slider == &gainSliderdB)
-    {
-        // convert db to magnitude
-        level = Decibels::decibelsToGain(gainSliderdB.getValue());
-        processor.setGain(level);
-    }
-}
+//void GainSliderAudioProcessorEditor::sliderValueChanged(Slider* slider)
+//{
+//    if (slider == &gainSliderdB)
+//    {
+//        // convert db to magnitude
+//        level = Decibels::decibelsToGain(gainSliderdB.getValue());
+//        processor.setGain(level);
+//    }
+//}

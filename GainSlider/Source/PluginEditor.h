@@ -15,8 +15,8 @@
 //==============================================================================
 /**
 */
-class GainSliderAudioProcessorEditor  : public AudioProcessorEditor,
-                                        public Slider::Listener
+class GainSliderAudioProcessorEditor  : public AudioProcessorEditor
+                                       // public Slider::Listener
 {
 public:
     GainSliderAudioProcessorEditor (GainSliderAudioProcessor&);
@@ -26,7 +26,7 @@ public:
     void paint (Graphics&) override;
     void resized() override;
     
-    void sliderValueChanged(Slider* slider) override;
+//    void sliderValueChanged(Slider* slider) override;
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -36,7 +36,7 @@ private:
     // works like slider but has 2 overriden functions
     DecibelSlider gainSliderdB;
     Label dBLabel;
-    // local level, not sure if needed
+    // local level, not needed if tree state is emplyed
     double level = 0.0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GainSliderAudioProcessorEditor)

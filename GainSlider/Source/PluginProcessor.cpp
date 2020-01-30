@@ -30,9 +30,9 @@ GainSliderAudioProcessor::GainSliderAudioProcessor()
                   "PARAMETER", // identifier
                   {std::make_unique<AudioParameterFloat> ( GAIN_ID,
                                                           GAIN_NAME,
-                                                          -100.0f,
+                                                        -100.0f,
                                                           0.0f,
-                                                          -16.0f)
+                                                          -100.0f)
                   }
                   )
 
@@ -108,6 +108,7 @@ void GainSliderAudioProcessor::changeProgramName (int index, const String& newNa
 //==============================================================================
 void GainSliderAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    mainGain = *treeState.getRawParameterValue(GAIN_ID);
     targetGain = mainGain;
 }
 
@@ -191,7 +192,7 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
 //        }
 //    }
     
-    
+    targetGain = *treeState.getRawParameterValue(GAIN_ID);
     auto localTargetGain = targetGain;
     
     // blows the output!
@@ -199,17 +200,18 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
     
     if ( localTargetGain != mainGain)
     {
+       
         auto gainRateOfChange = (localTargetGain - mainGain) / buffer.getNumSamples();
         
         for ( int channel = 0; channel < totalNumOutputChannels; ++ channel)
         {
             auto* channelData = buffer.getWritePointer(channel);
-            auto localMainGain = mainGain;
+           
             
             for( int sample = 0;  sample < buffer.getNumSamples(); ++sample)
             {
-                localMainGain += gainRateOfChange;
-                channelData[sample] = buffer.getSample(channel, sample) * localMainGain;
+                mainGain += gainRateOfChange;
+                channelData[sample] = buffer.getSample(channel, sample) * Decibels::decibelsToGain(mainGain);
             }
         }
         mainGain = localTargetGain;
@@ -221,7 +223,7 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
             auto* channelData = buffer.getWritePointer(channel);
             for ( int sample = 0; sample < buffer.getNumSamples(); ++sample)
             {
-                channelData[sample] = buffer.getSample(channel, sample) * mainGain;
+                channelData[sample] = buffer.getSample(channel, sample) * Decibels::decibelsToGain(mainGain);
             }
             
         }

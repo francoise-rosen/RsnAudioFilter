@@ -71,7 +71,7 @@ public:
 
 private:
     double mainGain;
-    double targetGain;
+    double targetGain; // do I need it at all or we could just use it in processBlock() ?
     AudioProcessorValueTreeState treeState;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GainSliderAudioProcessor)
