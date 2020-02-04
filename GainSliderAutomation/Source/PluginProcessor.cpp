@@ -172,7 +172,8 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
     // interleaved by keeping the same state.
         
    // auto localTargetGain = targetGain;
-    auto localTargetGain = *treeState.getRawParameterValue(GAIN_ID);
+    targetGain = *treeState.getRawParameterValue(GAIN_ID);
+    auto localTargetGain = targetGain;
     
     // blows the output!
    // mainGain = *treeState.getRawParameterValue(GAIN_ID);
@@ -189,7 +190,7 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
             for( int sample = 0;  sample < buffer.getNumSamples(); ++sample)
             {
                 localMainGain += gainRateOfChange;
-                channelData[sample] = buffer.getSample(channel, sample) * localMainGain;
+                channelData[sample] = buffer.getSample(channel, sample) * Decibels::decibelsToGain(localMainGain);
             }
         }
         mainGain = localTargetGain;
@@ -201,7 +202,7 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
             auto* channelData = buffer.getWritePointer(channel);
             for ( int sample = 0; sample < buffer.getNumSamples(); ++sample)
             {
-                channelData[sample] = buffer.getSample(channel, sample) * mainGain;
+                channelData[sample] = buffer.getSample(channel, sample) * Decibels::decibelsToGain(mainGain);
             }
             
         }

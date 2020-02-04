@@ -21,6 +21,10 @@
 			isa = PBXBuildFile;
 			fileRef = 5CF3DD10CBBE8C12F28D4F03;
 		};
+		0C2378454EE31A43EF097F84 = {
+			isa = PBXBuildFile;
+			fileRef = A192422EDF0FA7B6386B8706;
+		};
 		31D62748441F9FE2BBB66B12 = {
 			isa = PBXBuildFile;
 			fileRef = 536E724167D925BE75DAB0CD;
@@ -28,10 +32,6 @@
 		B1DA14C0AA0C27BD140126DD = {
 			isa = PBXBuildFile;
 			fileRef = 7A5C90FA6FDA09E3A13BA665;
-		};
-		0C2378454EE31A43EF097F84 = {
-			isa = PBXBuildFile;
-			fileRef = A192422EDF0FA7B6386B8706;
 		};
 		6BAAC0F5E3BF332FD76F2E75 = {
 			isa = PBXBuildFile;
@@ -501,13 +501,6 @@
 			path = System/Library/Frameworks/CoreMIDI.framework;
 			sourceTree = SDKROOT;
 		};
-		DD9B55FFC310761FEDE7A30A = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.objcpp;
-			name = "include_juce_data_structures.mm";
-			path = "../../JuceLibraryCode/include_juce_data_structures.mm";
-			sourceTree = "SOURCE_ROOT";
-		};
 		E4E9E6B22CC7E8CCA6884477 = {
 			isa = PBXFileReference;
 			explicitFileType = wrapper.application;
@@ -550,11 +543,11 @@
 			path = "../../JuceLibraryCode/include_juce_cryptography.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
-		DFCFC8978F160D8DF82C67CA = {
+		DD9B55FFC310761FEDE7A30A = {
 			isa = PBXFileReference;
-			lastKnownFileType = text.plist.xml;
-			name = GainSliderAutomation.entitlements;
-			path = GainSliderAutomation.entitlements;
+			lastKnownFileType = sourcecode.cpp.objcpp;
+			name = "include_juce_data_structures.mm";
+			path = "../../JuceLibraryCode/include_juce_data_structures.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
 		EAD20D1365B9807CD38EA4FB = {
@@ -690,9 +683,9 @@
 		71D14074B200AE79A1D4AF84 = {
 			isa = PBXGroup;
 			children = (
+				A192422EDF0FA7B6386B8706,
 				536E724167D925BE75DAB0CD,
 				7A5C90FA6FDA09E3A13BA665,
-				A192422EDF0FA7B6386B8706,
 				6FFAC05A3F27E0C345B897A4,
 				AAD88867D148AD4A54386A90,
 				0204471F408DB7288DC73E59,
@@ -735,6 +728,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -742,6 +736,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -1181,6 +1176,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "GainSliderAutomation";
+				SDKROOT = macosx;
 				WARNING_CFLAGS = "-Wreorder";
 				ZERO_LINK = NO;
 			};
@@ -1226,6 +1222,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PRODUCT_NAME = "GainSliderAutomation";
+				SDKROOT = macosx;
 				WARNING_CFLAGS = "-Wreorder";
 				ZERO_LINK = NO;
 			};
@@ -1378,9 +1375,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C2378454EE31A43EF097F84,
 				31D62748441F9FE2BBB66B12,
 				B1DA14C0AA0C27BD140126DD,
-				0C2378454EE31A43EF097F84,
 				6BAAC0F5E3BF332FD76F2E75,
 				1414D77190EC35B704CED334,
 				F93EAED45359E0B3F0E9A1FF,

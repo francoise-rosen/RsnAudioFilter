@@ -2,15 +2,18 @@
   ==============================================================================
 PHASE A
        1. Level in dB - done
-       1.1 Fix this - won't remember the state when the window is closed
+       1.1 Fix this - won't remember the state when the window is closed - fixed (removed listener)
        2. smooth the changes - done
-       3. automation. Works only if Window is on. Apparently takes the level from GUI. Must take from treeState tho?
-       4. save settings
+       3. automation. Works only if Window is on. Apparently takes the level from GUI. Must take from treeState tho? - fixed, see 1.1
+       4. save settings -
        5. set up the plugin host
+       6. skew problem (low priority)
  
- PHASE B
+ PHASE B - make a waveshaper out of it
  1. Pan dial
- 2. Waveshaper (TANH) and a slider (rotary) for amount
+ 2. Waveshaper (TANH) and a slider (rotary) for amount - hige priority
+ 3. Math functions
+ 4. Custom wavetables -> transfer functions
 
   ==============================================================================
 */

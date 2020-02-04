@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="oJx0JB" name="GainSliderAutomation" projectType="audioplug"
-              jucerVersion="5.4.5">
+              jucerVersion="5.4.6">
   <MAINGROUP id="nfE57Z" name="GainSliderAutomation">
     <GROUP id="{F0953BDF-DCD1-9AF2-A266-D386151F504C}" name="Source">
       <FILE id="cp4EpX" name="DecibelSlider.h" compile="0" resource="0" file="Source/DecibelSlider.h"/>

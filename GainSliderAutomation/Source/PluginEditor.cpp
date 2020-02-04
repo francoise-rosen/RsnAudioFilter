@@ -26,7 +26,7 @@ GainSliderAudioProcessorEditor::GainSliderAudioProcessorEditor (GainSliderAudioP
     // you must set skew factor after the range is defined!
     gainSlider.setSkewFactorFromMidPoint(-16.0);
     gainSlider.setValue(Decibels::gainToDecibels((float)level));
-    gainSlider.addListener(this);
+    //gainSlider.addListener(this);
     
     addAndMakeVisible(&dBLabel);
     dBLabel.setText("GAIN", dontSendNotification);
@@ -53,13 +53,13 @@ void GainSliderAudioProcessorEditor::resized()
     gainSlider.setBounds(getLocalBounds().removeFromRight(70).removeFromBottom(220));
 }
 
-void GainSliderAudioProcessorEditor::sliderValueChanged(Slider* slider)
-{
-    if (slider == &gainSlider)
-    {
-        // convert db to magnitude
-        //level = Decibels::decibelsToGain(gainSliderdB.getValue());
-        level = gainSlider.getValue();
-        processor.setGain(level);
-    }
-}
+//void GainSliderAudioProcessorEditor::sliderValueChanged(Slider* slider)
+//{
+//    if (slider == &gainSlider)
+//    {
+//        // convert db to magnitude
+//        //level = Decibels::decibelsToGain(gainSliderdB.getValue());
+//        level = gainSlider.getValue();
+//        processor.setGain(level);
+//    }
+//}
