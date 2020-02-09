@@ -21,6 +21,7 @@ PHASE A
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "TransferFunction.h"
 #define GAIN_ID "gain"
 #define GAIN_NAME "Gain"
 
@@ -76,7 +77,7 @@ private:
     double mainGain;
     double targetGain;
     AudioProcessorValueTreeState parameters;
-    AudioSampleBuffer transferFunction; // so far just one
+    TransferFunction transferFunction; // so far just one
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GainSliderAudioProcessor)
 };

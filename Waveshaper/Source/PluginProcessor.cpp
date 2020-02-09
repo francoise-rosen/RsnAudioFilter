@@ -11,6 +11,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+
 //==============================================================================
 GainSliderAudioProcessor::GainSliderAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -189,7 +190,9 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
             for( int sample = 0;  sample < buffer.getNumSamples(); ++sample)
             {
                 localMainGain += gainRateOfChange;
-                channelData[sample] = buffer.getSample(channel, sample) * Decibels::decibelsToGain(localMainGain);
+                double unit = buffer.getSample(channel, sample);
+                channelData[sample] = transferFunction.transform(TransferFunction::Functions::tanh, 3, unit) * (double)Decibels::decibelsToGain(localMainGain);
+                //channelData[sample] = std::tanh(unit);
             }
         }
         mainGain = localTargetGain;
@@ -201,7 +204,10 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
             auto* channelData = buffer.getWritePointer(channel);
             for ( int sample = 0; sample < buffer.getNumSamples(); ++sample)
             {
-                channelData[sample] = buffer.getSample(channel, sample) * Decibels::decibelsToGain(mainGain);
+               // channelData[sample] = buffer.getSample(channel, sample) * Decibels::decibelsToGain(mainGain);
+                double unit = buffer.getSample(channel, sample);
+                channelData[sample] = transferFunction.transform(TransferFunction::Functions::tanh, 3, unit) * Decibels::decibelsToGain(mainGain);
+                //channelData[sample] = std::tanh(unit);
             }
             
         }
