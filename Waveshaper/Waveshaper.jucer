@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="qTzfjD" name="Waveshaper" projectType="audioplug" jucerVersion="5.4.6">
+<JUCERPROJECT id="qTzfjD" name="Waveshaper" projectType="audioplug" jucerVersion="5.4.7">
   <MAINGROUP id="ZlvkUf" name="Waveshaper">
     <GROUP id="{C0726659-43BD-E8C1-6D19-5824158F4F1A}" name="Source">
       <FILE id="RJv9pO" name="TransferFunction.h" compile="0" resource="0"

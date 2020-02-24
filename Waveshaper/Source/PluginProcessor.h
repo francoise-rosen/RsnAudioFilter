@@ -10,10 +10,21 @@ PHASE A
        6. skew problem (low priority)
  
  PHASE B - make a waveshaper out of it
- 1. Pan dial
- 2. Waveshaper (TANH) and a slider (rotary) for amount - hige priority
- 3. Math functions
- 4. Custom wavetables -> transfer functions
+    1. Pan dial
+    2. Waveshaper (TANH) and a slider (rotary) for amount - high priority
+    3. Math functions (cos, soft clip, different sigmoid and piecewise functions)
+    4. Custom wavetables -> transfer functions
+    5. LPG to smooth the saturation
+    6. LPF / HPF before the waveshaping stage
+    7. DCblock
+    8. Oversampling
+    9. EPTR for transitions
+ 
+ 
+ PHASE C:
+    1 LFO Bank (-> symmetry, crossfade, index of modulation)
+    2 Assymetrical modulation (dial when in center - symetric, either side will modulate negative or positive values)
+    this can be modulated by LFO for better result!
 
   ==============================================================================
 */

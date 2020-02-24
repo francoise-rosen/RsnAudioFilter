@@ -3,6 +3,25 @@
 
   Based on this tutorial
   https://www.youtube.com/watch?v=7JUvVnRZrjg
+ 
+ Parameters and GUI:
+ One modulator
+ 
+ 1. Waveshaper function (radiobutton)
+ 2. Index of modulation (1.0 - 9.0)
+ 3. MIX (dry / wet)
+ 4. Symmetry knob
+ ------------------
+ 4. LPF / HPF cutoff dial, q dial (later)
+ 5. LPG dial (later)
+ 
+ --------------------
+ 
+ Two modulators:
+ 1. Crossfade horisontal slider
+ 2. the rest is how for 1 modulator
+ 
+ 
 
   ==============================================================================
 */
