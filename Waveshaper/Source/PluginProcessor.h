@@ -7,13 +7,13 @@ PHASE A
        3. automation. Works only if Window is on. Apparently takes the level from GUI. Must take from treeState tho? - fixed, see 1.1
        4. save settings -
        5. set up the plugin host
-       6. skew problem (low priority)
+       6. skew problem (low priority), use Normalised Range
  
  PHASE B - make a waveshaper out of it
     1. Pan dial
     2. Waveshaper (TANH) and a slider (rotary) for amount - high priority
     3. Math functions (cos, soft clip, different sigmoid and piecewise functions)
-    4. Custom wavetables -> transfer functions
+    4. Custom wavetables -> transfer functions 
     5. LPG to smooth the saturation
     6. LPF / HPF before the waveshaping stage
     7. DCblock

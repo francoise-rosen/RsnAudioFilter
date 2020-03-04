@@ -10,7 +10,7 @@
     1. Make TAHN, soft clipping and COS work
     2. How to imlement it in plugin processor? - done, but add parameters
     2.5 More transfer functions (Book)
-    3. DCblock
+    3. DCblock!
     4. LPG
     5. LPF before shaping
     6. Oversampling
@@ -28,11 +28,50 @@
 
 // write a scale function
 
-double scale(double valueToScale, double inMix, double inMax, double outMin, double outMax)
+// do I need these const here?
+template <typename T>
+T linearScale(T& valueToScale, const T inMin, const T inMax, const T outMin, const T outMax)
 {
-    double value;
+    T value;
+    jassert(inMin < inMax);
+    if(outMin == outMax) return outMin;
+    
+    const T factor = (outMax - outMin) / (inMax - inMin);
+    value = factor * (valueToScale - inMin) + outMin;
+    
     return value;
 }
+
+template<typename T>
+T expScale(T& valueToScale, const T inMin, const T inMax, const T outMin, const T outMax, const T expFactor)
+{
+    // expFactor in range (1, n) will produce exponential growth
+    // expFactor in range (0, 1) will produce logarithmic growth
+    // expFactor 1 is simple linearScale;
+    jassert(expFactor >= 0);
+    jassert(valueToScale >= 0); // we don't need negative numbers here (problems woth sqrt())
+    
+    T value = valueToScale;
+    if(expFactor == static_cast<T>(1)) return linearScale(valueToScale, inMin, inMax, outMin, outMax);
+    
+    // assume the input range is 0 - 1 (otherwise we may need to scale it first
+    if((inMin == static_cast<T>(0) && inMax == static_cast<T>(1)))
+    {
+        value = pow(value, expFactor);
+    }
+    else
+    {
+        T localMin = static_cast<T>(0);
+        T localMax = static_cast<T>(1);
+        value = linearScale(value, inMin, inMax, localMin, localMax);
+        value = pow(value, expFactor);
+    }
+    
+    value = linearScale(value, static_cast<T>(0), static_cast<T>(1), outMin, outMax);
+    return value;
+}
+
+
 
 inline double sgn(double inpt)
 {
@@ -50,7 +89,7 @@ public:
         tanh,
         cos,
         sin,
-        minPiToPiSin, // how do I implement this?
+        negPiToPiSin, // how do I implement this? scale input to - pi/2, pi/2
         softClipper, // index 0.5 - 1
         softClipperCascade3,
         sigmoid1,
