@@ -41,8 +41,8 @@ parameters(
                                                      NormalisableRange<float>(-1.0f, 1.0f), 0.0f),
                std::make_unique<AudioParameterFloat>(paramCrossfade, CROSSFADE_NAME,
                                                      NormalisableRange<float>(-48.0f, 48.0f), 0.0f),
-               std::make_unique<AudioParameterChoice>(paramFunctionsA, FUNCTIONS_A_NAME, StringArray({"SFDTanh", "SFDcos", "SFDclip", "SFDClipCascade"}), 1),
-               std::make_unique<AudioParameterChoice>(paramFunctionsA, FUNCTIONS_A_NAME, StringArray({"SFDTanh", "SFDcos", "SFDclip", "SFDClipCascade"}), 1)
+               std::make_unique<AudioParameterChoice>(paramFunctionsA, FUNCTIONS_A_NAME, StringArray({"SFDTanh", "SFDcos", "SFDsine" "SFDclip", "SFDClipCascade"}), 1),
+               std::make_unique<AudioParameterChoice>(paramFunctionsA, FUNCTIONS_A_NAME, StringArray({"SFDTanh", "SFDcos", "SFDsine", "SFDclip", "SFDClipCascade"}), 1)
                
            }
            )
