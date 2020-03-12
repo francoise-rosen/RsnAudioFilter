@@ -53,13 +53,3 @@ void GainSliderAudioProcessorEditor::resized()
     gainSlider.setBounds(getLocalBounds().removeFromRight(70).removeFromBottom(220));
 }
 
-//void GainSliderAudioProcessorEditor::sliderValueChanged(Slider* slider)
-//{
-//    if (slider == &gainSlider)
-//    {
-//        // convert db to magnitude
-//        //level = Decibels::decibelsToGain(gainSliderdB.getValue());
-//        level = gainSlider.getValue();
-//        processor.setGain(level);
-//    }
-//}

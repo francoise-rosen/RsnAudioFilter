@@ -117,7 +117,7 @@ public:
     
     forcedinline double halfCos(double& x, double index, double sym=1) noexcept
     {
-        double localIndex = expScale(index, MIN, MAX, 1.0, 2.0, 3.0);
+        double localIndex = expScale(index, min, max, 1.0, 2.0, 3.0);
         double threshold = HALFPI * localIndex;
         double sample = linearScale(x, MINRANGE, MAXRANGE, -threshold, threshold);
         //double sample = linearScale(x, 0.0, 1.0, -1.0, 1.0);
@@ -128,7 +128,7 @@ public:
     // this one nicely grows to distortion
     forcedinline double sfdsine(double& x, double index, double sym=1) noexcept
     {
-        index = expScale(index, MIN, MAX, 0.1, 10.0, 5.0);
+        index = expScale(index, min, max, 0.1, 10.0, 5.0);
         double sample = linearScale(x, MINRANGE, MAXRANGE, -HALFPI, HALFPI);
         // check gen for coefs, how to scale index?
         sample = std::sin(
@@ -145,14 +145,14 @@ public:
     forcedinline double sfdtanh(double& x, double index, double sym=1) noexcept
     {
         // processing
-        index = expScale(index, MIN, MAX, 1.0, 9.0, 2.0);
+        index = expScale(index, min, max, 1.0, 9.0, 2.0);
         auto sample = std::tanh(x * index) / std::tanh(index * 2.0);
         return sample;
     }
     
     forcedinline double sfdatan(double& x, double index, double sym=1) noexcept
     {
-        index = expScale(index, MIN, MAX, 1.0, 9.0, 0.75);
+        index = expScale(index, min, max, 1.0, 9.0, 0.75);
         auto sample = std::atan(x * index) / std::atan(index * 2.0);
         return sample;
     }

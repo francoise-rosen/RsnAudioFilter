@@ -187,11 +187,11 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
             auto* channelData = buffer.getWritePointer(channel);
             auto localMainGain = mainGain;
             
-            for( int sample = 0;  sample < buffer.getNumSamples(); ++sample)
+            for( int i = 0;  i < buffer.getNumSamples(); ++i)
             {
                 localMainGain += gainRateOfChange;
-                double unit = buffer.getSample(channel, sample);
-                channelData[sample] = transferFunction.transform(TransferFunction::Functions::tanh, 3, unit) * (double)Decibels::decibelsToGain(localMainGain);
+                double sample = buffer.getSample(channel, i);
+                channelData[i] = transferFunction.transform(TransferFunction::Functions::tanh, sample, 0.75, 1) * (double)Decibels::decibelsToGain(localMainGain);
                 //channelData[sample] = std::tanh(unit);
             }
         }
@@ -202,11 +202,11 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
         for ( int channel = 0; channel < totalNumOutputChannels; ++channel)
         {
             auto* channelData = buffer.getWritePointer(channel);
-            for ( int sample = 0; sample < buffer.getNumSamples(); ++sample)
+            for ( int i = 0; i < buffer.getNumSamples(); ++i)
             {
                // channelData[sample] = buffer.getSample(channel, sample) * Decibels::decibelsToGain(mainGain);
-                double unit = buffer.getSample(channel, sample);
-                channelData[sample] = transferFunction.transform(TransferFunction::Functions::tanh, 3, unit) * Decibels::decibelsToGain(mainGain);
+                double sample = buffer.getSample(channel, i);
+                channelData[i] = transferFunction.transform(TransferFunction::Functions::tanh, sample, 0.75, 1) * Decibels::decibelsToGain(mainGain);
                 //channelData[sample] = std::tanh(unit);
             }
             

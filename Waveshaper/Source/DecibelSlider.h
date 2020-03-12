@@ -6,6 +6,8 @@
     Author:  syfo_dias
  
     Taken from the JUCE page
+ 
+ This is redundant
 
   ==============================================================================
 */
