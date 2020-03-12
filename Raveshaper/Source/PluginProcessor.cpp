@@ -10,7 +10,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "Waveshaper.h"
+
 
 String RaveshaperAudioProcessor::paramGain {"gain"};
 String RaveshaperAudioProcessor::paramSaturate {"saturate"};
@@ -119,14 +119,14 @@ void RaveshaperAudioProcessor::changeProgramName (int index, const String& newNa
 //==============================================================================
 void RaveshaperAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    currentSampleRate = sampleRate;
+    currentBlockSize = samplesPerBlock;
+    gain = 0;
 }
 
 void RaveshaperAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+    
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -159,26 +159,24 @@ void RaveshaperAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
     
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
+    gain = *parameters.getRawParameterValue(paramGain);
+    
+
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
     
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
+
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer (channel);
         
-        // ..do something to the data...
+        // sample bookkeeping
+        for (int i = 0; i < buffer.getNumSamples(); ++i)
+        {
+            auto sample = buffer.getSample(channel, i);
+            channelData[i] = transferFunction.transform(TransferFunction<float>::Functions::tanh, sample, 3, 1) * Decibels::decibelsToGain(gain);
+        }
+        
     }
 }
 

@@ -11,6 +11,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+// implement this in wavesher as a static array of strings?
 std::vector<String> RaveshaperAudioProcessorEditor::functions{"sfdtanh", "sfdcos", "soft clipper", "clipper cascade", "sfdsine"};
 
 //==============================================================================

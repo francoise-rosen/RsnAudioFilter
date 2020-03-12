@@ -73,9 +73,9 @@ public:
     
     forcedinline T halfCos(T& x, T index, T sym=1) noexcept
     {
-        T localIndex = expScale(index, MIN, MAX, 1.0, 2.0, 3.0);
+        T localIndex = expScale<T>(index, MIN, MAX, 1.0, 2.0, 3.0);
         T threshold = HALFPI * localIndex;
-        auto sample = linearScale(x, MINRANGE, MAXRANGE, -threshold, threshold);
+        auto sample = linearScale<T>(x, MINRANGE, MAXRANGE, -threshold, threshold);
         //double sample = linearScale(x, 0.0, 1.0, -1.0, 1.0);
         sample = std::cos(sample + HALFPI);
         return sample;
@@ -84,8 +84,8 @@ public:
     // this one nicely grows to distortion
     forcedinline T sfdsine(T& x, T index, T sym=1) noexcept
     {
-        index = expScale(index, MIN, MAX, 0.1, 10.0, 5.0);
-        auto sample = linearScale(x, MINRANGE, MAXRANGE, -HALFPI, HALFPI);
+        index = expScale<T>(index, MIN, MAX, 0.1, 10.0, 5.0);
+        auto sample = linearScale<T>(x, MINRANGE, MAXRANGE, -HALFPI, HALFPI);
         // check gen for coefs, how to scale index?
         sample = std::sin(
                           sample + std::sin(
@@ -101,7 +101,7 @@ public:
     forcedinline T sfdtanh(T& x, T index, T sym=1) noexcept
     {
         // processing
-        index = expScale(index, MIN, MAX, 1.0, 9.0, 2.0);
+        index = expScale<T>(index, MIN, MAX, 1.0, 9.0, 2.0);
         auto sample = std::tanh(x * index) / std::tanh(index * 2.0);
         return sample;
     }
@@ -170,6 +170,7 @@ public:
         
         return sample;
     }
+
 
 private:
     T min; // so far unused

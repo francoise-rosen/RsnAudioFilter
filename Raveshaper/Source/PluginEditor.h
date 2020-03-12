@@ -4,6 +4,13 @@
     This file was auto-generated!
 
     It contains the basic framework code for a JUCE plugin editor.
+ 
+ PLAN:
+ 1. DRAW GUI (align later)
+ 2. IMLEMENT SYMMETRY (DC offset in, DCblock out (class?))
+ 3. IMPLEMENT plugin processor blocks (reading, saving, using parameters)
+ 4. Align the GUI
+ 5. Oversampling
 
   ==============================================================================
 */

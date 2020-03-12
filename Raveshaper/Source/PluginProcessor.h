@@ -11,6 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Waveshaper.h"
 #define GAIN_NAME "Gain"
 #define SATURATION_NAME "Saturate"
 #define SYMMETRY_NAME "Symmetry"
@@ -72,5 +73,12 @@ public:
 private:
     //==============================================================================
     AudioProcessorValueTreeState parameters;
+    //SmoothedValue<float, ValueSmoothingTypes::Linear> gain;
+    float gain;
+    double currentSampleRate;
+    double currentBlockSize;
+    
+    TransferFunction<float> transferFunction;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RaveshaperAudioProcessor)
 };
