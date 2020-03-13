@@ -33,18 +33,18 @@ PHASE A
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "TransferFunction.h"
-#define GAIN_ID "gain"
 #define GAIN_NAME "Gain"
+#define SATURATION_NAME "Saturation"
 
 //==============================================================================
 /**
 */
-class GainSliderAudioProcessor  : public AudioProcessor
+class WaveshaperAudioProcessor  : public AudioProcessor
 {
 public:
     //==============================================================================
-    GainSliderAudioProcessor();
-    ~GainSliderAudioProcessor();
+    WaveshaperAudioProcessor();
+    ~WaveshaperAudioProcessor();
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -83,12 +83,16 @@ public:
     void setGain(double);
     double getGain() const;
     AudioProcessorValueTreeState& accessTreeState();
+    
+    static String paramGain;
+    static String paramSaturation;
 
 private:
     double mainGain;
     double targetGain;
+    float saturation;
     AudioProcessorValueTreeState parameters;
     TransferFunction transferFunction; // so far just one
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GainSliderAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveshaperAudioProcessor)
 };

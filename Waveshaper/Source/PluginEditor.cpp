@@ -12,44 +12,48 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-GainSliderAudioProcessorEditor::GainSliderAudioProcessorEditor (GainSliderAudioProcessor& p)
+WaveshaperAudioProcessorEditor::WaveshaperAudioProcessorEditor (WaveshaperAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
     // upon startup read the value off the processor?
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    setSize (400, 300);
+
+    setSize (400, 250);
     addAndMakeVisible(&gainSlider);
-    gainSlider.setSliderStyle(Slider::SliderStyle::LinearVertical);
+    gainSlider.setSliderStyle(Slider::SliderStyle::Rotary);
     gainSlider.setTextBoxStyle(Slider::TextBoxBelow, true, 100, 40);
-   gainSlider.setRange(0.0, 1.0);
-    // you must set skew factor after the range is defined!
-    gainSlider.setSkewFactorFromMidPoint(-16.0);
-    gainSlider.setValue(Decibels::gainToDecibels((float)level));
-    //gainSlider.addListener(this);
-    
+
     addAndMakeVisible(&dBLabel);
     dBLabel.setText("GAIN", dontSendNotification);
     dBLabel.attachToComponent(&gainSlider, false);
     
+    addAndMakeVisible(&saturationSlider);
+    saturationSlider.setSliderStyle(Slider::SliderStyle::Rotary);
+    saturationSlider.setTextBoxStyle(Slider::TextBoxBelow, true, 100, 40);
+    
+    
     // tree state
-    sliderAttachment.reset(new AudioProcessorValueTreeState::SliderAttachment(processor.accessTreeState(), GAIN_ID, gainSlider));
+    gainSliderAttachment.reset(new AudioProcessorValueTreeState::SliderAttachment(processor.accessTreeState(), WaveshaperAudioProcessor::paramGain, gainSlider));
+    saturationSliderAttachment.reset(new AudioProcessorValueTreeState::SliderAttachment(processor.accessTreeState(),
+                                                                                  WaveshaperAudioProcessor::paramSaturation, saturationSlider));
 }
 
-GainSliderAudioProcessorEditor::~GainSliderAudioProcessorEditor()
+WaveshaperAudioProcessorEditor::~WaveshaperAudioProcessorEditor()
 {
 }
 
 //==============================================================================
-void GainSliderAudioProcessorEditor::paint (Graphics& g)
+void WaveshaperAudioProcessorEditor::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
 
 }
 
-void GainSliderAudioProcessorEditor::resized()
+void WaveshaperAudioProcessorEditor::resized()
 {
-    gainSlider.setBounds(getLocalBounds().removeFromRight(70).removeFromBottom(220));
+    
+    auto box = getLocalBounds().reduced(20);
+    gainSlider.setBounds(box.removeFromRight(70).removeFromBottom(120));
+    saturationSlider.setBounds(box.removeFromLeft(70).removeFromBottom(120));
 }
 

@@ -15,6 +15,9 @@
  4 Radio Button shape A
  5 Radio Button shape B
  6 Slider (horisontal) shape A - shape B
+ 7 Dry / Wet (for instance wet can be bandlimited with HPF and LPF, whereas Dry still will keep LF components untouched)
+ 8 TransferA on/off (if we don't want to change saturation level or dry/wet, but want to move gradually from saturated state, we can turn off either of Transfer functions, like Octatrac slide)
+ 9 TransferB on/off
  
  
 
@@ -30,12 +33,12 @@
 //==============================================================================
 /**
 */
-class GainSliderAudioProcessorEditor  : public AudioProcessorEditor
+class WaveshaperAudioProcessorEditor  : public AudioProcessorEditor
 
 {
 public:
-    GainSliderAudioProcessorEditor (GainSliderAudioProcessor&);
-    ~GainSliderAudioProcessorEditor();
+    WaveshaperAudioProcessorEditor (WaveshaperAudioProcessor&);
+    ~WaveshaperAudioProcessorEditor();
 
     //==============================================================================
     void paint (Graphics&) override;
@@ -43,26 +46,22 @@ public:
     
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
-    //Slider gainSlider;
-    // works like slider but has 2 overriden functions
-    //DecibelSlider gainSliderdB;
+ 
     Slider gainSlider;
     Label dBLabel;
-    // local level, not sure if needed
+
     double level = 0.0;
     
     // waveshaper gui
-    Slider index;
+    Slider saturationSlider;
     
-    GainSliderAudioProcessor& processor;
+    WaveshaperAudioProcessor& processor;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GainSliderAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveshaperAudioProcessorEditor)
     
-public:
     // connection between slider and parameter in tree state
     // if this pointer deleted, the connection brakes
     // don't delete the slider object or AudioProcessorTreeState object before this one!
-    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> sliderAttachment;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> gainSliderAttachment;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> saturationSliderAttachment;
 };

@@ -145,7 +145,7 @@ public:
     forcedinline double sfdtanh(double& x, double index, double sym=1) noexcept
     {
         // processing
-        index = expScale(index, min, max, 1.0, 9.0, 2.0);
+        index = expScale(index, min, max, 1.0, 5.0, 2.0);
         auto sample = std::tanh(x * index) / std::tanh(index * 2.0);
         return sample;
     }

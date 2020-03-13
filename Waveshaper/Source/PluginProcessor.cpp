@@ -10,10 +10,13 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+//==============================================================================
 
+String WaveshaperAudioProcessor::paramGain{"gain"};
+String WaveshaperAudioProcessor::paramSaturation{"saturation"};
 
 //==============================================================================
-GainSliderAudioProcessor::GainSliderAudioProcessor()
+WaveshaperAudioProcessor::WaveshaperAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -29,28 +32,33 @@ GainSliderAudioProcessor::GainSliderAudioProcessor()
         parameters(*this,  // add to this processor
                   nullptr, // ?
                   "PARAMETER", // identifier
-                  {std::make_unique<AudioParameterFloat> ( GAIN_ID,
+                  {std::make_unique<AudioParameterFloat> (paramGain,
                                                           GAIN_NAME,
                                                           -100.0f,
                                                           0.0f,
-                                                          -100.0f)
+                                                          -100.0f),
+                      std::make_unique<AudioParameterFloat> (paramSaturation,
+                                                             SATURATION_NAME,
+                                                             0.0f,
+                                                             1.0f,
+                                                             0.0f)
                   }
                   )
 
 {
 }
 
-GainSliderAudioProcessor::~GainSliderAudioProcessor()
+WaveshaperAudioProcessor::~WaveshaperAudioProcessor()
 {
 }
 
 //==============================================================================
-const String GainSliderAudioProcessor::getName() const
+const String WaveshaperAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool GainSliderAudioProcessor::acceptsMidi() const
+bool WaveshaperAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -59,7 +67,7 @@ bool GainSliderAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool GainSliderAudioProcessor::producesMidi() const
+bool WaveshaperAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -68,7 +76,7 @@ bool GainSliderAudioProcessor::producesMidi() const
    #endif
 }
 
-bool GainSliderAudioProcessor::isMidiEffect() const
+bool WaveshaperAudioProcessor::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -77,39 +85,40 @@ bool GainSliderAudioProcessor::isMidiEffect() const
    #endif
 }
 
-double GainSliderAudioProcessor::getTailLengthSeconds() const
+double WaveshaperAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int GainSliderAudioProcessor::getNumPrograms()
+int WaveshaperAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int GainSliderAudioProcessor::getCurrentProgram()
+int WaveshaperAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void GainSliderAudioProcessor::setCurrentProgram (int index)
+void WaveshaperAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const String GainSliderAudioProcessor::getProgramName (int index)
+const String WaveshaperAudioProcessor::getProgramName (int index)
 {
     return {};
 }
 
-void GainSliderAudioProcessor::changeProgramName (int index, const String& newName)
+void WaveshaperAudioProcessor::changeProgramName (int index, const String& newName)
 {
 }
 
 //==============================================================================
-void GainSliderAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void WaveshaperAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    mainGain = *parameters.getRawParameterValue(GAIN_ID);
+    mainGain = *parameters.getRawParameterValue(paramGain);
+    saturation = *parameters.getRawParameterValue(paramSaturation);
     String msg;
     msg << "mainGain in prepare to play: " << String(mainGain);
     std::cout << msg << '\n';
@@ -119,13 +128,13 @@ void GainSliderAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     targetGain = mainGain;
 }
 
-void GainSliderAudioProcessor::releaseResources()
+void WaveshaperAudioProcessor::releaseResources()
 {
 
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool GainSliderAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool WaveshaperAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     ignoreUnused (layouts);
@@ -148,7 +157,7 @@ bool GainSliderAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 }
 #endif
 
-void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void WaveshaperAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals; // ?
     
@@ -173,9 +182,9 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
     // interleaved by keeping the same state.
         
    // auto localTargetGain = targetGain;
-    targetGain = *parameters.getRawParameterValue(GAIN_ID);
+    targetGain = *parameters.getRawParameterValue(paramGain);
     auto localTargetGain = targetGain;
-    
+    saturation = *parameters.getRawParameterValue(paramSaturation);
    // I'M here - flip the for loops? 
     
     if ( localTargetGain != mainGain)
@@ -191,7 +200,7 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
             {
                 localMainGain += gainRateOfChange;
                 double sample = buffer.getSample(channel, i);
-                channelData[i] = transferFunction.transform(TransferFunction::Functions::tanh, sample, 0.75, 1) * (double)Decibels::decibelsToGain(localMainGain);
+                channelData[i] = transferFunction.transform(TransferFunction::Functions::tanh, sample, saturation, 1) * (double)Decibels::decibelsToGain(localMainGain);
                 //channelData[sample] = std::tanh(unit);
             }
         }
@@ -206,7 +215,7 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
             {
                // channelData[sample] = buffer.getSample(channel, sample) * Decibels::decibelsToGain(mainGain);
                 double sample = buffer.getSample(channel, i);
-                channelData[i] = transferFunction.transform(TransferFunction::Functions::tanh, sample, 0.75, 1) * Decibels::decibelsToGain(mainGain);
+                channelData[i] = transferFunction.transform(TransferFunction::Functions::tanh, sample, saturation, 1) * Decibels::decibelsToGain(mainGain);
                 //channelData[sample] = std::tanh(unit);
             }
             
@@ -215,25 +224,25 @@ void GainSliderAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuf
 }
 
 //==============================================================================
-bool GainSliderAudioProcessor::hasEditor() const
+bool WaveshaperAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-AudioProcessorEditor* GainSliderAudioProcessor::createEditor()
+AudioProcessorEditor* WaveshaperAudioProcessor::createEditor()
 {
-    return new GainSliderAudioProcessorEditor (*this);
+    return new WaveshaperAudioProcessorEditor(*this);
 }
 
 //==============================================================================
-void GainSliderAudioProcessor::getStateInformation (MemoryBlock& destData)
+void WaveshaperAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 }
 
-void GainSliderAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void WaveshaperAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
@@ -243,22 +252,22 @@ void GainSliderAudioProcessor::setStateInformation (const void* data, int sizeIn
 // This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new GainSliderAudioProcessor();
+    return new WaveshaperAudioProcessor();
 }
 
 //===========================================================
 
-void GainSliderAudioProcessor::setGain(double gain)
+void WaveshaperAudioProcessor::setGain(double gain)
 {
     targetGain = gain;
 }
 
-double GainSliderAudioProcessor::getGain() const
+double WaveshaperAudioProcessor::getGain() const
 {
     return mainGain;
 }
 
-AudioProcessorValueTreeState& GainSliderAudioProcessor::accessTreeState()
+AudioProcessorValueTreeState& WaveshaperAudioProcessor::accessTreeState()
 {
     return parameters;
 }
