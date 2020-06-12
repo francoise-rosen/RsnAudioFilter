@@ -17,7 +17,45 @@ SimpleDelayFeedbackAudioProcessorEditor::SimpleDelayFeedbackAudioProcessorEditor
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize (500, 250);
+    
+    
+    // GUI
+    gainSlider.setName("Gain");
+    gainSlider.setSliderStyle(Slider::SliderStyle::Rotary);
+    gainSlider.setTextBoxStyle(Slider::TextBoxBelow, false, textboxWidth, textboxHeight);
+    addAndMakeVisible(&gainSlider);
+    //gainSlider.setTextValueSuffix("dB");
+    
+    delaySlider.setName("Delay");
+    delaySlider.setSliderStyle(Slider::SliderStyle::Rotary);
+    delaySlider.setTextBoxStyle(Slider::TextBoxBelow, false, textboxWidth, textboxHeight);
+    addAndMakeVisible(&delaySlider);
+    //delaySlider.setTextValueSuffix("ms");
+    
+    feedbackSlider.setName("Feedback");
+    feedbackSlider.setSliderStyle(Slider::SliderStyle::Rotary);
+    feedbackSlider.setTextBoxStyle(Slider::TextBoxBelow, false, textboxWidth, textboxHeight);
+    addAndMakeVisible(&feedbackSlider);
+    
+    gainLabel.setText(Processor::paramGain, dontSendNotification);
+    gainLabel.attachToComponent(&gainSlider, false);
+    
+    delayLabel.setText(Processor::paramDelay, dontSendNotification);
+    delayLabel.attachToComponent(&delaySlider, false);
+    
+    fbLabel.setText(Processor::paramFeedback, dontSendNotification);
+    fbLabel.attachToComponent(&feedbackSlider, false);
+    
+    
+
+    // ATTACHMENTS
+    gainSliderAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(), Processor::paramGain, gainSlider);
+    delaySliderAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(), Processor::paramDelay, delaySlider);
+    freedBackSliderAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(),
+        Processor::paramFeedback, feedbackSlider);
+    
+
 }
 
 SimpleDelayFeedbackAudioProcessorEditor::~SimpleDelayFeedbackAudioProcessorEditor()
@@ -27,16 +65,25 @@ SimpleDelayFeedbackAudioProcessorEditor::~SimpleDelayFeedbackAudioProcessorEdito
 //==============================================================================
 void SimpleDelayFeedbackAudioProcessorEditor::paint (Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
 
-    g.setColour (Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), Justification::centred, 1);
+    g.fillAll (Colours::mediumvioletred.withMultipliedBrightness(0.5));
+
+    g.setColour (Colours::cyan);
+    g.setFont (21.0f);
+    
+    g.drawText("rosen::delay", 0, 0, getWidth()/3, getHeight()/6, Justification::centred);
+
+    
 }
 
 void SimpleDelayFeedbackAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    auto box = getLocalBounds().reduced(edgeThickness);
+    const float dialWidth = box.getWidth() / 3;
+    
+    gainSlider.setBounds(box.removeFromRight(dialWidth).reduced(edgeThickness));
+    delaySlider.setBounds(box.removeFromLeft(dialWidth).reduced(edgeThickness));
+    feedbackSlider.setBounds(box.reduced(edgeThickness));
+    
+
 }

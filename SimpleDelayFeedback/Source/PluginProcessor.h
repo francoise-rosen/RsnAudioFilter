@@ -15,7 +15,8 @@
 //==============================================================================
 /**
 */
-class SimpleDelayFeedbackAudioProcessor  : public AudioProcessor
+class SimpleDelayFeedbackAudioProcessor  : public AudioProcessor,
+public AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -26,9 +27,8 @@ public:
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-   #ifndef JucePlugin_PreferredChannelConfigurations
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-   #endif
+    void parameterChanged (const String& parameterID, float newValue) override;
 
     void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
 
@@ -54,9 +54,29 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    //==============================================================================
+    AudioProcessorValueTreeState& accessTreeState();
+    
+    static String paramGain;
+    static String paramDelay; // in ms
+    static String paramFeedback;
 
 private:
+    // std::atomic wrappers
+    Atomic<float> gainAtom;
+    Atomic<float> delayAtom;
+    Atomic<float> feedbackAtom;
+    
+    
     AudioBuffer<float> delayBuffer;
+    AudioProcessorValueTreeState parameters;
+
+    UndoManager undo;
+    
+    float lastInputGain { 0.0f };
+    float lastFeedbackValue { 0.0f};
+    double currentSampleRate { 0.0 };
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleDelayFeedbackAudioProcessor)
 };

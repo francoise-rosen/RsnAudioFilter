@@ -12,6 +12,12 @@
 #include "PluginEditor.h"
 
 //==============================================================================
+// Static parameters
+String SimpleDelayFeedbackAudioProcessor::paramGain = "gain";
+String SimpleDelayFeedbackAudioProcessor::paramDelay = "delay";
+String SimpleDelayFeedbackAudioProcessor::paramFeedback = "feedback";
+
+//==============================================================================
 SimpleDelayFeedbackAudioProcessor::SimpleDelayFeedbackAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
@@ -21,141 +27,130 @@ SimpleDelayFeedbackAudioProcessor::SimpleDelayFeedbackAudioProcessor()
                       #endif
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ),
 #endif
+// initialise parameters
+gainAtom{0.0f}, delayAtom{100.0f}, feedbackAtom{-50.0f},
+parameters(*this, // processor to connect to
+           nullptr, // undo
+           Identifier("DELAY_PARAMETERS"),
+           {
+               std::make_unique<AudioParameterFloat>(paramGain,
+                                                     "GAIN",
+                                                     NormalisableRange<float>(-100.0f, 6.0f, 0.1f, std::log(0.5f) / std::log(100.0f/106.0f)),
+                                                     gainAtom.get(), "dB",
+                                                     AudioProcessorParameter::genericParameter,
+                                                     [](float val, int) {return String(val, 2) + "dB";},
+                                                     [](const String& s) {return s.dropLastCharacters(3).getFloatValue();}
+                                                     ),
+               std::make_unique<AudioParameterFloat>(paramDelay,
+                                                     "DELAY",
+                                                     NormalisableRange<float>(0.1f, 2000.0f, 0.1f),
+                                                     delayAtom.get(), "ms",
+                                                     AudioProcessorParameter::genericParameter,
+                                                     [](float val, int) {return String(val) + "ms";},
+                                                     [](const String& s) {return s.dropLastCharacters(3).getFloatValue();}
+                                                     ),
+               std::make_unique<AudioParameterFloat>(paramFeedback,
+                                                     "FEEDBACK",
+                                                     NormalisableRange<float>(-100.0f, 0.0f, -6.0f, std::log(0.5f) / std::log(100.0f / 106.0f)),
+                                                     feedbackAtom.get(), "dB",
+                                                     AudioProcessorParameter::genericParameter,
+                                                     [](float val, int) {return String(val, 2) + "dB";},
+                                                     [](const String& s) {return s.dropLastCharacters(3).getFloatValue();}
+                                                     )
+           }
+           )
 {
+    // Listeners
 }
 
 SimpleDelayFeedbackAudioProcessor::~SimpleDelayFeedbackAudioProcessor()
 {
-}
-
-//==============================================================================
-const String SimpleDelayFeedbackAudioProcessor::getName() const
-{
-    return JucePlugin_Name;
-}
-
-bool SimpleDelayFeedbackAudioProcessor::acceptsMidi() const
-{
-   #if JucePlugin_WantsMidiInput
-    return true;
-   #else
-    return false;
-   #endif
-}
-
-bool SimpleDelayFeedbackAudioProcessor::producesMidi() const
-{
-   #if JucePlugin_ProducesMidiOutput
-    return true;
-   #else
-    return false;
-   #endif
-}
-
-bool SimpleDelayFeedbackAudioProcessor::isMidiEffect() const
-{
-   #if JucePlugin_IsMidiEffect
-    return true;
-   #else
-    return false;
-   #endif
-}
-
-double SimpleDelayFeedbackAudioProcessor::getTailLengthSeconds() const
-{
-    return 0.0;
-}
-
-int SimpleDelayFeedbackAudioProcessor::getNumPrograms()
-{
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-                // so this should be at least 1, even if you're not really implementing programs.
-}
-
-int SimpleDelayFeedbackAudioProcessor::getCurrentProgram()
-{
-    return 0;
-}
-
-void SimpleDelayFeedbackAudioProcessor::setCurrentProgram (int index)
-{
-}
-
-const String SimpleDelayFeedbackAudioProcessor::getProgramName (int index)
-{
-    return {};
-}
-
-void SimpleDelayFeedbackAudioProcessor::changeProgramName (int index, const String& newName)
-{
+    //Attach a callback to one of the parameters, which will be called when the parameter changes.
+    parameters.addParameterListener(paramGain, this);
+    parameters.addParameterListener(paramDelay, this);
+    parameters.addParameterListener(paramFeedback, this);
 }
 
 //==============================================================================
 void SimpleDelayFeedbackAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    currentSampleRate = sampleRate; // why do I need this?
+    const int bufferLength = 2 * (sampleRate + samplesPerBlock);
+    delayBuffer.setSize(getTotalNumOutputChannels(), bufferLength);
+    delayBuffer.clear();
 }
 
 void SimpleDelayFeedbackAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+    
 }
 
-#ifndef JucePlugin_PreferredChannelConfigurations
-bool SimpleDelayFeedbackAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+// Bus layout. Only Mono -> Stereo or Stereo -> Stereo
+
+bool SimpleDelayFeedbackAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const
 {
-  #if JucePlugin_IsMidiEffect
-    ignoreUnused (layouts);
-    return true;
-  #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
+    if (layouts.getMainInputChannels() == layouts.getMainInputChannels() > 2)
         return false;
-
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
+    
+    if (layouts.getMainOutputChannels() == layouts.getMainOutputChannels() > 2)
         return false;
-   #endif
-
+    
+    if (layouts.getMainInputChannels() > layouts.getMainOutputChannels())
+        return false;
+    
     return true;
-  #endif
 }
-#endif
+
+void SimpleDelayFeedbackAudioProcessor::parameterChanged(const String &parameterID, float newValue)
+{
+    if (parameterID == paramGain)
+    {
+        gainAtom = newValue; // place newValue in atomic gain
+    }
+    
+    if (parameterID == paramDelay)
+    {
+        delayAtom = newValue;
+    }
+    
+    if (parameterID == paramFeedback)
+    {
+        feedbackAtom = newValue;
+    }
+}
 
 void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+    // disables denormals on CPU
     ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
-
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
-
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    
+    // get values off the atomics
+    
+    const float gain = gainAtom.get();
+    const float delay = delayAtom.get(); // distance between write and read pos
+    const float feedback = feedbackAtom.get();
+    
+    auto totalNumOfInputChannels = getTotalNumInputChannels();
+    auto totalNumOfOutputChannels = getTotalNumOutputChannels();
+    
+    // assume for mono in we'll use mono out
+    for (auto i = totalNumOfInputChannels; i < totalNumOfOutputChannels; ++i)
+        buffer.clear(i, 0, buffer.getNumSamples());
+    
+    // 1. write to the delay buffer, or first read from it?
+    auto bufferSize = buffer.getNumSamples();
+    auto delayBufferSize = delayBuffer.getNumSamples();
+    
+    for (auto channel = 0; channel < totalNumOfInputChannels; ++channel)
     {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
+        
     }
+    // 2. when the delay buffer is full wrap it and start from 0 sample
+    // 3. read from delay buffer
+    
+    
 }
 
 //==============================================================================
@@ -188,4 +183,72 @@ void SimpleDelayFeedbackAudioProcessor::setStateInformation (const void* data, i
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new SimpleDelayFeedbackAudioProcessor();
+}
+
+
+//==============================================================================
+AudioProcessorValueTreeState& SimpleDelayFeedbackAudioProcessor::accessTreeState()
+{
+    return parameters;
+}
+
+//==============================================================================
+const String SimpleDelayFeedbackAudioProcessor::getName() const
+{
+    return JucePlugin_Name;
+}
+
+bool SimpleDelayFeedbackAudioProcessor::acceptsMidi() const
+{
+#if JucePlugin_WantsMidiInput
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool SimpleDelayFeedbackAudioProcessor::producesMidi() const
+{
+#if JucePlugin_ProducesMidiOutput
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool SimpleDelayFeedbackAudioProcessor::isMidiEffect() const
+{
+#if JucePlugin_IsMidiEffect
+    return true;
+#else
+    return false;
+#endif
+}
+
+double SimpleDelayFeedbackAudioProcessor::getTailLengthSeconds() const
+{
+    return 0.0; // ?
+}
+
+int SimpleDelayFeedbackAudioProcessor::getNumPrograms()
+{
+    return 1;
+}
+
+int SimpleDelayFeedbackAudioProcessor::getCurrentProgram()
+{
+    return 0;
+}
+
+void SimpleDelayFeedbackAudioProcessor::setCurrentProgram (int index)
+{
+}
+
+const String SimpleDelayFeedbackAudioProcessor::getProgramName (int index)
+{
+    return {};
+}
+
+void SimpleDelayFeedbackAudioProcessor::changeProgramName (int index, const String& newName)
+{
 }
