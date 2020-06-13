@@ -29,8 +29,8 @@ SimpleDelayFeedbackAudioProcessor::SimpleDelayFeedbackAudioProcessor()
                      #endif
                        ),
 #endif
-// initialise parameters
-gainAtom{0.0f}, delayAtom{100.0f}, feedbackAtom{-50.0f},
+ initialise parameters
+:gainAtom{-100.0f}, delayAtom{100.0f}, feedbackAtom{-50.0f}, lastGain{0.0f},
 parameters(*this, // processor to connect to
            nullptr, // undo
            Identifier("DELAY_PARAMETERS"),
@@ -63,14 +63,15 @@ parameters(*this, // processor to connect to
            )
 {
     // Listeners
-}
-
-SimpleDelayFeedbackAudioProcessor::~SimpleDelayFeedbackAudioProcessor()
-{
     //Attach a callback to one of the parameters, which will be called when the parameter changes.
     parameters.addParameterListener(paramGain, this);
     parameters.addParameterListener(paramDelay, this);
     parameters.addParameterListener(paramFeedback, this);
+}
+
+SimpleDelayFeedbackAudioProcessor::~SimpleDelayFeedbackAudioProcessor()
+{
+   
 }
 
 //==============================================================================
@@ -126,9 +127,12 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
     // disables denormals on CPU
     ScopedNoDenormals noDenormals;
     
-    // get values off the atomics
     
-    const float gain = gainAtom.get();
+    //if (Bus* inputBus = getBus(true, 0))
+    
+        
+    // get values off the atomics
+    const float gain = Decibels::decibelsToGain(gainAtom.get());
     const float delay = delayAtom.get(); // distance between write and read pos
     const float feedback = feedbackAtom.get();
     
@@ -139,18 +143,29 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
     for (auto i = totalNumOfInputChannels; i < totalNumOfOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
     
-    // 1. write to the delay buffer, or first read from it?
+    // WHAT IF THE DELAY TIME IS SHORTER THAN THE BLOCK? TEST IT
+    // 1. read from delay buffer, write to it then.
     auto bufferSize = buffer.getNumSamples();
     auto delayBufferSize = delayBuffer.getNumSamples();
     
     for (auto channel = 0; channel < totalNumOfInputChannels; ++channel)
     {
+        auto* bufferData = buffer.getReadPointer(channel);
+        auto* delayBufferData = delayBuffer.getReadPointer(channel);
+        auto* bufferWrite = buffer.getWritePointer(channel);
         
+        // test audio through
+//        for (auto sample = 0; sample < buffer.getNumSamples(); ++sample)
+//        {
+//            bufferWrite[sample] = buffer.getSample(channel, sample) * 1;
+//        }
+        buffer.applyGainRamp(channel, 0, bufferSize, lastGain, gain);
     }
+        lastGain = gain;
     // 2. when the delay buffer is full wrap it and start from 0 sample
     // 3. read from delay buffer
     
-    
+
 }
 
 //==============================================================================

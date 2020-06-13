@@ -68,6 +68,8 @@ private:
     Atomic<float> delayAtom;
     Atomic<float> feedbackAtom;
     
+    float lastGain;
+    
     
     AudioBuffer<float> delayBuffer;
     AudioProcessorValueTreeState parameters;

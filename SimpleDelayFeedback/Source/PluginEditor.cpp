@@ -21,19 +21,19 @@ SimpleDelayFeedbackAudioProcessorEditor::SimpleDelayFeedbackAudioProcessorEditor
     
     
     // GUI
-    gainSlider.setName("Gain");
+    //gainSlider.setName("Gain2");
     gainSlider.setSliderStyle(Slider::SliderStyle::Rotary);
     gainSlider.setTextBoxStyle(Slider::TextBoxBelow, false, textboxWidth, textboxHeight);
     addAndMakeVisible(&gainSlider);
     //gainSlider.setTextValueSuffix("dB");
     
-    delaySlider.setName("Delay");
+    //delaySlider.setName("Delay");
     delaySlider.setSliderStyle(Slider::SliderStyle::Rotary);
     delaySlider.setTextBoxStyle(Slider::TextBoxBelow, false, textboxWidth, textboxHeight);
     addAndMakeVisible(&delaySlider);
     //delaySlider.setTextValueSuffix("ms");
     
-    feedbackSlider.setName("Feedback");
+    //feedbackSlider.setName("Feedback");
     feedbackSlider.setSliderStyle(Slider::SliderStyle::Rotary);
     feedbackSlider.setTextBoxStyle(Slider::TextBoxBelow, false, textboxWidth, textboxHeight);
     addAndMakeVisible(&feedbackSlider);
