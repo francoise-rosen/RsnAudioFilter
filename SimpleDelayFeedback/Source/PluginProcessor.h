@@ -69,7 +69,8 @@ private:
     Atomic<float> feedbackAtom;
     
     float lastGain;
-    
+    float writePosition; //float or int? privat members of Delay / Circular Buffer class?
+    float readPosition;
     
     AudioBuffer<float> delayBuffer;
     AudioProcessorValueTreeState parameters;
@@ -79,6 +80,8 @@ private:
     float lastInputGain { 0.0f };
     float lastFeedbackValue { 0.0f};
     double currentSampleRate { 0.0 };
+    
+   
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleDelayFeedbackAudioProcessor)
 };

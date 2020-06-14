@@ -1,12 +1,17 @@
 /*
   ==============================================================================
 
-    DSP
+CircularBuffer
     1. Build simple stereo delay feedback. Switch Mono - Stereo (2 different delays for L and R)
     1.1 Ping Pong on OF
+    1.2 Clip, Fold, and Wrap functions
     1. SEND or MIX (dry/wet) option
     2. Add biquad filter in feedback path
     3. Add biquad filter in the input
+    4. Class CircularBuffer with functions .read(readPos, blockSize), .write(writePos, blockSize)
+ 
+ 
+ PRIVATE, CREATIVE
     4. Modulator for Delay (L and R) - LFO
     5. Modulator for Feedback - LFO
     6. Tempo based delay. How do I get this kind of info from a host?
