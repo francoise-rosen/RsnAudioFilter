@@ -138,6 +138,7 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
     const float gain = Decibels::decibelsToGain(gainAtom.get());
     const float delayInMs = delayAtom.get(); // distance between write and read pos
     const float feedback = feedbackAtom.get();
+    const float delayAmp = 0.999;
     
     // at this time no fractional delays
     const int delayInSmps = roundToInt(delayInMs * currentSampleRate / 1000.0);
@@ -172,14 +173,14 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
         // enough samples
         if (bufferSize < delayBufferSize - writePosition)
         {
-            delayBuffer.copyFromWithRamp(channel, writePosition, bufferData, bufferSize, 0.8, 0.8);
+            delayBuffer.copyFromWithRamp(channel, writePosition, bufferData, bufferSize, delayAmp, delayAmp);
         }
 
         else
         {
             const int writeSamplesRemaining = delayBufferSize - writePosition;
-            delayBuffer.copyFromWithRamp(channel, writePosition, bufferData, writeSamplesRemaining, 0.8, 0.8);
-            delayBuffer.copyFromWithRamp(channel, 0, bufferData, bufferSize - writeSamplesRemaining, 0.8, 0.8);
+            delayBuffer.copyFromWithRamp(channel, writePosition, bufferData, writeSamplesRemaining, delayAmp, delayAmp);
+            delayBuffer.copyFromWithRamp(channel, 0, bufferData, bufferSize - writeSamplesRemaining, delayAmp, delayAmp);
         }
         
         
@@ -200,7 +201,9 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
         }
         
         
+        
     }
+    buffer.applyGainRamp(0, bufferSize, lastGain, gain); // postgain.
     writePosition += bufferSize;
     lastGain = gain;
     
