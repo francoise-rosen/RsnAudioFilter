@@ -139,6 +139,9 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
     const float delayInMs = delayAtom.get(); // distance between write and read pos
     const float feedback = feedbackAtom.get();
     
+    // at this time no fractional delays
+    const int delayInSmps = roundToInt(delayInMs * currentSampleRate / 1000.0);
+    
     auto totalNumOfInputChannels = getTotalNumInputChannels();
     auto totalNumOfOutputChannels = getTotalNumOutputChannels();
     
@@ -148,61 +151,58 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
     
     // WHAT IF THE DELAY TIME IS SHORTER THAN THE BLOCK? TEST IT
     // 1. read from delay buffer, write to it then.
-    auto bufferSize = buffer.getNumSamples();
-    auto delayBufferSize = delayBuffer.getNumSamples();
+    const auto bufferSize = buffer.getNumSamples();
+    const auto delayBufferSize = delayBuffer.getNumSamples();
     
-    // Does not work!
+    if (writePosition >= delayBufferSize) writePosition -= delayBufferSize;
+    
+    readPosition = writePosition - delayInSmps;
+    
+    if (readPosition < 0) readPosition += delayBufferSize;
+    
     for (auto channel = 0; channel < totalNumOfInputChannels; ++channel)
     {
+        // read pointers to buffer and delay buffer
         auto* bufferData = buffer.getReadPointer(channel);
         auto* delayBufferData = delayBuffer.getReadPointer(channel);
-        auto* bufferWrite = buffer.getWritePointer(channel);
         
-        // wrap the write position
-        if (writePosition > delayBufferSize - 1) writePosition -= delayBufferSize;
+        // write
+        //buffer.applyGainRamp(channel, 0, bufferSize, 0.1, 0.8);
         
-        readPosition = roundToInt(writePosition - (currentSampleRate * delayInMs / 1000));
-        
-        if (readPosition < 0) readPosition += delayBufferSize; // wrap the read position
-    
-        buffer.applyGainRamp(channel, 0, bufferSize, lastGain, gain);
-    
-        auto readSamplesRemaining = delayBufferSize - readPosition - 1;
-        auto writeSamplesRemaining = delayBufferSize - writePosition - 1;
-        
-        // first write (we have max time + samplesPerBlock for that)
-        if (bufferSize < writeSamplesRemaining)
+        // enough samples
+        if (bufferSize < delayBufferSize - writePosition)
         {
-            delayBuffer.copyFromWithRamp(channel, writePosition, bufferData, bufferSize, lastGain, gain);
-        }
-        
-        else
-        {
-            delayBuffer.copyFromWithRamp(channel, writePosition, bufferData, writeSamplesRemaining, lastGain, gain);
-            delayBuffer.copyFromWithRamp(channel, 0, bufferData, bufferSize - writeSamplesRemaining, gain, gain);
-        }
-        
-        // read
-        
-        if (bufferSize < readSamplesRemaining)
-        {
-            buffer.addFrom(channel, 0, delayBufferData, bufferSize);
-        }
-        
-        else
-        {
-            buffer.addFrom(channel, 0, delayBufferData, readSamplesRemaining);
-            buffer.addFrom(channel, readSamplesRemaining, delayBufferData, bufferSize - readSamplesRemaining);
+            delayBuffer.copyFromWithRamp(channel, writePosition, bufferData, bufferSize, 0.8, 0.8);
         }
 
+        else
+        {
+            const int writeSamplesRemaining = delayBufferSize - writePosition;
+            delayBuffer.copyFromWithRamp(channel, writePosition, bufferData, writeSamplesRemaining, 0.8, 0.8);
+            delayBuffer.copyFromWithRamp(channel, 0, bufferData, bufferSize - writeSamplesRemaining, 0.8, 0.8);
+        }
+        
+        
+
+        // read
+        // read crashes!
+
+        if (bufferSize < delayBufferSize - readPosition)
+        {
+            buffer.addFrom(channel, 0, delayBufferData + readPosition, bufferSize);
+        }
+
+        else
+        {
+            const int readSamplesRemaining = delayBufferSize - readPosition;
+            buffer.addFrom(channel, 0, delayBufferData + readPosition, readSamplesRemaining);
+            buffer.addFrom(channel, readSamplesRemaining, delayBufferData, bufferSize - readSamplesRemaining);
+        }
+        
         
     }
-        lastGain = gain;
-        writePosition += bufferSize;
-        //readPosition += bufferSize;
-    // 2. when the delay buffer is full wrap it and start from 0 sample
-    // 3. read from delay buffer
-    
+    writePosition += bufferSize;
+    lastGain = gain;
     
     
 
