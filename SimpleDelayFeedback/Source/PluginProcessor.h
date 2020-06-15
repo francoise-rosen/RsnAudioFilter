@@ -31,6 +31,8 @@ public:
     void parameterChanged (const String& parameterID, float newValue) override;
 
     void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
+    void fillDelayBuffer(AudioBuffer<float>& buffer, const int& inputChannel, const int& writePosition, const int& delayBufferSize, float gainStart, float gainEnd) noexcept;
+    void readFromDelayBuffer(AudioBuffer<float>& buffer, const int& outputChannel, const int& delayBufferSize, const int& readPosition, float gainStart, float gainEnd) noexcept;
 
     //==============================================================================
     AudioProcessorEditor* createEditor() override;

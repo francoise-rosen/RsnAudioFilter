@@ -138,7 +138,7 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
     const float gain = Decibels::decibelsToGain(gainAtom.get());
     const float delayInMs = delayAtom.get(); // distance between write and read pos
     const float feedback = feedbackAtom.get();
-    const float delayAmp = 0.999;
+    const float delayAmp = 1.0f;
     
     // at this time no fractional delays
     const int delayInSmps = roundToInt(delayInMs * currentSampleRate / 1000.0);
@@ -151,7 +151,7 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
         buffer.clear(i, 0, buffer.getNumSamples());
     
     // WHAT IF THE DELAY TIME IS SHORTER THAN THE BLOCK? TEST IT
-    // 1. read from delay buffer, write to it then.
+
     const auto bufferSize = buffer.getNumSamples();
     const auto delayBufferSize = delayBuffer.getNumSamples();
     
@@ -164,41 +164,10 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
     for (auto channel = 0; channel < totalNumOfInputChannels; ++channel)
     {
         // read pointers to buffer and delay buffer
-        auto* bufferData = buffer.getReadPointer(channel);
-        auto* delayBufferData = delayBuffer.getReadPointer(channel);
         
-        // write
-        //buffer.applyGainRamp(channel, 0, bufferSize, 0.1, 0.8);
-        
-        // enough samples
-        if (bufferSize < delayBufferSize - writePosition)
-        {
-            delayBuffer.copyFromWithRamp(channel, writePosition, bufferData, bufferSize, delayAmp, delayAmp);
-        }
-
-        else
-        {
-            const int writeSamplesRemaining = delayBufferSize - writePosition;
-            delayBuffer.copyFromWithRamp(channel, writePosition, bufferData, writeSamplesRemaining, delayAmp, delayAmp);
-            delayBuffer.copyFromWithRamp(channel, 0, bufferData, bufferSize - writeSamplesRemaining, delayAmp, delayAmp);
-        }
-        
-        
-
-        // read
-        // read crashes!
-
-        if (bufferSize < delayBufferSize - readPosition)
-        {
-            buffer.addFrom(channel, 0, delayBufferData + readPosition, bufferSize);
-        }
-
-        else
-        {
-            const int readSamplesRemaining = delayBufferSize - readPosition;
-            buffer.addFrom(channel, 0, delayBufferData + readPosition, readSamplesRemaining);
-            buffer.addFrom(channel, readSamplesRemaining, delayBufferData, bufferSize - readSamplesRemaining);
-        }
+        // write and read
+        fillDelayBuffer(buffer, channel, writePosition, delayBufferSize, delayAmp, delayAmp);
+        readFromDelayBuffer(buffer, channel, delayBufferSize, readPosition, delayAmp, delayAmp);
         
         
         
@@ -210,6 +179,57 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
     
 
 }
+
+// fill the delay buffer
+
+void SimpleDelayFeedbackAudioProcessor::fillDelayBuffer(AudioBuffer<float>& buffer, const int& inputChannel, const int& writePosition, const int& delayBufferSize, float gainStart, float gainEnd) noexcept
+{
+    auto* bufferData = buffer.getReadPointer(inputChannel);
+    const int samplesLeft = delayBufferSize - writePosition;
+    
+    // we have enough samples left to place entire block
+    if (buffer.getNumSamples() < samplesLeft)
+    {
+        delayBuffer.copyFromWithRamp(inputChannel, writePosition, bufferData, buffer.getNumSamples(), gainStart, gainEnd);
+    }
+    
+    // we have not enough samples in the delayBuffer, so we fill remaining samples
+    // and start over from the beginning
+    else
+    {
+        auto crossPos = samplesLeft / buffer.getNumSamples();
+        auto crossGain = jmap(static_cast<float>(crossPos), gainStart, gainEnd);
+        delayBuffer.copyFromWithRamp(inputChannel, writePosition, bufferData, samplesLeft, gainStart, crossGain);
+        delayBuffer.copyFromWithRamp(inputChannel, 0, bufferData, buffer.getNumSamples() - samplesLeft, crossGain, gainEnd);
+    }
+}
+
+
+// read from delay buffer
+
+void SimpleDelayFeedbackAudioProcessor::readFromDelayBuffer(AudioBuffer<float>& buffer, const int& outputChannel, const int& delayBufferSize, const int& readPosition, float gainStart, float gainEnd) noexcept
+    {
+        auto* delayBufferData = delayBuffer.getReadPointer(outputChannel);
+        auto samplesLeft = delayBufferSize - readPosition;
+
+        // we have enough samples to read before the end of the delayBuffer
+        if (buffer.getNumSamples() < samplesLeft)
+        {
+            buffer.addFromWithRamp(outputChannel, 0, delayBufferData + readPosition, buffer.getNumSamples(), gainStart, gainEnd);
+        }
+        
+        else
+        {
+            auto crossPos = samplesLeft / buffer.getNumSamples();
+            auto crossGain = jmap(static_cast<float>(crossPos), gainStart, gainEnd);
+            buffer.addFromWithRamp(outputChannel, 0, delayBufferData + readPosition, samplesLeft, gainStart, crossGain);
+            buffer.addFromWithRamp(outputChannel, samplesLeft, delayBufferData, buffer.getNumSamples() - samplesLeft, crossGain, gainEnd);
+        }
+    
+    }
+
+
+// feedback fb * y (n - d)
 
 //==============================================================================
 bool SimpleDelayFeedbackAudioProcessor::hasEditor() const
