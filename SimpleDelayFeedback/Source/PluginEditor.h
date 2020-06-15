@@ -9,6 +9,9 @@ CircularBuffer
     2. Add biquad filter in feedback path
     3. Add biquad filter in the input
     4. Class CircularBuffer with functions .read(readPos, blockSize), .write(writePos, blockSize)
+    4.1 Class Delay - up to 1 sample delay (not block related). Check SC DelayN, DelayC etc. - Karpus Strong algo etc. (don't check implementation of Karpus Strong yet!)
+    5. Wire-And-Ing (page 396) - for a class
+    7. Fractional Delay - for a class only
  
  
  PRIVATE, CREATIVE

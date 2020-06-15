@@ -69,17 +69,17 @@ private:
     Atomic<float> feedbackAtom;
     
     float lastGain;
-    float writePosition; //float or int? privat members of Delay / Circular Buffer class?
-    float readPosition;
+    float lastFeedbackValue { 0.0f};
+    double currentSampleRate { 0.0 };
+    int writePosition; //float or int? privat members of Delay / Circular Buffer class?
+    int readPosition;
     
     AudioBuffer<float> delayBuffer;
     AudioProcessorValueTreeState parameters;
 
     UndoManager undo;
     
-    float lastInputGain { 0.0f };
-    float lastFeedbackValue { 0.0f};
-    double currentSampleRate { 0.0 };
+    
     
    
     //==============================================================================
