@@ -31,7 +31,7 @@ SimpleDelayFeedbackAudioProcessor::SimpleDelayFeedbackAudioProcessor()
 #endif
 
 gainAtom{-100.0f}, delayAtom{100.0f}, feedbackAtom{-50.0f}, lastGain{0.0f},
-writePosition{0}, readPosition{0},
+lastFeedbackValue{0.0f}, writePosition{0}, readPosition{0},
 
  //initialise parameters
 parameters(*this, // processor to connect to
@@ -137,7 +137,7 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
     // get values off the atomics
     const float gain = Decibels::decibelsToGain(gainAtom.get());
     const float delayInMs = delayAtom.get(); // distance between write and read pos
-    const float feedback = feedbackAtom.get();
+    const float feedback = Decibels::decibelsToGain(feedbackAtom.get());
     const float delayAmp = 1.0f;
     
     // at this time no fractional delays
@@ -155,7 +155,7 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
     const auto bufferSize = buffer.getNumSamples();
     const auto delayBufferSize = delayBuffer.getNumSamples();
     
-    if (writePosition >= delayBufferSize) writePosition -= delayBufferSize;
+    if (writePosition > delayBufferSize - 1) writePosition -= delayBufferSize;
     
     readPosition = writePosition - delayInSmps;
     
@@ -168,13 +168,22 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
         // write and read
         fillDelayBuffer(buffer, channel, writePosition, delayBufferSize, delayAmp, delayAmp);
         readFromDelayBuffer(buffer, channel, delayBufferSize, readPosition, delayAmp, delayAmp);
-        
-        
+       
         
     }
+    lastGain = gain;
+    
+    // add feedback
+    // read from output channels
+    
+    for (auto outChannel = 0; outChannel < totalNumOfOutputChannels; ++outChannel)
+    {
+         fillDelayBuffer(buffer, outChannel, writePosition, delayBufferSize, lastFeedbackValue, feedback, false);
+    }
+    
     buffer.applyGainRamp(0, bufferSize, lastGain, gain); // postgain.
     writePosition += bufferSize;
-    lastGain = gain;
+    lastFeedbackValue = feedback;
     
     
 
@@ -182,15 +191,20 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
 
 // fill the delay buffer
 
-void SimpleDelayFeedbackAudioProcessor::fillDelayBuffer(AudioBuffer<float>& buffer, const int& inputChannel, const int& writePosition, const int& delayBufferSize, float gainStart, float gainEnd) noexcept
+void SimpleDelayFeedbackAudioProcessor::fillDelayBuffer(AudioBuffer<float>& buffer, const int& inputChannel, const int& writePosition, const int& delayBufferSize, float gainStart, float gainEnd, bool replace) noexcept
 {
     auto* bufferData = buffer.getReadPointer(inputChannel);
     const int samplesLeft = delayBufferSize - writePosition;
     
     // we have enough samples left to place entire block
-    if (buffer.getNumSamples() < samplesLeft)
+    if (buffer.getNumSamples() <= samplesLeft)
     {
+        if (replace == true){
         delayBuffer.copyFromWithRamp(inputChannel, writePosition, bufferData, buffer.getNumSamples(), gainStart, gainEnd);
+        }
+        else{
+            delayBuffer.addFromWithRamp(inputChannel, writePosition, bufferData, buffer.getNumSamples(), gainStart, gainEnd);
+        }
     }
     
     // we have not enough samples in the delayBuffer, so we fill remaining samples
@@ -199,8 +213,16 @@ void SimpleDelayFeedbackAudioProcessor::fillDelayBuffer(AudioBuffer<float>& buff
     {
         auto crossPos = samplesLeft / buffer.getNumSamples();
         auto crossGain = jmap(static_cast<float>(crossPos), gainStart, gainEnd);
+        
+        if (replace == true)
+        {
         delayBuffer.copyFromWithRamp(inputChannel, writePosition, bufferData, samplesLeft, gainStart, crossGain);
-        delayBuffer.copyFromWithRamp(inputChannel, 0, bufferData, buffer.getNumSamples() - samplesLeft, crossGain, gainEnd);
+        delayBuffer.copyFromWithRamp(inputChannel, 0, bufferData + samplesLeft, buffer.getNumSamples() - samplesLeft, crossGain, gainEnd);
+        }
+        else {
+            delayBuffer.addFromWithRamp(inputChannel, writePosition, bufferData, samplesLeft, gainStart, gainEnd);
+            delayBuffer.addFromWithRamp(inputChannel, 0, bufferData + samplesLeft, buffer.getNumSamples() - samplesLeft, gainStart, gainEnd);
+        }
     }
 }
 
@@ -213,7 +235,7 @@ void SimpleDelayFeedbackAudioProcessor::readFromDelayBuffer(AudioBuffer<float>& 
         auto samplesLeft = delayBufferSize - readPosition;
 
         // we have enough samples to read before the end of the delayBuffer
-        if (buffer.getNumSamples() < samplesLeft)
+        if (buffer.getNumSamples() <= samplesLeft)
         {
             buffer.addFromWithRamp(outputChannel, 0, delayBufferData + readPosition, buffer.getNumSamples(), gainStart, gainEnd);
         }
@@ -230,6 +252,8 @@ void SimpleDelayFeedbackAudioProcessor::readFromDelayBuffer(AudioBuffer<float>& 
 
 
 // feedback fb * y (n - d)
+
+//void SimpleDelayFeedbackAudioProcessor::addFromFeedback(AudioBuffer<float>& buffer)
 
 //==============================================================================
 bool SimpleDelayFeedbackAudioProcessor::hasEditor() const

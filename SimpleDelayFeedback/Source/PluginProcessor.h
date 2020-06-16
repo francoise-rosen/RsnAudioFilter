@@ -31,7 +31,7 @@ public:
     void parameterChanged (const String& parameterID, float newValue) override;
 
     void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
-    void fillDelayBuffer(AudioBuffer<float>& buffer, const int& inputChannel, const int& writePosition, const int& delayBufferSize, float gainStart, float gainEnd) noexcept;
+    void fillDelayBuffer(AudioBuffer<float>& buffer, const int& inputChannel, const int& writePosition, const int& delayBufferSize, float gainStart, float gainEnd, bool replace = true) noexcept;
     void readFromDelayBuffer(AudioBuffer<float>& buffer, const int& outputChannel, const int& delayBufferSize, const int& readPosition, float gainStart, float gainEnd) noexcept;
 
     //==============================================================================
@@ -71,7 +71,7 @@ private:
     Atomic<float> feedbackAtom;
     
     float lastGain;
-    float lastFeedbackValue { 0.0f};
+    float lastFeedbackValue;
     double currentSampleRate { 0.0 };
     int writePosition; //float or int? privat members of Delay / Circular Buffer class?
     int readPosition;
