@@ -203,10 +203,10 @@ void Delay<T>::writeToBuffer(AudioBuffer<T>& buffer, const int& inputChannel, T 
     {
         if (replace)
         {
-        delayBuffer.copyFromWithRamp(0, 0, bufferData, buffer.getNumSamples(), gainStart, gainEnd);
+        delayBuffer.copyFromWithRamp(0, writePosition, bufferData, buffer.getNumSamples(), gainStart, gainEnd);
         }
         else {
-            delayBuffer.addFromWithRamp(0, 0, bufferData, buffer.getNumSamples(), gainStart, gainEnd);
+            delayBuffer.addFromWithRamp(0, writePosition, bufferData, buffer.getNumSamples(), gainStart, gainEnd);
         }
     }
     else
@@ -216,13 +216,13 @@ void Delay<T>::writeToBuffer(AudioBuffer<T>& buffer, const int& inputChannel, T 
         
         if (replace)
         {
-            delayBuffer.copyFromWithRamp(0, 0, bufferData, samplesLeft, gainStart, crossGain);
+            delayBuffer.copyFromWithRamp(0, writePosition, bufferData, samplesLeft, gainStart, crossGain);
             delayBuffer.copyFromWithRamp(0, samplesLeft, bufferData + samplesLeft, buffer.getNumSamples() - samplesLeft, crossGain, gainEnd);
         }
         
         else
         {
-            delayBuffer.addFromWithRamp(0, 0, bufferData, samplesLeft, gainStart, crossGain);
+            delayBuffer.addFromWithRamp(0, writePosition, bufferData, samplesLeft, gainStart, crossGain);
             delayBuffer.addFromWithRamp(0, samplesLeft, bufferData + samplesLeft, buffer.getNumSamples() - samplesLeft, crossGain, gainEnd);
         }
     }
