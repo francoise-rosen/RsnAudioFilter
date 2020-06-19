@@ -133,7 +133,7 @@ public:
     {
         delayInSamples = roundToInt(delayInMs * currentSampleRate / 1000.0);
         readPosition = writePosition - delayInSamples;
-        
+        if (readPosition < 0) readPosition += delayBuffer.getNumSamples();
         
     }
     
@@ -199,7 +199,7 @@ void Delay<T>::writeToBuffer(AudioBuffer<T>& buffer, const int& inputChannel, T 
     auto* bufferData = buffer.getReadPointer(inputChannel);
     auto samplesLeft = delayBuffer.getNumSamples() - writePosition;
     
-    if (samplesLeft > buffer.getNumSamples())
+    if (samplesLeft >= buffer.getNumSamples())
     {
         if (replace)
         {

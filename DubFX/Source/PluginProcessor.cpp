@@ -152,39 +152,44 @@ void DubFxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& 
     
     auto totalNumOfInputChannels = getTotalNumInputChannels();
     auto totalNumOfOutputChannels = getTotalNumOutputChannels();
+    
+    for (auto i = totalNumOfInputChannels; i < totalNumOfOutputChannels; ++i)
+        buffer.clear(i, 0, buffer.getNumSamples());
 
     const auto bufferSize = buffer.getNumSamples();
     
     // for now assume input is stereo
     // WONT READ THE DELAYED SIGNAL
     
-    stereoDelay.getUnchecked(0)->writeToBuffer(buffer, 0, delayAmp, delayAmp, true);
-    stereoDelay.getUnchecked(1)->writeToBuffer(buffer, 0, delayAmp, delayAmp, true);
-    stereoDelay.getUnchecked(0)->readFromBuffer(buffer, 0, delayAmp, delayAmp);
-    stereoDelay.getUnchecked(1)->readFromBuffer(buffer, 1, delayAmp, delayAmp);
-//    for (auto channel = 0; channel < totalNumOfInputChannels; ++channel)
-//    {
-//        int inputChannel = jmin(channel, totalNumOfInputChannels);
-//        stereoDelay.getUnchecked(channel)->writeToBuffer(buffer, channel, 1.0, 1.0, true);
-//    }
-//
-//    // read
-//
-//    for (auto channel = 0; channel < totalNumOfOutputChannels; ++channel)
-//    {
-//        //int outputChannel = jmin(channel, stereoDelay.size());
-//        stereoDelay.getUnchecked(channel)->readFromBuffer(buffer, channel, 1.0, 1.0);
-//    }
+//    stereoDelay.getUnchecked(0)->writeToBuffer(buffer, 0, delayAmp, delayAmp, true);
+//    stereoDelay.getUnchecked(1)->writeToBuffer(buffer, 0, delayAmp, delayAmp, true);
+//    stereoDelay.getUnchecked(0)->readFromBuffer(buffer, 0, delayAmp, delayAmp);
+//    stereoDelay.getUnchecked(1)->readFromBuffer(buffer, 1, delayAmp, delayAmp);
+    
+    // DELAY SOMETIMES DOES NOT WORK (L AND R)
+    for (auto channel = 0; channel < totalNumOfInputChannels; ++channel)
+    {
+        int inputChannel = jmin(channel, totalNumOfInputChannels);
+        stereoDelay.getUnchecked(channel)->writeToBuffer(buffer, inputChannel, delayAmp, delayAmp, true);
+    }
+
+    // read
+
+    for (auto channel = 0; channel < totalNumOfOutputChannels; ++channel)
+    {
+        int outputChannel = jmin(channel, stereoDelay.size());
+        stereoDelay.getUnchecked(outputChannel)->readFromBuffer(buffer, channel, delayAmp, delayAmp);
+    }
     
     
     
     
-    // add feedback - BLOWS EVEN W/O INPUT
+    // add feedback - NOT WORKING on the L at all, and not working properly on the R channel
     
-//    for (auto outChannel = 0; outChannel < totalNumOfOutputChannels; ++outChannel)
-//    {
-//        stereoDelay.getUnchecked(outChannel)->writeToBuffer(buffer, outChannel, lastFeedbackValue, feedback, false);
-//    }
+    for (auto outChannel = 0; outChannel < totalNumOfOutputChannels; ++outChannel)
+    {
+        stereoDelay.getUnchecked(outChannel)->writeToBuffer(buffer, outChannel, lastFeedbackValue, feedback, false);
+    }
     
     buffer.applyGainRamp(0, bufferSize, lastGain, gain); // postgain.
     lastGain = gain;
