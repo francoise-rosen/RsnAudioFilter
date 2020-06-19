@@ -15,25 +15,21 @@
 DubFxAudioProcessorEditor::DubFxAudioProcessorEditor (DubFxAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    setSize (500, 250);
+    setSize (500, 300);
     
-    
-    // GUI
-    //gainSlider.setName("Gain2");
+    // SLIDERS
     gainSlider.setSliderStyle(Slider::SliderStyle::Rotary);
     gainSlider.setTextBoxStyle(Slider::TextBoxBelow, false, textboxWidth, textboxHeight);
     addAndMakeVisible(&gainSlider);
-    //gainSlider.setTextValueSuffix("dB");
+
+    delaySliderLeft.setSliderStyle(Slider::SliderStyle::Rotary);
+    delaySliderLeft.setTextBoxStyle(Slider::TextBoxBelow, false, textboxWidth, textboxHeight);
+    addAndMakeVisible(&delaySliderLeft);
     
-    //delaySlider.setName("Delay");
-    delaySlider.setSliderStyle(Slider::SliderStyle::Rotary);
-    delaySlider.setTextBoxStyle(Slider::TextBoxBelow, false, textboxWidth, textboxHeight);
-    addAndMakeVisible(&delaySlider);
-    //delaySlider.setTextValueSuffix("ms");
-    
-    //feedbackSlider.setName("Feedback");
+    delaySliderRight.setSliderStyle(Slider::SliderStyle::Rotary);
+    delaySliderRight.setTextBoxStyle(Slider::TextBoxBelow, false, textboxWidth, textboxHeight);
+    addAndMakeVisible(&delaySliderRight);
+   
     feedbackSlider.setSliderStyle(Slider::SliderStyle::Rotary);
     feedbackSlider.setTextBoxStyle(Slider::TextBoxBelow, false, textboxWidth, textboxHeight);
     addAndMakeVisible(&feedbackSlider);
@@ -41,17 +37,20 @@ DubFxAudioProcessorEditor::DubFxAudioProcessorEditor (DubFxAudioProcessor& p)
     gainLabel.setText(DubFxAudioProcessor::paramGain, dontSendNotification);
     gainLabel.attachToComponent(&gainSlider, false);
     
-    delayLabel.setText(DubFxAudioProcessor::paramDelay, dontSendNotification);
-    delayLabel.attachToComponent(&delaySlider, false);
+    delayLabelLeft.setText(DubFxAudioProcessor::paramDelayLeft, dontSendNotification);
+    delayLabelLeft.attachToComponent(&delaySliderLeft, false);
+    
+    delayLabelRight.setText(DubFxAudioProcessor::paramDelayRight, dontSendNotification);
+    delayLabelRight.attachToComponent(&delaySliderRight, false);
     
     fbLabel.setText(DubFxAudioProcessor::paramFeedback, dontSendNotification);
     fbLabel.attachToComponent(&feedbackSlider, false);
     
-    
 
     // ATTACHMENTS
     gainSliderAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(), DubFxAudioProcessor::paramGain, gainSlider);
-    delaySliderAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(), DubFxAudioProcessor::paramDelay, delaySlider);
+    delaySliderLeftAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(), DubFxAudioProcessor::paramDelayLeft, delaySliderLeft);
+    delaySliderRightAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(), DubFxAudioProcessor::paramDelayRight, delaySliderRight);
     freedBackSliderAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(),
         DubFxAudioProcessor::paramFeedback, feedbackSlider);
     
@@ -81,8 +80,11 @@ void DubFxAudioProcessorEditor::resized()
     auto box = getLocalBounds().reduced(edgeThickness);
     const float dialWidth = box.getWidth() / 3;
     
+    auto delaySlidersBox = box.removeFromLeft(dialWidth);
+    
     gainSlider.setBounds(box.removeFromRight(dialWidth).reduced(edgeThickness));
-    delaySlider.setBounds(box.removeFromLeft(dialWidth).reduced(edgeThickness));
+    delaySliderLeft.setBounds(delaySlidersBox.removeFromTop(box.getHeight() / 2).reduced(edgeThickness));
+    delaySliderRight.setBounds(delaySlidersBox.reduced(edgeThickness));
     feedbackSlider.setBounds(box.reduced(edgeThickness));
     
 

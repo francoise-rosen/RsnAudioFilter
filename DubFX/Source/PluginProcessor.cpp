@@ -14,7 +14,8 @@
 //==============================================================================
 // Static parameters
 String DubFxAudioProcessor::paramGain = "gain";
-String DubFxAudioProcessor::paramDelay = "delay";
+String DubFxAudioProcessor::paramDelayLeft = "delayLeft";
+String DubFxAudioProcessor::paramDelayRight = "delayRight";
 String DubFxAudioProcessor::paramFeedback = "feedback";
 
 //==============================================================================
@@ -30,8 +31,8 @@ DubFxAudioProcessor::DubFxAudioProcessor()
                        ),
 #endif
 
-gainAtom{-100.0f}, delayAtom{100.0f}, feedbackAtom{-50.0f}, lastGain{0.0f},
-lastFeedbackValue{0.0f},
+gainAtom{-100.0f}, delayLeftAtom{100.0f}, delayRightAtom{100.0f},
+feedbackAtom{-50.0f}, lastGain{0.0f}, lastFeedbackValue{0.0f},
 
  //initialise parameters
 parameters(*this, // processor to connect to
@@ -46,10 +47,18 @@ parameters(*this, // processor to connect to
                                                      [](float val, int) {return String(val, 2) + "dB";},
                                                      [](const String& s) {return s.dropLastCharacters(3).getFloatValue();}
                                                      ),
-               std::make_unique<AudioParameterFloat>(paramDelay,
-                                                     "DELAY",
+               std::make_unique<AudioParameterFloat>(paramDelayLeft,
+                                                     "DELAYLEFT",
                                                      NormalisableRange<float>(0.1f, 2000.0f, 0.1f),
-                                                     delayAtom.get(), "ms",
+                                                     delayLeftAtom.get(), "ms",
+                                                     AudioProcessorParameter::genericParameter,
+                                                     [](float val, int) {return String(val) + "ms";},
+                                                     [](const String& s) {return s.dropLastCharacters(3).getFloatValue();}
+                                                     ),
+               std::make_unique<AudioParameterFloat>(paramDelayRight,
+                                                     "DELAYRIGHT",
+                                                     NormalisableRange<float>(0.1f, 2000.0f, 0.1f),
+                                                     delayRightAtom.get(), "ms",
                                                      AudioProcessorParameter::genericParameter,
                                                      [](float val, int) {return String(val) + "ms";},
                                                      [](const String& s) {return s.dropLastCharacters(3).getFloatValue();}
@@ -68,7 +77,8 @@ parameters(*this, // processor to connect to
     // Listeners
     //Attach a callback to one of the parameters, which will be called when the parameter changes.
     parameters.addParameterListener(paramGain, this);
-    parameters.addParameterListener(paramDelay, this);
+    parameters.addParameterListener(paramDelayLeft, this);
+    parameters.addParameterListener(paramDelayRight, this);
     parameters.addParameterListener(paramFeedback, this);
 }
 
@@ -120,9 +130,14 @@ void DubFxAudioProcessor::parameterChanged(const String &parameterID, float newV
         gainAtom = newValue; // place newValue in atomic gain
     }
     
-    if (parameterID == paramDelay)
+    if (parameterID == paramDelayLeft)
     {
-        delayAtom = newValue;
+        delayLeftAtom = newValue;
+    }
+    
+    if (parameterID == paramDelayRight)
+    {
+        delayRightAtom = newValue;
     }
     
     if (parameterID == paramFeedback)
@@ -138,42 +153,36 @@ void DubFxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& 
     
     
     //if (Bus* inputBus = getBus(true, 0))
-    
         
     // get values off the atomics
     const float gain = Decibels::decibelsToGain(gainAtom.get());
-    const float delayInMs = delayAtom.get(); // distance between write and read pos
+    const float delayInMsLeft = delayLeftAtom.get(); // distance between write and read pos
+    const float delayInMsRight = delayRightAtom.get();
     const float feedback = Decibels::decibelsToGain(feedbackAtom.get());
-    const float delayAmp = 0.75f;
+    const float delayAmp = 0.75f; // gain for delayed signals
     
     // at this time no fractional delays
-    stereoDelay.getUnchecked(0)->setDelayInMs(delayInMs);
-    stereoDelay.getUnchecked(1)->setDelayInMs(delayInMs * 2);
+    stereoDelay.getUnchecked(0)->setDelayInMs(delayInMsLeft);
+    stereoDelay.getUnchecked(1)->setDelayInMs(delayInMsRight);
     
     auto totalNumOfInputChannels = getTotalNumInputChannels();
     auto totalNumOfOutputChannels = getTotalNumOutputChannels();
     
+    // what if I need mono -> stereo? Test it
     for (auto i = totalNumOfInputChannels; i < totalNumOfOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
 
     const auto bufferSize = buffer.getNumSamples();
+
     
-    // for now assume input is stereo
-    // WONT READ THE DELAYED SIGNAL
-    
-//    stereoDelay.getUnchecked(0)->writeToBuffer(buffer, 0, delayAmp, delayAmp, true);
-//    stereoDelay.getUnchecked(1)->writeToBuffer(buffer, 0, delayAmp, delayAmp, true);
-//    stereoDelay.getUnchecked(0)->readFromBuffer(buffer, 0, delayAmp, delayAmp);
-//    stereoDelay.getUnchecked(1)->readFromBuffer(buffer, 1, delayAmp, delayAmp);
-    
-    // DELAY SOMETIMES DOES NOT WORK (L AND R)
-    for (auto channel = 0; channel < totalNumOfInputChannels; ++channel)
+    // WRITE TO DELAY
+    for (auto channel = 0; channel < stereoDelay.size(); ++channel)
     {
         int inputChannel = jmin(channel, totalNumOfInputChannels);
         stereoDelay.getUnchecked(channel)->writeToBuffer(buffer, inputChannel, delayAmp, delayAmp, true);
     }
 
-    // read
+    // READ FROM DELAY
 
     for (auto channel = 0; channel < totalNumOfOutputChannels; ++channel)
     {
@@ -181,10 +190,7 @@ void DubFxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& 
         stereoDelay.getUnchecked(outputChannel)->readFromBuffer(buffer, channel, delayAmp, delayAmp);
     }
     
-    
-    
-    
-    // add feedback - NOT WORKING on the L at all, and not working properly on the R channel
+    // WRITE FEEDBACK TO DELAY
     
     for (auto outChannel = 0; outChannel < totalNumOfOutputChannels; ++outChannel)
     {
@@ -196,12 +202,8 @@ void DubFxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& 
     for (auto ddl = 0; ddl < stereoDelay.size(); ++ddl)
         stereoDelay.getUnchecked(ddl)->advanceWritePosition(bufferSize);
     lastFeedbackValue = feedback;
-    
-    
+
 }
-
-
-//void SimpleDelayFeedbackAudioProcessor::addFromFeedback(AudioBuffer<float>& buffer)
 
 //==============================================================================
 bool DubFxAudioProcessor::hasEditor() const

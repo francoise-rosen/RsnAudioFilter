@@ -57,22 +57,26 @@ private:
     DubFxAudioProcessor& processor;
     
     Slider gainSlider;
-    Slider delaySlider;
+    Slider delaySliderLeft;
+    Slider delaySliderRight;
     Slider feedbackSlider;
     
     Label gainLabel;
-    Label delayLabel;
+    Label delayLabelLeft;
+    Label delayLabelRight;
     Label fbLabel;
     
-    const float edgeThickness = 20;
+    const float edgeThickness = 10;
     const int textboxWidth = 70;
     const int textboxHeight = 30;
     
     // these objects maintain connection between sliders and parameters in
     // an AudioProcessorValueTreeState
     std::unique_ptr<SliderAttachment> gainSliderAttachment;
-    std::unique_ptr<SliderAttachment> delaySliderAttachment;
+    std::unique_ptr<SliderAttachment> delaySliderLeftAttachment;
+    std::unique_ptr<SliderAttachment> delaySliderRightAttachment;
     std::unique_ptr<SliderAttachment> freedBackSliderAttachment;
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DubFxAudioProcessorEditor)
     

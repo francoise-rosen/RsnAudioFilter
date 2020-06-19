@@ -61,13 +61,15 @@ public:
     AudioProcessorValueTreeState& accessTreeState();
     
     static String paramGain;
-    static String paramDelay; // in ms
+    static String paramDelayLeft; // in ms
+    static String paramDelayRight; // in ms
     static String paramFeedback;
 
 private:
     // std::atomic wrappers
     Atomic<float> gainAtom;
-    Atomic<float> delayAtom;
+    Atomic<float> delayLeftAtom;
+    Atomic<float> delayRightAtom;
     Atomic<float> feedbackAtom;
     
     float lastGain;
