@@ -1,5 +1,9 @@
 /*
   ==============================================================================
+ 
+ PROBLEMS:
+ - repetative click on both channels! (something SimpleDelay patch does not have) - fixed (wrong write position)
+ - clicks when playback stopped (add fade out!) (something SimpleDelay patch has)
 
 CircularBuffer - for Public GIT
     1. Build simple stereo delay feedback. Switch Mono - Stereo (2 different delays for L and R)

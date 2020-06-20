@@ -171,7 +171,6 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
        
         
     }
-    lastGain = gain;
     
     // add feedback
     // read from output channels
@@ -182,6 +181,7 @@ void SimpleDelayFeedbackAudioProcessor::processBlock (AudioBuffer<float>& buffer
     }
     
     buffer.applyGainRamp(0, bufferSize, lastGain, gain); // postgain.
+    lastGain = gain;
     writePosition += bufferSize;
     lastFeedbackValue = feedback;
     

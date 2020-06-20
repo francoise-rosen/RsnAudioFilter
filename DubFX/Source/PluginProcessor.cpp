@@ -159,7 +159,7 @@ void DubFxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& 
     const float delayInMsLeft = delayLeftAtom.get(); // distance between write and read pos
     const float delayInMsRight = delayRightAtom.get();
     const float feedback = Decibels::decibelsToGain(feedbackAtom.get());
-    const float delayAmp = 0.75f; // gain for delayed signals
+    const float delayAmp = 1.00f; // gain for delayed signals
     
     // at this time no fractional delays
     stereoDelay.getUnchecked(0)->setDelayInMs(delayInMsLeft);
@@ -197,10 +197,11 @@ void DubFxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& 
         stereoDelay.getUnchecked(outChannel)->writeToBuffer(buffer, outChannel, lastFeedbackValue, feedback, false);
     }
     
-    buffer.applyGainRamp(0, bufferSize, lastGain, gain); // postgain.
-    lastGain = gain;
     for (auto ddl = 0; ddl < stereoDelay.size(); ++ddl)
         stereoDelay.getUnchecked(ddl)->advanceWritePosition(bufferSize);
+    
+    buffer.applyGainRamp(0, bufferSize, lastGain, gain); // postgain.
+    lastGain = gain;
     lastFeedbackValue = feedback;
 
 }

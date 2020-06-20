@@ -123,9 +123,10 @@ public:
     ~Delay() {}
     
     // max delay size
-    void setSize(const int& sz)
+    void setBufferSize(const int& sz)
     {
         delayBuffer.setSize(1, sz);
+        delayBuffer.clear();
     }
     
     // call this in the beginning of AudioProcessor::processBlock()
@@ -212,19 +213,19 @@ void Delay<T>::writeToBuffer(AudioBuffer<T>& buffer, const int& inputChannel, T 
     }
     else
     {
-        auto crossPos = samplesLeft / buffer.getNumSamples();
-        auto crossGain = jmap(static_cast<float>(crossPos), gainStart, gainEnd);
+        auto crossPos = static_cast<float>(samplesLeft) / buffer.getNumSamples();
+        auto crossGain = jmap(crossPos, gainStart, gainEnd);
         
         if (replace)
         {
             delayBuffer.copyFromWithRamp(0, writePosition, bufferData, samplesLeft, gainStart, crossGain);
-            delayBuffer.copyFromWithRamp(0, samplesLeft, bufferData + samplesLeft, buffer.getNumSamples() - samplesLeft, crossGain, gainEnd);
+            delayBuffer.copyFromWithRamp(0, 0, bufferData + samplesLeft, buffer.getNumSamples() - samplesLeft, crossGain, gainEnd);
         }
         
         else
         {
             delayBuffer.addFromWithRamp(0, writePosition, bufferData, samplesLeft, gainStart, crossGain);
-            delayBuffer.addFromWithRamp(0, samplesLeft, bufferData + samplesLeft, buffer.getNumSamples() - samplesLeft, crossGain, gainEnd);
+            delayBuffer.addFromWithRamp(0, 0, bufferData + samplesLeft, buffer.getNumSamples() - samplesLeft, crossGain, gainEnd);
         }
     }
 }
@@ -236,15 +237,15 @@ void Delay<T>::readFromBuffer(AudioBuffer<T>& buffer, const int& outputChannel, 
     auto samplesLeft = delayBuffer.getNumSamples() - readPosition;
     
     // we have enough samples to read before the end of the delayBuffer
-    if (buffer.getNumSamples() <= samplesLeft)
+    if (samplesLeft >= buffer.getNumSamples())
     {
         buffer.addFromWithRamp(outputChannel, 0, delayBufferData + readPosition, buffer.getNumSamples(), gainStart, gainEnd);
     }
     
     else
     {
-        auto crossPos = samplesLeft / buffer.getNumSamples();
-        auto crossGain = jmap(static_cast<float>(crossPos), gainStart, gainEnd);
+        auto crossPos = static_cast<float>(samplesLeft) / buffer.getNumSamples();
+        auto crossGain = jmap(crossPos, gainStart, gainEnd);
         buffer.addFromWithRamp(outputChannel, 0, delayBufferData + readPosition, samplesLeft, gainStart, crossGain);
         buffer.addFromWithRamp(outputChannel, samplesLeft, delayBufferData, buffer.getNumSamples() - samplesLeft, crossGain, gainEnd);
     }
