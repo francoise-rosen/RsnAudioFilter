@@ -3,19 +3,21 @@
  
  PROBLEMS:
  - repetative click on both channels! (something SimpleDelay patch does not have) - fixed (wrong write position)
- - clicks when playback stopped (add fade out!) (something SimpleDelay patch has)
+ - clicks when playback stopped (add fade out!) (something SimpleDelay patch has) - fixed (see above)
 
 CircularBuffer - for Public GIT
-    1. Build simple stereo delay feedback. Switch Mono - Stereo (2 different delays for L and R)
-    1.1 Ping Pong on OF
-    1.2 Clip, Fold, and Wrap functions
+    1. Build simple stereo delay feedback. - done
+    1.1 Ping Pong or STEREO - works fine (using Delay.h) and reversed channels in processBlock()
+    1.2 Clip, Fold, and Wrap functions (use fold in feedback path, to prevent blowup, test in gen)
+    1.3 Switch Mono - Stereo (2 different delays for L and R)
     1. SEND or MIX (dry/wet) option
     2. Add biquad (or VCF?) filter in feedback path (what out for Q values, no peak filters!)
     3. Add biquad filter in the input
     4. Class CircularBuffer with functions .read(readPos, blockSize), .write(writePos, blockSize)
     4.1 Class Delay - up to 1 sample delay (not block related). Check SC DelayN, DelayC etc. - Karpus Strong algo etc. (don't check implementation of Karpus Strong yet!)
     5. Wire-And-Ing (page 396) - for a class
-    7. Fractional Delay - for a class only, for now just linear interpolation
+    7. Fractional Delay - for a class only, for now just linear interpolation.
+    7.1 Lagrange, Cubic, Spline interpolation?
  
  
  PRIVATE, CREATIVE
@@ -49,6 +51,8 @@ class DubFxAudioProcessorEditor  : public AudioProcessorEditor
 public:
     DubFxAudioProcessorEditor (DubFxAudioProcessor& p);
     ~DubFxAudioProcessorEditor();
+    
+    void fillTypeBox();
 
     //==============================================================================
     void paint (Graphics&) override;
@@ -56,6 +60,7 @@ public:
 
 private:
     using SliderAttachment = AudioProcessorValueTreeState::SliderAttachment;
+    using ComboBoxAttachment = AudioProcessorValueTreeState::ComboBoxAttachment;
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     DubFxAudioProcessor& processor;
@@ -64,11 +69,13 @@ private:
     Slider delaySliderLeft;
     Slider delaySliderRight;
     Slider feedbackSlider;
+    ComboBox delayTypeBox;
     
     Label gainLabel;
     Label delayLabelLeft;
     Label delayLabelRight;
     Label fbLabel;
+    Label typeLabel;
     
     const float edgeThickness = 10;
     const int textboxWidth = 70;
@@ -80,6 +87,7 @@ private:
     std::unique_ptr<SliderAttachment> delaySliderLeftAttachment;
     std::unique_ptr<SliderAttachment> delaySliderRightAttachment;
     std::unique_ptr<SliderAttachment> freedBackSliderAttachment;
+    std::unique_ptr<ComboBoxAttachment> typeAttachment;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DubFxAudioProcessorEditor)

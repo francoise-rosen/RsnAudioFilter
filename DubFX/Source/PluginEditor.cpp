@@ -34,6 +34,9 @@ DubFxAudioProcessorEditor::DubFxAudioProcessorEditor (DubFxAudioProcessor& p)
     feedbackSlider.setTextBoxStyle(Slider::TextBoxBelow, false, textboxWidth, textboxHeight);
     addAndMakeVisible(&feedbackSlider);
     
+    addAndMakeVisible(&delayTypeBox);
+    fillTypeBox();
+    
     gainLabel.setText(DubFxAudioProcessor::paramGain, dontSendNotification);
     gainLabel.attachToComponent(&gainSlider, false);
     
@@ -46,6 +49,9 @@ DubFxAudioProcessorEditor::DubFxAudioProcessorEditor (DubFxAudioProcessor& p)
     fbLabel.setText(DubFxAudioProcessor::paramFeedback, dontSendNotification);
     fbLabel.attachToComponent(&feedbackSlider, false);
     
+    typeLabel.setText(DubFxAudioProcessor::paramType, dontSendNotification);
+    typeLabel.attachToComponent(&delayTypeBox, false);
+    
 
     // ATTACHMENTS
     gainSliderAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(), DubFxAudioProcessor::paramGain, gainSlider);
@@ -53,12 +59,23 @@ DubFxAudioProcessorEditor::DubFxAudioProcessorEditor (DubFxAudioProcessor& p)
     delaySliderRightAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(), DubFxAudioProcessor::paramDelayRight, delaySliderRight);
     freedBackSliderAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(),
         DubFxAudioProcessor::paramFeedback, feedbackSlider);
+    typeAttachment = std::make_unique<ComboBoxAttachment>(processor.accessTreeState(), DubFxAudioProcessor::paramType, delayTypeBox);
     
 
 }
 
 DubFxAudioProcessorEditor::~DubFxAudioProcessorEditor()
 {
+}
+
+void DubFxAudioProcessorEditor::fillTypeBox()
+{
+    int boxSize = DubFxAudioProcessor::delayTypes.size();
+    if (!boxSize) return;
+    for (int i = 0; i < boxSize; ++i)
+    {
+        delayTypeBox.addItem(DubFxAudioProcessor::delayTypes[i], 100 + i);
+    }
 }
 
 //==============================================================================
@@ -81,8 +98,10 @@ void DubFxAudioProcessorEditor::resized()
     const float dialWidth = box.getWidth() / 3;
     
     auto delaySlidersBox = box.removeFromLeft(dialWidth);
+    auto gainArea = box.removeFromRight(dialWidth);
     
-    gainSlider.setBounds(box.removeFromRight(dialWidth).reduced(edgeThickness));
+    gainSlider.setBounds(gainArea.removeFromBottom(getHeight()/2).reduced(edgeThickness));
+    delayTypeBox.setBounds(gainArea.reduced(edgeThickness));
     delaySliderLeft.setBounds(delaySlidersBox.removeFromTop(box.getHeight() / 2).reduced(edgeThickness));
     delaySliderRight.setBounds(delaySlidersBox.reduced(edgeThickness));
     feedbackSlider.setBounds(box.reduced(edgeThickness));

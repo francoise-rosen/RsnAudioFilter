@@ -14,9 +14,11 @@
 //==============================================================================
 // Static parameters
 String DubFxAudioProcessor::paramGain = "gain";
-String DubFxAudioProcessor::paramDelayLeft = "delayLeft";
-String DubFxAudioProcessor::paramDelayRight = "delayRight";
+String DubFxAudioProcessor::paramDelayLeft = "delay_left";
+String DubFxAudioProcessor::paramDelayRight = "delay_right";
 String DubFxAudioProcessor::paramFeedback = "feedback";
+String DubFxAudioProcessor::paramType = "delay_type";
+StringArray DubFxAudioProcessor::delayTypes {"Stereo", "Ping_Pong"};
 
 //==============================================================================
 DubFxAudioProcessor::DubFxAudioProcessor()
@@ -32,7 +34,7 @@ DubFxAudioProcessor::DubFxAudioProcessor()
 #endif
 
 gainAtom{-100.0f}, delayLeftAtom{100.0f}, delayRightAtom{100.0f},
-feedbackAtom{-50.0f}, lastGain{0.0f}, lastFeedbackValue{0.0f},
+feedbackAtom{-50.0f}, typeAtom{0}, lastGain{0.0f}, lastFeedbackValue{0.0f},
 
  //initialise parameters
 parameters(*this, // processor to connect to
@@ -70,7 +72,12 @@ parameters(*this, // processor to connect to
                                                      AudioProcessorParameter::genericParameter,
                                                      [](float val, int) {return String(val, 2) + "dB";},
                                                      [](const String& s) {return s.dropLastCharacters(3).getFloatValue();}
-                                                     )
+                                                     ),
+               std::make_unique<AudioParameterChoice>(paramType,
+                                                      "DELAYTYPE",
+                                                      delayTypes,
+                                                      typeAtom.get() // default index
+                                                      )
            }
            )
 {
@@ -80,6 +87,7 @@ parameters(*this, // processor to connect to
     parameters.addParameterListener(paramDelayLeft, this);
     parameters.addParameterListener(paramDelayRight, this);
     parameters.addParameterListener(paramFeedback, this);
+    parameters.addParameterListener(paramType, this);
 }
 
 DubFxAudioProcessor::~DubFxAudioProcessor()
@@ -97,9 +105,7 @@ void DubFxAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
         stereoDelay.add(new Delay<float>(bufferLength, sampleRate));
         
     }
-    
-    for (int i = 0; i < stereoDelay.size(); ++i)
-        stereoDelay.getUnchecked(i)->printData();
+
 }
 
 void DubFxAudioProcessor::releaseResources()
@@ -144,6 +150,12 @@ void DubFxAudioProcessor::parameterChanged(const String &parameterID, float newV
     {
         feedbackAtom = newValue;
     }
+    
+    if (parameterID == paramType)
+    {
+        // index for delay type (0 - stereo, 1 - ping pong ...)
+        typeAtom = roundToInt(newValue);
+    }
 }
 
 void DubFxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
@@ -159,6 +171,7 @@ void DubFxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& 
     const float delayInMsLeft = delayLeftAtom.get(); // distance between write and read pos
     const float delayInMsRight = delayRightAtom.get();
     const float feedback = Decibels::decibelsToGain(feedbackAtom.get());
+    const int delayType = typeAtom.get();
     const float delayAmp = 1.00f; // gain for delayed signals
     
     // at this time no fractional delays
@@ -192,9 +205,23 @@ void DubFxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& 
     
     // WRITE FEEDBACK TO DELAY
     
-    for (auto outChannel = 0; outChannel < totalNumOfOutputChannels; ++outChannel)
+    // STEREO
+    if (delayType == 0)
     {
-        stereoDelay.getUnchecked(outChannel)->writeToBuffer(buffer, outChannel, lastFeedbackValue, feedback, false);
+        for (auto outChannel = 0; outChannel < totalNumOfOutputChannels; ++outChannel)
+        {
+            stereoDelay.getUnchecked(outChannel)->writeToBuffer(buffer, outChannel, lastFeedbackValue, feedback, false);
+        }
+    }
+    
+    // PING PONG
+    else if (delayType == 1)
+    {
+        for (auto outChannel = 0; outChannel < totalNumOfOutputChannels; ++outChannel)
+        {
+            auto reversedChannel = (outChannel == 0) ? 1 : 0;
+            stereoDelay.getUnchecked(reversedChannel)->writeToBuffer(buffer, outChannel, lastFeedbackValue, feedback, false);
+        }
     }
     
     for (auto ddl = 0; ddl < stereoDelay.size(); ++ddl)

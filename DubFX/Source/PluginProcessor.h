@@ -64,6 +64,8 @@ public:
     static String paramDelayLeft; // in ms
     static String paramDelayRight; // in ms
     static String paramFeedback;
+    static String paramType;
+    static StringArray delayTypes;
 
 private:
     // std::atomic wrappers
@@ -71,6 +73,7 @@ private:
     Atomic<float> delayLeftAtom;
     Atomic<float> delayRightAtom;
     Atomic<float> feedbackAtom;
+    Atomic<int> typeAtom;
     
     float lastGain;
     float lastFeedbackValue;
