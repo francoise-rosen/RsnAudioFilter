@@ -536,6 +536,13 @@
 			path = "../../JuceLibraryCode/include_juce_audio_formats.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		DAF657E72CE0935861F58B78 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = CircularBuffer2.h;
+			path = ../../Source/CircularBuffer2.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		DC80A0587A28BF6C44E6C796 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
@@ -602,6 +609,7 @@
 		5B0127BEC1342A53D88A5DD1 = {
 			isa = PBXGroup;
 			children = (
+				DAF657E72CE0935861F58B78,
 				1D4F06576A4C2C9888AE677D,
 				503A9DB538C9F28711382446,
 				8258B0D040FA37787F96036A,

@@ -102,8 +102,7 @@ void StereoDelayProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
     const int bufferLength = 2 * (sampleRate + samplesPerBlock);
     for (int i = 0; i < getTotalNumOutputChannels(); ++i)
     {
-        stereoDelay.add(new rosen::Delay<float>(bufferLength, sampleRate));
-        
+        stereoDelay.add(new CircularBuffer<float>(bufferLength, sampleRate));
     }
 
 }
@@ -192,7 +191,7 @@ void StereoDelayProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
     for (auto channel = 0; channel < stereoDelay.size(); ++channel)
     {
         int inputChannel = jmin(channel, totalNumOfInputChannels);
-        stereoDelay.getUnchecked(channel)->writeToBuffer(buffer, inputChannel, delayAmp, delayAmp, true);
+        stereoDelay.getUnchecked(channel)->write(buffer, inputChannel, delayAmp, delayAmp, true);
     }
 
     // READ FROM DELAY
@@ -200,7 +199,7 @@ void StereoDelayProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
     for (auto channel = 0; channel < totalNumOfOutputChannels; ++channel)
     {
         int outputChannel = jmin(channel, stereoDelay.size());
-        stereoDelay.getUnchecked(outputChannel)->readFromBuffer(buffer, channel, delayAmp, delayAmp);
+        stereoDelay.getUnchecked(outputChannel).read(buffer, channel, delayAmp, delayAmp);
     }
     
     // WRITE FEEDBACK TO DELAY
@@ -210,7 +209,7 @@ void StereoDelayProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
     {
         for (auto outChannel = 0; outChannel < totalNumOfOutputChannels; ++outChannel)
         {
-            stereoDelay.getUnchecked(outChannel)->writeToBuffer(buffer, outChannel, lastFeedbackValue, feedback, false);
+            stereoDelay.getUnchecked(outChannel).write(buffer, outChannel, lastFeedbackValue, feedback, false);
         }
     }
     
@@ -220,12 +219,12 @@ void StereoDelayProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
         for (auto outChannel = 0; outChannel < totalNumOfOutputChannels; ++outChannel)
         {
             auto reversedChannel = (outChannel == 0) ? 1 : 0;
-            stereoDelay.getUnchecked(reversedChannel)->writeToBuffer(buffer, outChannel, lastFeedbackValue, feedback, false);
+            stereoDelay.getUnchecked(reversedChannel).write(buffer, outChannel, lastFeedbackValue, feedback, false);
         }
     }
     
     for (auto ddl = 0; ddl < stereoDelay.size(); ++ddl)
-        stereoDelay.getUnchecked(ddl)->advanceWritePosition(bufferSize);
+        stereoDelay.getUnchecked(ddl).advanceWrite(bufferSize);
     
     buffer.applyGainRamp(0, bufferSize, lastGain, gain); // postgain.
     lastGain = gain;

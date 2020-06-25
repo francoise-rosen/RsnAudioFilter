@@ -3,6 +3,8 @@
 <JUCERPROJECT id="Hiv3WW" name="StereoDelay" projectType="audioplug" jucerVersion="5.4.7">
   <MAINGROUP id="uOReUB" name="StereoDelay">
     <GROUP id="{332EEA9E-BD67-FABE-BFF3-2FC33AB42A3C}" name="Source">
+      <FILE id="Yv0fLS" name="CircularBuffer2.h" compile="0" resource="0"
+            file="Source/CircularBuffer2.h"/>
       <FILE id="DKiFmo" name="CircularBuffer.h" compile="0" resource="0"
             file="Source/CircularBuffer.h"/>
       <FILE id="Y0hZsT" name="PluginProcessor.cpp" compile="1" resource="0"

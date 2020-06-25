@@ -11,7 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "CircularBuffer.h"
+#include "CircularBuffer2.h"
 
 //==============================================================================
 /**
@@ -78,7 +78,7 @@ private:
     float lastFeedbackValue;
     double currentSampleRate { 0.0 };
     
-    OwnedArray<rosen::Delay<float>> stereoDelay; // left and right delays
+    OwnedArray<CircularBuffer<float>> stereoDelay; // left and right delays
     AudioProcessorValueTreeState parameters;
 
     UndoManager undo;
