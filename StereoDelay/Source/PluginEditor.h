@@ -47,11 +47,11 @@ CircularBuffer - for Public GIT
 //==============================================================================
 /**
 */
-class DubFxAudioProcessorEditor  : public AudioProcessorEditor
+class StereoDelayProcessorEditor  : public AudioProcessorEditor
 {
 public:
-    DubFxAudioProcessorEditor (DubFxAudioProcessor& p);
-    ~DubFxAudioProcessorEditor();
+    StereoDelayProcessorEditor (StereoDelayProcessor& p);
+    ~StereoDelayProcessorEditor();
     
     void fillTypeBox();
 
@@ -64,7 +64,7 @@ private:
     using ComboBoxAttachment = AudioProcessorValueTreeState::ComboBoxAttachment;
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    DubFxAudioProcessor& processor;
+    StereoDelayProcessor& processor;
     
     Slider gainSlider;
     Slider delaySliderLeft;
@@ -91,7 +91,7 @@ private:
     std::unique_ptr<ComboBoxAttachment> typeAttachment;
 
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DubFxAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StereoDelayProcessorEditor)
     
     
 };

@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="S8YpJS" name="DubFX" projectType="audioplug" jucerVersion="5.4.7">
-  <MAINGROUP id="KGRwR7" name="DubFX">
-    <GROUP id="{671C1642-1D0A-1962-71CD-2A93DDEA6796}" name="Source">
-      <FILE id="FOncGv" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
-      <FILE id="bULGE2" name="CircularBuffer.h" compile="0" resource="0"
+<JUCERPROJECT id="Hiv3WW" name="StereoDelay" projectType="audioplug" jucerVersion="5.4.7">
+  <MAINGROUP id="uOReUB" name="StereoDelay">
+    <GROUP id="{332EEA9E-BD67-FABE-BFF3-2FC33AB42A3C}" name="Source">
+      <FILE id="DKiFmo" name="CircularBuffer.h" compile="0" resource="0"
             file="Source/CircularBuffer.h"/>
-      <FILE id="ZHdTo9" name="Delay.h" compile="0" resource="0" file="Source/Delay.h"/>
-      <FILE id="PMygjp" name="PluginProcessor.cpp" compile="1" resource="0"
+      <FILE id="Y0hZsT" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
-      <FILE id="l2lbvN" name="PluginProcessor.h" compile="0" resource="0"
+      <FILE id="msMQPA" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
-      <FILE id="ujab9I" name="PluginEditor.cpp" compile="1" resource="0"
+      <FILE id="z0TL7r" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
-      <FILE id="S7v9uf" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="euqNxm" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
