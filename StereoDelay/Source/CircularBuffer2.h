@@ -26,6 +26,21 @@
  - double delayInSamples - std::vector<double> delayInSamples(numOfTaps)
  
  */
+enum class Interpolation
+{
+    none, linear, cosine, cubic, lagrange, spline
+    
+};
+
+//==============================================================================
+// HELPER FUNCTIONS
+//==============================================================================
+
+template <typename T>
+T linearInterpolation(T fraction, const T& loValue, const T& hiValue)
+{
+    return loValue + fraction * (hiValue - loValue);;
+}
 
 
 template <typename T>
@@ -38,14 +53,19 @@ public:
     
     ~CircularBuffer() {}
     
-    void setDelayInMs(const T& delayInMs) noexcept;
+    forcedinline void setDelayInMs(const T& delayInMs) noexcept;
     
-    void write(AudioBuffer<T>& buffer, const int& bufChannel, T gainStart, T gainEnd, bool replace = true) noexcept;
+    void writeBlock(AudioBuffer<T>& buffer, const int& bufChannel, T gainStart, T gainEnd, bool replace = true) noexcept;
+    
+    void readBlock(AudioBuffer<T>& buffer, const int& bufChannel, const T& delayInMs, const T& gainStart, const T& gainEnd, Interpolation type = Interpolation::none) noexcept;
+    
+    void advanceWrite(const int& numSamples);
     
     
 private:
     unsigned int writePosition;
     unsigned int bufferSize;
+    unsigned int wrapMask;
     unsigned int channels;
     double currentSampleRate;
     double delayInSamples;
@@ -55,7 +75,7 @@ private:
 
 template <typename T>
 CircularBuffer<T>::CircularBuffer()
-:writePosition{0}, bufferSize{0}, channels{0}, currentSampleRate{0}
+:writePosition{0}, bufferSize{0}, channels{0}, currentSampleRate{0}, wrapMask{0}
 {
     circularBuffer.setSize(channels, bufferSize);
     circularBuffer.clear();
@@ -68,6 +88,7 @@ CircularBuffer<T>::CircularBuffer(const int& sizeInMs, double sampleRate)
     double requestedSizeInSamples = ((double)sizeInMs / 1000.0) * sampleRate;
     // adjusting the size to binary
     bufferSize = (unsigned)(pow(2, ceil(log2(requestedSizeInSamples))));
+    wrapMask = bufferSize - 1;
     circularBuffer.setSize(channels, bufferSize);
     circularBuffer.clear();
 }
@@ -79,19 +100,91 @@ void CircularBuffer<T>::setDelayInMs(const T& delayInMs) noexcept
 }
 
 template <typename T>
-void CircularBuffer<T>::write(AudioBuffer<T>& buffer, const int& bufChannel, T gainStart, T gainEnd, bool replace) noexcept
+void CircularBuffer<T>::writeBlock(AudioBuffer<T>& buffer, const int& bufChannel, T gainStart, T gainEnd, bool replace) noexcept
 {
     auto* bufferData = buffer.getReadPointer(bufChannel);
+    auto* circularBufferData = circularBuffer.getWritePointer(0);
     auto localWritePos = writePosition;
+    
+    T gainIncrement = (gainEnd - gainStart) / buffer.getNumSamples();
+    auto localGain = gainStart;
+    
+    // replace = direct signal, overrides samples
+    if (replace)
+    {
+        for (int i = 0; i < buffer.getNumSamples(); ++i)
+        {
+            
+            circularBufferData[localWritePos] = bufferData[i] * localGain;;
+            localGain += gainIncrement;
+            ++localWritePos;
+            localWritePos &= wrapMask;
+        }
+    }
+    else
+    {
+        for (int i = 0; i < buffer.getNumSamples(); ++i)
+        {
+            circularBufferData[localWritePos] = bufferData[i] * localGain;;
+            localGain += gainIncrement;
+            ++localWritePos;
+            localWritePos &= wrapMask;
+        }
+    }
 }
 
-//==============================================================================
-// HELPER FUNCTIONS
-//==============================================================================
+// read
+template <typename T>
+void CircularBuffer<T>::readBlock(AudioBuffer<T>& buffer, const int& bufChannel, const T& delayInMs, const T& gainStart, const T& gainEnd, Interpolation type) noexcept
+{
+    auto* bufferData = buffer.getWritePointer(bufChannel);
+    auto* circularBufferData = circularBuffer.getReadPointer(0);
+    setDelayInMs(delayInMs);
+    auto localGain = gainStart;
+    
+    T gainIncrement = (gainEnd - gainStart) / (T)buffer.getNumSamples();
+    
+    if (type == Interpolation::none)
+    {
+        int readPosition = writePosition - (int)delayInSamples;
+        for (int i = 0; i < buffer.getNumSamples(); ++i)
+        {
+            bufferData[i] += circularBufferData[readPosition] * localGain;
+            ++readPosition;
+            localGain += gainIncrement;
+            readPosition &= wrapMask;
+        }
+    }
+    
+    else if (type == Interpolation::linear)
+    {
+        // readPosition has a fractional part
+        int readPosition = writePosition - (int)delayInSamples;
+        if (readPosition < 0) readPosition += bufferSize;
+        T fraction = delayInSamples - (int)delayInSamples;
+        
+        for (int i = 0; i < buffer.getNumSamples(); ++i)
+        {
+            auto loValue = circularBufferData[readPosition];
+            unsigned int upperIndex = (int)readPosition + 1;
+            upperIndex &= wrapMask;
+            T hiValue = circularBufferData[upperIndex];
+            auto sample = linearInterpolation<T>(fraction, loValue, hiValue);
+            bufferData[i] += sample * localGain;
+            ++readPosition;
+            readPosition &= wrapMask;
+            localGain += gainIncrement;
+        }
+    }
+        
+}
 
 template <typename T>
-T linearInterpolation(T fractionalValue, const T& loValue, const T& hiValue)
+void CircularBuffer<T>::advanceWrite(const int& numSamples)
 {
-    T fraction = fractionalValue - (int)fractionalValue;
-    return loValue + fraction * (hiValue - loValue);;
+    writePosition += numSamples;
+    if (writePosition > bufferSize - 1) writePosition -= bufferSize;
 }
+
+
+
