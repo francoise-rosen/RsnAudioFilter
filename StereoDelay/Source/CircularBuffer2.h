@@ -125,7 +125,7 @@ void CircularBuffer<T>::writeBlock(AudioBuffer<T>& buffer, const int& bufChannel
     {
         for (int i = 0; i < buffer.getNumSamples(); ++i)
         {
-            circularBufferData[localWritePos] = bufferData[i] * localGain;;
+            circularBufferData[localWritePos] += bufferData[i] * localGain;
             localGain += gainIncrement;
             ++localWritePos;
             localWritePos &= wrapMask;

@@ -4,6 +4,9 @@
  PROBLEMS:
  - repetative click on both channels! (something SimpleDelay patch does not have) - fixed (wrong write position)
  - clicks when playback stopped (add fade out!) (something SimpleDelay patch has) - fixed (see above)
+ - unstable Stereo, Gain 0.0 FB 0.0 after some time may blow up
+ - Ping Pong not working at all
+ - w/o interpolation 2% CPU unlike DubFx that uses 1%
 
 CircularBuffer - for Public GIT
     1. Build simple stereo delay feedback. - done
