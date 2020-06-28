@@ -96,7 +96,7 @@ CircularBuffer<T>::CircularBuffer(const int& sizeInMs, double sampleRate)
 template <typename T>
 void CircularBuffer<T>::setDelayInMs(const T& delayInMs) noexcept
 {
-    delayInSamples = ((double)delayInMs * currentSampleRate) / 1000.0;
+    delayInSamples = (delayInMs * currentSampleRate) / 1000.0;
 }
 
 template <typename T>
@@ -115,7 +115,7 @@ void CircularBuffer<T>::writeBlock(AudioBuffer<T>& buffer, const int& bufChannel
         for (int i = 0; i < buffer.getNumSamples(); ++i)
         {
             
-            circularBufferData[localWritePos] = bufferData[i] * localGain;;
+            circularBufferData[localWritePos] = bufferData[i] * localGain;
             localGain += gainIncrement;
             ++localWritePos;
             localWritePos &= wrapMask;
@@ -137,19 +137,27 @@ void CircularBuffer<T>::writeBlock(AudioBuffer<T>& buffer, const int& bufChannel
 template <typename T>
 void CircularBuffer<T>::readBlock(AudioBuffer<T>& buffer, const int& bufChannel, const T& delayInMs, const T& gainStart, const T& gainEnd, Interpolation type) noexcept
 {
+    // get the write pointer to the buffer, and the read to the cicrularBuffer
     auto* bufferData = buffer.getWritePointer(bufChannel);
     auto* circularBufferData = circularBuffer.getReadPointer(0);
-    setDelayInMs(delayInMs);
-    auto localGain = gainStart;
     
+    // set the delay in samples value and the initial read position
+    setDelayInMs(delayInMs);
+    int readPosition = writePosition - (int)delayInSamples;
+    if (readPosition < 0) readPosition += bufferSize;
+    
+    // gain ramp
+    auto localGain = gainStart;
     T gainIncrement = (gainEnd - gainStart) / (T)buffer.getNumSamples();
     
+    // Interpolation cases
     if (type == Interpolation::none)
     {
-        int readPosition = writePosition - (int)delayInSamples;
+       
         for (int i = 0; i < buffer.getNumSamples(); ++i)
         {
             bufferData[i] += circularBufferData[readPosition] * localGain;
+           // bufferData[i] += circularBufferData[readPosition];
             ++readPosition;
             localGain += gainIncrement;
             readPosition &= wrapMask;
@@ -158,9 +166,6 @@ void CircularBuffer<T>::readBlock(AudioBuffer<T>& buffer, const int& bufChannel,
     
     else if (type == Interpolation::linear)
     {
-        // readPosition has a fractional part
-        int readPosition = writePosition - (int)delayInSamples;
-        if (readPosition < 0) readPosition += bufferSize;
         T fraction = delayInSamples - (int)delayInSamples;
         
         for (int i = 0; i < buffer.getNumSamples(); ++i)

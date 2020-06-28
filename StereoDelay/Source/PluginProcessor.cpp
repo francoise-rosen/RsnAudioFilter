@@ -196,17 +196,12 @@ void StereoDelayProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
 
     // READ FROM DELAY
 
-//    for (auto channel = 0; channel < totalNumOfOutputChannels; ++channel)
-//    {
-//        int outputChannel = jmin(channel, stereoDelay.size());
-//        stereoDelay.getUnchecked(outputChannel)->readBlock(buffer, channel, delayInMsLeft, delayAmp, delayAmp);
-//    }
     stereoDelay.getUnchecked(0)->readBlock(buffer, 0, delayInMsLeft, delayAmp, delayAmp);
     stereoDelay.getUnchecked(1)->readBlock(buffer, 1, delayInMsRight, delayAmp, delayAmp);
     
     // WRITE FEEDBACK TO DELAY
     
-    // STEREO
+     //STEREO
     if (delayType == 0)
     {
         for (auto outChannel = 0; outChannel < totalNumOfOutputChannels; ++outChannel)
@@ -214,7 +209,7 @@ void StereoDelayProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
             stereoDelay.getUnchecked(outChannel)->writeBlock(buffer, outChannel, lastFeedbackValue, feedback, false);
         }
     }
-    
+
     // PING PONG
     else if (delayType == 1)
     {
