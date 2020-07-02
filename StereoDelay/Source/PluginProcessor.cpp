@@ -247,22 +247,27 @@ void StereoDelayProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
         {
             auto inputChannel = jmin(channel, totalNumOfInputChannels); /* mono / stereo */
             auto* inputData = buffer.getReadPointer(inputChannel);
-      
-            auto delayChannel = channel; /* stereo*/
+            auto* outputData = buffer.getWritePointer(channel);
             
-            if (delayType == 1) /* ping pong */
-            {
-                delayChannel = (channel == 0) ? 1 : 0;
-            }
-            auto* outputData = buffer.getWritePointer(delayChannel);
-            
-            
+            // read direct and delayed signals
             float inputSample = inputData[index];
             float delayInMs = (channel == 0) ? delayInMsLeft : delayInMsRight;
             float delayedSample = stereoDelay.getUnchecked(channel)->read(delayInMs, Interpolation::linear);
+      
+            // write to circularBuffer
             float writeToDelayBuffer = inputSample + delayedSample * feedback;
             
-            stereoDelay.getUnchecked(delayChannel)->write(writeToDelayBuffer);
+            if (delayType == 0) /* stereo */
+            {
+                stereoDelay.getUnchecked(channel)->write(writeToDelayBuffer);
+            }
+            else if (delayType == 1) /* ping pong */
+            {
+                auto delayChannel = (channel == 0) ? 1 : 0;
+                stereoDelay.getUnchecked(delayChannel)->write(writeToDelayBuffer);
+            }
+            
+            // output
             outputData[index] = (inputSample * (1 - wetGain) + delayedSample * wetGain) * gain;
         }
         
