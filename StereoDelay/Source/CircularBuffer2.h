@@ -39,8 +39,12 @@ enum class Interpolation
 template <typename T>
 T linearInterpolation(T fraction, const T& loValue, const T& hiValue)
 {
-    return loValue + fraction * (hiValue - loValue);;
+    return loValue + fraction * (hiValue - loValue);
 }
+
+//==============================================================================
+// CIRCULAR BUFFER
+//==============================================================================
 
 
 template <typename T>
@@ -156,6 +160,7 @@ void CircularBuffer<T>::readBlock(AudioBuffer<T>& buffer, const int& bufChannel,
        
         for (int i = 0; i < buffer.getNumSamples(); ++i)
         {
+            //bufferData[i] *= (1 - localGain); /* dry sample value */
             bufferData[i] += circularBufferData[readPosition] * localGain;
            // bufferData[i] += circularBufferData[readPosition];
             ++readPosition;
@@ -170,12 +175,10 @@ void CircularBuffer<T>::readBlock(AudioBuffer<T>& buffer, const int& bufChannel,
         
         for (int i = 0; i < buffer.getNumSamples(); ++i)
         {
-            auto loValue = circularBufferData[readPosition];
             unsigned int upperIndex = (int)readPosition + 1;
             upperIndex &= wrapMask;
-            T hiValue = circularBufferData[upperIndex];
-            auto sample = linearInterpolation<T>(fraction, loValue, hiValue);
-            bufferData[i] += sample * localGain;
+            //bufferData[i] *= (1 - localGain); /* dry sample value */
+            bufferData[i] += linearInterpolation<T>(fraction, circularBufferData[readPosition], circularBufferData[upperIndex]) * localGain;
             ++readPosition;
             readPosition &= wrapMask;
             localGain += gainIncrement;

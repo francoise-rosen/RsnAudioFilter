@@ -34,6 +34,10 @@ StereoDelayProcessorEditor::StereoDelayProcessorEditor (StereoDelayProcessor& p)
     feedbackSlider.setTextBoxStyle(Slider::TextBoxBelow, false, textboxWidth, textboxHeight);
     addAndMakeVisible(&feedbackSlider);
     
+    dryWetSlider.setSliderStyle(Slider::SliderStyle::Rotary);
+    dryWetSlider.setTextBoxStyle(Slider::TextBoxBelow, false, textboxWidth, textboxHeight);
+    addAndMakeVisible(&dryWetSlider);
+    
     addAndMakeVisible(&delayTypeBox);
     fillTypeBox();
     
@@ -57,8 +61,9 @@ StereoDelayProcessorEditor::StereoDelayProcessorEditor (StereoDelayProcessor& p)
     gainSliderAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(), StereoDelayProcessor::paramGain, gainSlider);
     delaySliderLeftAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(), StereoDelayProcessor::paramDelayLeft, delaySliderLeft);
     delaySliderRightAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(), StereoDelayProcessor::paramDelayRight, delaySliderRight);
-    freedBackSliderAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(),
+    freedbackSliderAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(),
         StereoDelayProcessor::paramFeedback, feedbackSlider);
+    dryWetSliderAttachment = std::make_unique<SliderAttachment>(processor.accessTreeState(), StereoDelayProcessor::paramDryWet, dryWetSlider);
     typeAttachment = std::make_unique<ComboBoxAttachment>(processor.accessTreeState(), StereoDelayProcessor::paramType, delayTypeBox);
     
 
@@ -100,7 +105,8 @@ void StereoDelayProcessorEditor::resized()
     auto delaySlidersBox = box.removeFromLeft(dialWidth);
     auto gainArea = box.removeFromRight(dialWidth);
     
-    gainSlider.setBounds(gainArea.removeFromBottom(getHeight()/2).reduced(edgeThickness));
+    gainSlider.setBounds(gainArea.removeFromBottom(getHeight()/3).reduced(edgeThickness));
+    dryWetSlider.setBounds(gainArea.removeFromBottom(getHeight()/3).reduced(edgeThickness));
     delayTypeBox.setBounds(gainArea.reduced(edgeThickness));
     delaySliderLeft.setBounds(delaySlidersBox.removeFromTop(box.getHeight() / 2).reduced(edgeThickness));
     delaySliderRight.setBounds(delaySlidersBox.reduced(edgeThickness));

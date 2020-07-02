@@ -396,6 +396,13 @@
 			path = ../../Source/PluginProcessor.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		852A3D8E5C0FFA0291A83CEB = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = JucePluginDefines.h;
+			path = ../../JuceLibraryCode/JucePluginDefines.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		87C453DD55141EB5430DB0E6 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -673,6 +680,7 @@
 				51D0737235BB9333727F5776,
 				7711A81306F1A4EB8F20C560,
 				D09B97AD1D060BD9C642303C,
+				852A3D8E5C0FFA0291A83CEB,
 			);
 			name = "JUCE Library Code";
 			sourceTree = "<group>";
@@ -731,6 +739,34 @@
 			);
 			name = Source;
 			sourceTree = "<group>";
+		};
+		A40FABEFE6A6E539091F0B03 = {
+			isa = PBXTargetDependency;
+			target = D4B500E47CC0D7C778E41CFC;
+		};
+		57DFFDC7AF89004D56C508C5 = {
+			isa = PBXTargetDependency;
+			target = DB0C0EEC1C753E7514EA3F89;
+		};
+		1E68D1D745E0B2B8252FD829 = {
+			isa = PBXTargetDependency;
+			target = 0A20BA6487CFCCFD506BF36C;
+		};
+		106829B20D559CF7263690EC = {
+			isa = PBXTargetDependency;
+			target = A8B0F7DC3FCE09309B4E84EB;
+		};
+		49C5FD1E8EE01ADCD68125CE = {
+			isa = PBXTargetDependency;
+			target = A8B0F7DC3FCE09309B4E84EB;
+		};
+		E298E305454AC52D6501DA9F = {
+			isa = PBXTargetDependency;
+			target = A8B0F7DC3FCE09309B4E84EB;
+		};
+		15A4502581FEED3E09EA6CB9 = {
+			isa = PBXTargetDependency;
+			target = A8B0F7DC3FCE09309B4E84EB;
 		};
 		84A0FBD9521D44F26D4C427C = {
 			isa = XCBuildConfiguration;
@@ -828,7 +864,6 @@
 					"JucePlugin_Build_Standalone=0",
 					"JucePlugin_Build_Unity=0",
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_PKGINFO_FILE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -933,7 +968,6 @@
 					"JucePlugin_Build_Standalone=0",
 					"JucePlugin_Build_Unity=0",
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_PKGINFO_FILE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -1030,7 +1064,6 @@
 					"JucePlugin_Build_Standalone=1",
 					"JucePlugin_Build_Unity=0",
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					"/Applications/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
@@ -1123,7 +1156,6 @@
 					"JucePlugin_Build_Unity=0",
 					"JUCE_SHARED_CODE=1",
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
 					"/Applications/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
@@ -1167,11 +1199,12 @@
 				CODE_SIGN_IDENTITY = "";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
+				ENABLE_TESTABILITY = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
@@ -1215,10 +1248,12 @@
 				CODE_SIGN_IDENTITY = "";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
@@ -1235,22 +1270,6 @@
 				ZERO_LINK = NO;
 			};
 			name = Release;
-		};
-		B59D4989B9AF7D7506C21842 = {
-			isa = PBXTargetDependency;
-			target = D4B500E47CC0D7C778E41CFC;
-		};
-		9E004B6B307E06C548C2E26B = {
-			isa = PBXTargetDependency;
-			target = DB0C0EEC1C753E7514EA3F89;
-		};
-		D0736AEC5D8D7D7A7BD52731 = {
-			isa = PBXTargetDependency;
-			target = 0A20BA6487CFCCFD506BF36C;
-		};
-		B86764EBC76360276726A0EC = {
-			isa = PBXTargetDependency;
-			target = A8B0F7DC3FCE09309B4E84EB;
 		};
 		67CE629A78284F2661F97AC6 = {
 			isa = XCConfigurationList;
@@ -1276,10 +1295,10 @@
 			buildPhases = ( );
 			buildRules = ( );
 			dependencies = (
-				B59D4989B9AF7D7506C21842,
-				9E004B6B307E06C548C2E26B,
-				D0736AEC5D8D7D7A7BD52731,
-				B86764EBC76360276726A0EC,
+				A40FABEFE6A6E539091F0B03,
+				57DFFDC7AF89004D56C508C5,
+				1E68D1D745E0B2B8252FD829,
+				106829B20D559CF7263690EC,
 			);
 			name = "StereoDelay - All";
 			productName = StereoDelay;
@@ -1338,7 +1357,7 @@
 			);
 			buildRules = ( );
 			dependencies = (
-				B86764EBC76360276726A0EC,
+				49C5FD1E8EE01ADCD68125CE,
 			);
 			name = "StereoDelay - VST3";
 			productName = StereoDelay;
@@ -1410,7 +1429,7 @@
 			);
 			buildRules = ( );
 			dependencies = (
-				B86764EBC76360276726A0EC,
+				E298E305454AC52D6501DA9F,
 			);
 			name = "StereoDelay - AU";
 			productName = StereoDelay;
@@ -1471,7 +1490,7 @@
 			);
 			buildRules = ( );
 			dependencies = (
-				B86764EBC76360276726A0EC,
+				15A4502581FEED3E09EA6CB9,
 			);
 			name = "StereoDelay - Standalone Plugin";
 			productName = StereoDelay;

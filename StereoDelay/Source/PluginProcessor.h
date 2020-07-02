@@ -11,7 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "CircularBuffer2.h"
+#include "CircularBuffer.h"
 
 //==============================================================================
 /**
@@ -64,6 +64,7 @@ public:
     static String paramDelayRight; // in ms
     static String paramFeedback;
     static String paramType;
+    static String paramDryWet;
     static StringArray delayTypes;
 
 private:
@@ -72,10 +73,12 @@ private:
     Atomic<float> delayLeftAtom;
     Atomic<float> delayRightAtom;
     Atomic<float> feedbackAtom;
+    Atomic<float> dryWetAtom;
     Atomic<int> typeAtom;
     
     float lastGain;
     float lastFeedbackValue;
+    float lastWetGain;
     double currentSampleRate { 0.0 };
     
     OwnedArray<CircularBuffer<float>> stereoDelay; // left and right delays

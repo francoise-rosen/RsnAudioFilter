@@ -18,6 +18,7 @@ String StereoDelayProcessor::paramDelayLeft = "delay_left";
 String StereoDelayProcessor::paramDelayRight = "delay_right";
 String StereoDelayProcessor::paramFeedback = "feedback";
 String StereoDelayProcessor::paramType = "delay_type";
+String StereoDelayProcessor::paramDryWet = "dryWetGain";
 StringArray StereoDelayProcessor::delayTypes {"Stereo", "Ping_Pong"};
 
 //==============================================================================
@@ -47,6 +48,14 @@ parameters(*this, // processor to connect to
                                                      gainAtom.get(), "dB",
                                                      AudioProcessorParameter::genericParameter,
                                                      [](float val, int) {return String(val, 2) + "dB";},
+                                                     [](const String& s) {return s.dropLastCharacters(3).getFloatValue();}
+                                                     ),
+               std::make_unique<AudioParameterFloat>(paramDryWet,
+                                                     "DRY_WET_GAIN",
+                                                     NormalisableRange<float>(0.0f, 100.0f, 0.1f, 1),
+                                                     dryWetAtom.get(), "%",
+                                                     AudioProcessorParameter::genericParameter,
+                                                     [](float val, int){return String(val, 2) + "%";},
                                                      [](const String& s) {return s.dropLastCharacters(3).getFloatValue();}
                                                      ),
                std::make_unique<AudioParameterFloat>(paramDelayLeft,
@@ -87,6 +96,7 @@ parameters(*this, // processor to connect to
     parameters.addParameterListener(paramDelayLeft, this);
     parameters.addParameterListener(paramDelayRight, this);
     parameters.addParameterListener(paramFeedback, this);
+    parameters.addParameterListener(paramDryWet, this);
     parameters.addParameterListener(paramType, this);
 }
 
@@ -150,6 +160,11 @@ void StereoDelayProcessor::parameterChanged(const String &parameterID, float new
         feedbackAtom = newValue;
     }
     
+    if (parameterID == paramDryWet)
+    {
+        dryWetAtom = newValue;
+    }
+    
     if (parameterID == paramType)
     {
         // index for delay type (0 - stereo, 1 - ping pong ...)
@@ -162,7 +177,6 @@ void StereoDelayProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
     // disables denormals on CPU
     ScopedNoDenormals noDenormals;
     
-    
     //if (Bus* inputBus = getBus(true, 0))
         
     // get values off the atomics
@@ -170,62 +184,89 @@ void StereoDelayProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
     const float delayInMsLeft = delayLeftAtom.get(); // distance between write and read pos
     const float delayInMsRight = delayRightAtom.get();
     const float feedback = Decibels::decibelsToGain(feedbackAtom.get());
+    const float wetGain = dryWetAtom.get() * 0.01;
     const int delayType = typeAtom.get();
     const float delayAmp = 1.00f; // gain for delayed signals
     
-    // at this time no fractional delays
-    //stereoDelay.getUnchecked(0)->setDelayInMs(delayInMsLeft);
-    //stereoDelay.getUnchecked(1)->setDelayInMs(delayInMsRight);
-    
     auto totalNumOfInputChannels = getTotalNumInputChannels();
     auto totalNumOfOutputChannels = getTotalNumOutputChannels();
+    const auto bufferSize = buffer.getNumSamples();
     
     // what if I need mono -> stereo? Test it
     for (auto i = totalNumOfInputChannels; i < totalNumOfOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
-
-    const auto bufferSize = buffer.getNumSamples();
-
+    //==============================================================================
+    // BLOCK
+    //==============================================================================
     
     // WRITE TO DELAY
-    for (auto channel = 0; channel < stereoDelay.size(); ++channel)
-    {
-        int inputChannel = jmin(channel, totalNumOfInputChannels);
-        stereoDelay.getUnchecked(channel)->writeBlock(buffer, inputChannel, delayAmp, delayAmp, true);
-    }
-
-    // READ FROM DELAY
-
-    stereoDelay.getUnchecked(0)->readBlock(buffer, 0, delayInMsLeft, delayAmp, delayAmp);
-    stereoDelay.getUnchecked(1)->readBlock(buffer, 1, delayInMsRight, delayAmp, delayAmp);
+//    for (auto channel = 0; channel < stereoDelay.size(); ++channel)
+//    {
+//        int inputChannel = jmin(channel, totalNumOfInputChannels);
+//        stereoDelay.getUnchecked(channel)->writeBlock(buffer, inputChannel, delayAmp, delayAmp, true);
+//    }
+//
+//    // READ FROM DELAY
+//
+//    stereoDelay.getUnchecked(0)->readBlock(buffer, 0, delayInMsLeft, lastWetGain, wetGain, Interpolation::linear);
+//    stereoDelay.getUnchecked(jmin(1, stereoDelay.size()-1))->readBlock(buffer, 1, delayInMsRight, lastWetGain, wetGain, Interpolation::linear);
+//
+//    // WRITE FEEDBACK TO DELAY
+//
+//     //This works only if there're 2 delay buffers and 2 output channels
+//    for (auto outChannel = 0; outChannel < totalNumOfOutputChannels; ++outChannel)
+//    {
+//        // Stereo is a default setting, delayType == 0
+//        int delayChannel = outChannel;
+//        //PingPong
+//        if (delayType == 1)
+//        {
+//            // flip the channels
+//            delayChannel = (outChannel == 0) ? 1 : 0;
+//        }
+//        // write back to the circular buffer
+//        stereoDelay.getUnchecked(delayChannel)->writeBlock(buffer, outChannel, lastFeedbackValue, feedback, false);
+//    }
+//
+//    // advance the writing positon for all the circular buffers
+//    for (auto ddl = 0; ddl < stereoDelay.size(); ++ddl)
+//        stereoDelay.getUnchecked(ddl)->advanceWrite(bufferSize);
+//
+//    buffer.applyGainRamp(0, bufferSize, lastGain, gain); // postgain.
+//    lastGain = gain;
+//    lastWetGain = wetGain;
+//    lastFeedbackValue = feedback;
     
-    // WRITE FEEDBACK TO DELAY
-    
-     //STEREO
-    if (delayType == 0)
+    //==============================================================================
+    // SAMPLE
+    //==============================================================================
+    // dry/wet, filter on delay, modulated delay time
+    for (auto index = 0; index < bufferSize; ++index)
     {
-        for (auto outChannel = 0; outChannel < totalNumOfOutputChannels; ++outChannel)
+        for (auto channel = 0; channel < totalNumOfOutputChannels; ++channel)
         {
-            stereoDelay.getUnchecked(outChannel)->writeBlock(buffer, outChannel, lastFeedbackValue, feedback, false);
+            auto inputChannel = jmin(channel, totalNumOfInputChannels); /* mono / stereo */
+            auto* inputData = buffer.getReadPointer(inputChannel);
+      
+            auto delayChannel = channel; /* stereo*/
+            
+            if (delayType == 1) /* ping pong */
+            {
+                delayChannel = (channel == 0) ? 1 : 0;
+            }
+            auto* outputData = buffer.getWritePointer(delayChannel);
+            
+            
+            float inputSample = inputData[index];
+            float delayInMs = (channel == 0) ? delayInMsLeft : delayInMsRight;
+            float delayedSample = stereoDelay.getUnchecked(channel)->read(delayInMs, Interpolation::linear);
+            float writeToDelayBuffer = inputSample + delayedSample * feedback;
+            
+            stereoDelay.getUnchecked(delayChannel)->write(writeToDelayBuffer);
+            outputData[index] = (inputSample * (1 - wetGain) + delayedSample * wetGain) * gain;
         }
+        
     }
-
-    // PING PONG
-    else if (delayType == 1)
-    {
-        for (auto outChannel = 0; outChannel < totalNumOfOutputChannels; ++outChannel)
-        {
-            auto reversedChannel = (outChannel == 0) ? 1 : 0;
-            stereoDelay.getUnchecked(reversedChannel)->writeBlock(buffer, outChannel, lastFeedbackValue, feedback, false);
-        }
-    }
-    
-    for (auto ddl = 0; ddl < stereoDelay.size(); ++ddl)
-        stereoDelay.getUnchecked(ddl)->advanceWrite(bufferSize);
-    
-    buffer.applyGainRamp(0, bufferSize, lastGain, gain); // postgain.
-    lastGain = gain;
-    lastFeedbackValue = feedback;
 
 }
 
