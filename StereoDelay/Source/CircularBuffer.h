@@ -74,6 +74,7 @@ public:
     void write(const T& sample);
     T read(int delayedSample);
     T read(T delayedSampleFraction, Interpolation type);
+
     
 private:
     unsigned int writePosition;

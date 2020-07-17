@@ -7,6 +7,8 @@
  - unstable Stereo, Gain 0.0 FB 0.0 after some time may blow up - fixed (didn't update read position)
  - Ping Pong not working at all - fixed
  - w/o interpolation 2% CPU unlike DubFx that uses 1%
+ - sample-wise hits 19% CPU, regardless interpolation! fuck! >10% of it cased by write and read functions - fixed by choosing Release of the Build in Edit Scheme - now it's5%
+ - ping pong not working again!
 
 CircularBuffer - for Public GIT
     1. Build simple stereo delay feedback. - done

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="Hiv3WW" name="StereoDelay" projectType="audioplug" jucerVersion="5.4.7"
-              displaySplashScreen="1">
+<JUCERPROJECT id="Hiv3WW" name="StereoDelay" projectType="audioplug" displaySplashScreen="1"
+              jucerFormatVersion="1">
   <MAINGROUP id="uOReUB" name="StereoDelay">
     <GROUP id="{332EEA9E-BD67-FABE-BFF3-2FC33AB42A3C}" name="Source">
       <FILE id="Yv0fLS" name="CircularBuffer2.h" compile="0" resource="0"

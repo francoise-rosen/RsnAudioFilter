@@ -115,6 +115,7 @@ void StereoDelayProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
         stereoDelay.add(new CircularBuffer<float>(bufferLength, sampleRate));
     }
 
+
 }
 
 void StereoDelayProcessor::releaseResources()
@@ -253,18 +254,30 @@ void StereoDelayProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
             float inputSample = inputData[index];
             float delayInMs = (channel == 0) ? delayInMsLeft : delayInMsRight;
             float delayedSample = stereoDelay.getUnchecked(channel)->read(delayInMs, Interpolation::linear);
-      
+            
             // write to circularBuffer
             float writeToDelayBuffer = inputSample + delayedSample * feedback;
             
+  // this does not work for pingpong
+//            int delayChannel = channel;
+//            if (delayType == 1)
+//            {
+//                delayChannel = (channel == 0) ? 1 : 0;
+//            }
+//            stereoDelay.getUnchecked(delayChannel)->write(writeToDelayBuffer);
+      
+            
+// this works for ping pong
             if (delayType == 0) /* stereo */
             {
                 stereoDelay.getUnchecked(channel)->write(writeToDelayBuffer);
             }
             else if (delayType == 1) /* ping pong */
             {
-                auto delayChannel = (channel == 0) ? 1 : 0;
-                stereoDelay.getUnchecked(delayChannel)->write(writeToDelayBuffer);
+                if (channel == 0)
+                    stereoDelay.getUnchecked(1)->write(writeToDelayBuffer);
+                else if (channel == 1)
+                    stereoDelay.getUnchecked(0)->write(writeToDelayBuffer);
             }
             
             // output
