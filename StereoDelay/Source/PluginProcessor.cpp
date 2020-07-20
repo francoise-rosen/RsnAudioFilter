@@ -44,7 +44,7 @@ parameters(*this, // processor to connect to
            {
                std::make_unique<AudioParameterFloat>(paramGain,
                                                      "GAIN",
-                                                     NormalisableRange<float>(-100.0f, 6.0f, 0.1f, std::log(0.5f) / std::log(100.0f/106.0f)),
+                                                     NormalisableRange<float>(-100.0f, 6.0f, 0.1f, std::log(0.5f) / std::log(88.0f/106.0f)),
                                                      gainAtom.get(), "dB",
                                                      AudioProcessorParameter::genericParameter,
                                                      [](float val, int) {return String(val, 2) + "dB";},
@@ -76,7 +76,7 @@ parameters(*this, // processor to connect to
                                                      ),
                std::make_unique<AudioParameterFloat>(paramFeedback,
                                                      "FEEDBACK",
-                                                     NormalisableRange<float>(-100.0f, 0.0f, 0.1f, std::log(0.5f) / std::log(100.0f / 106.0f)),
+                                                     NormalisableRange<float>(-100.0f, 0.0f, 0.1f, std::log(0.5f) / std::log(88.0f / 100.0f)),
                                                      feedbackAtom.get(), "dB",
                                                      AudioProcessorParameter::genericParameter,
                                                      [](float val, int) {return String(val, 2) + "dB";},

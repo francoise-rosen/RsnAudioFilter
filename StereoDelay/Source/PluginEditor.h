@@ -5,10 +5,10 @@
  - repetative click on both channels! (something SimpleDelay patch does not have) - fixed (wrong write position)
  - clicks when playback stopped (add fade out!) (something SimpleDelay patch has) - fixed (see above)
  - unstable Stereo, Gain 0.0 FB 0.0 after some time may blow up - fixed (didn't update read position)
- - Ping Pong not working at all - fixed
+ - Ping Pong not working at all - fixed (but still need to look into this)
  - w/o interpolation 2% CPU unlike DubFx that uses 1%
  - sample-wise hits 19% CPU, regardless interpolation! fuck! >10% of it cased by write and read functions - fixed by choosing Release of the Build in Edit Scheme - now it's5%
- - ping pong not working again!
+ - ping pong not working again! - fixed but neet to look it up again, to optimise the code
 
 CircularBuffer - for Public GIT
     1. Build simple stereo delay feedback. - done
