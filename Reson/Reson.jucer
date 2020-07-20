@@ -4,7 +4,6 @@
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="MT18Pq" name="Reson">
     <GROUP id="{185DF828-B689-0116-FEF0-6E1DECAEFAA1}" name="Source">
-      <FILE id="vnMELa" name="Resonator.cpp" compile="1" resource="0" file="Source/Resonator.cpp"/>
       <FILE id="SO7DXC" name="Resonator.h" compile="0" resource="0" file="Source/Resonator.h"/>
       <FILE id="LeiwBw" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

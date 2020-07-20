@@ -10,6 +10,7 @@
 
 #include "Resonator.h"
 
+
 //==============================================================================
 /**
 */
@@ -74,6 +75,13 @@ private:
     juce::Atomic<float> gainAtom;
     juce::Atomic<bool> bypassAtom;
     juce::Atomic<int> algorithmAtom;
+    
+    float lastGain;
+    float lastQValue;
+    float lastFreqValue;
+    
+    juce::OwnedArray<rosen::Resonator<float>> stereoResonator;
+
     
     juce::AudioProcessorValueTreeState parameters;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ResonAudioProcessor)

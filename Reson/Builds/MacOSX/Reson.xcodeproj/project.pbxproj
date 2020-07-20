@@ -73,10 +73,6 @@
 			isa = PBXBuildFile;
 			fileRef = ADF48F41F4A1A3C648BF2789;
 		};
-		84AAA0313CB4898778A3B15D = {
-			isa = PBXBuildFile;
-			fileRef = E7C5CA14953042D1328D1A2C;
-		};
 		D4B28E9A41E15F214FD364F3 = {
 			isa = PBXBuildFile;
 			fileRef = 530A199A471F4FE9CEF3356A;
@@ -514,13 +510,6 @@
 			path = System/Library/Frameworks/CoreAudioKit.framework;
 			sourceTree = SDKROOT;
 		};
-		E7C5CA14953042D1328D1A2C = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
-			name = Resonator.cpp;
-			path = ../../Source/Resonator.cpp;
-			sourceTree = "SOURCE_ROOT";
-		};
 		EA6DEEC45660BFB829C6C20A = {
 			isa = PBXFileReference;
 			lastKnownFileType = file;
@@ -566,7 +555,6 @@
 		3618B3A1FB8E2512F77D7F1B = {
 			isa = PBXGroup;
 			children = (
-				E7C5CA14953042D1328D1A2C,
 				F165DC546F46F8430D719640,
 				530A199A471F4FE9CEF3356A,
 				9DDD4CFDC639F59D5A22E74C,
@@ -1931,7 +1919,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84AAA0313CB4898778A3B15D,
 				D4B28E9A41E15F214FD364F3,
 				8121A2F113E65E147C9FB0A6,
 				CDAF905895E4B7717C14EBCA,
