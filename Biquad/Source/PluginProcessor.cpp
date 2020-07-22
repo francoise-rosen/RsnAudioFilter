@@ -51,6 +51,16 @@ parameters{*this,
                                                            [](float val, int) {return juce::String(val, 2) + "%";},
                                                            [](const juce::String& str_val) {return str_val.dropLastCharacters(3).getFloatValue();}
                                                            ),
+               std::make_unique<juce::AudioParameterFloat>(gainParam,
+                                                           "GAIN",
+                                                           juce::NormalisableRange<float>{
+                                                               -100.0f, 12.0f, 0.01f, std::log(0.5f)/std::log(88.0f/112.0f)
+                                                           },
+                                                           gainAtom.get(), "dB",
+                                                           juce::AudioProcessorParameter::genericParameter,
+                                                           [](float val, int) {return juce::String(val, 2) + "dB";},
+                                                           [](const juce::String& strval) {return strval.dropLastCharacters(3).getFloatValue();}
+                                                           ),
                std::make_unique<juce::AudioParameterChoice>(typeParam,
                                                             "FILTER_TYPE",
                                                             filterTypeList,
@@ -84,11 +94,50 @@ BiquadAudioProcessor::~BiquadAudioProcessor()
 void BiquadAudioProcessor::parameterChanged(const juce::String &paramID
                                             , float newValue)
 {
+    // SLIDERS
+    if (paramID == freqParam)
+    {
+        freqAtom = newValue;
+    }
     
+    else if (paramID == qParam)
+    {
+        qAtom = newValue;
+    }
+    
+    else if (paramID == dryWetParam)
+    {
+        dryWetAtom = newValue;
+    }
+    
+    else if (paramID == gainParam)
+    {
+        gainAtom = newValue;
+    }
+    
+    // COMBO
+    
+    else if (paramID == typeParam)
+    {
+        typeAtom = (int)newValue;
+    }
+    
+    else if (paramID == orderParam)
+    {
+        orderAtom = (int)newValue;
+    }
+    
+    else if (paramID == bypassParam)
+    {
+        bypassAtom = (int)newValue;
+    }
 }
 void BiquadAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
- 
+    lastGain = gainAtom.get();
+    lastFreq = freqAtom.get();
+    lastQ = qAtom.get();
+    lastDryWet = dryWetAtom.get();
 }
 
 void BiquadAudioProcessor::releaseResources()
@@ -128,6 +177,8 @@ void BiquadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
+    
+    const float gain = juce::Decibels::decibelsToGain(gainAtom.get());
 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
@@ -135,7 +186,11 @@ void BiquadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer (channel);
-
+        
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+        {
+            channelData[sample] *= gain;
+        }
 
     }
 }

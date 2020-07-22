@@ -63,7 +63,7 @@ BiquadAudioProcessorEditor::~BiquadAudioProcessorEditor()
 
 void BiquadAudioProcessorEditor::fillTypeBox(int numOfTypes)
 {
-    assert (numOfTypes < 1);
+    assert (numOfTypes > 1);
     for (int i = 0; i < numOfTypes; ++i)
     {
         if (i < audioProcessor.filterTypeList.size()) typeBox.addItem(audioProcessor.filterTypeList[i], 100 + i);
@@ -94,5 +94,10 @@ void BiquadAudioProcessorEditor::paint (juce::Graphics& g)
 
 void BiquadAudioProcessorEditor::resized()
 {
- 
+    auto gainArea = getLocalBounds().removeFromRight(getWidth()/2);
+    
+    float dialSize = getHeight() / 3.0f;
+    float edge = 10.0f;
+    
+    gainSlider.setBounds(gainArea.removeFromBottom(dialSize).reduced(edge));
 }
