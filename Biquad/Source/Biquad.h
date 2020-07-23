@@ -8,12 +8,23 @@
   ==============================================================================
 */
 
+/*
+ 
+ Biquad -> FilterDesign -> Filter (biquad, set of biquads)
+ 
+ class Filter that can create different type of filter algos (Biquad, Sequence of Biquads etc.)
+ 
+ Biquad is a self sufficient class, but can be hosted into Filter as well
+ 
+ */
+
 #pragma once
 
 namespace rosen
 {
     enum class biquadAlgorithm {LPF, HPF, ButterLPF, ButterHPF, BPF, HiShelf, LoShelf, numOfAlgorithms};
-    enum filterCoef {a0, a1, a2, b1, b2, c, d, numOfCoef};
+    
+    enum biquadCoeff {a0, a1, a2, b1, b2, numOfCoef};
     enum zState {x_z1, x_z2, y_z1, y_z2, numOfZ};
     
     //Biquad Class
@@ -24,7 +35,7 @@ namespace rosen
         
         Biquad();
         
-        Biquad(const T& freq, const T& q, double sampleRate, biquadAlgorithm algo = biquadAlgorithm::LPF);
+        Biquad(const T& freq, const T& q, double sampleRate, const unsigned& order = 1, biquadAlgorithm algo = biquadAlgorithm::LPF);
         
         ~Biquad() {}
         
@@ -32,7 +43,7 @@ namespace rosen
         
         void setFrequency(const T& freq);
         void setQ(const T& q);
-        void setFilterAlgorithm(const int&);
+        void setBiquadAlgorithm(const int&);
         void setSampleRate(const double& sampleRate);
         
         // getters
@@ -43,16 +54,21 @@ namespace rosen
         void reset();
         void resetCoefficients();
         
+        // process
+        T process(const T& sample) noexcept;
+        //T processBlock(AudioBuffer<T>& buffer) noexcept;
+        
         
     private:
         using Math = juce::MathConstants<double>;
         T frequency;
         T qualityFactor;
         double currentSampleRate;
+        unsigned filterOrder; // 1 or 2
         biquadAlgorithm algorithm;
         
         //static arrays
-        T filterCoefficients[filterCoef::numOfCoef];
+        T filterCoefficients[biquadCoeff::numOfCoef];
         T zArray[zState::numOfZ];
         
         // this must be called if and only if all the member variables are initialised
@@ -67,8 +83,8 @@ namespace rosen
     {}
     
     template <typename T>
-    Biquad<T>::Biquad(const T& freq, const T& q, double sampleRate, biquadAlgorithm algo)
-    :frequency{freq}, qualityFactor{q}, currentSampleRate{sampleRate}, algorithm{algo}
+    Biquad<T>::Biquad(const T& freq, const T& q, double sampleRate, const unsigned& order, biquadAlgorithm algo)
+    :frequency{freq}, qualityFactor{q}, currentSampleRate{sampleRate}, filterOrder{order}, algorithm{algo}
     {
         assert (currentSampleRate > 0);
         setCoefficients();
@@ -100,7 +116,7 @@ namespace rosen
     }
     
     template <typename T>
-    void Biquad<T>::setFilterAlgorithm(const int& filterType)
+    void Biquad<T>::setBiquadAlgorithm(const int& filterType)
     {
         if (algorithm == (biquadAlgorithm)filterType) return;
         
@@ -116,6 +132,7 @@ namespace rosen
     void Biquad<T>::setCoefficients()
     {
         assert (qualityFactor > 0);
+        assert (filterOrder == 1 || filterOrder == 2);
         // freq must be smaller than nyquist!
         assert (std::abs(frequency) < currentSampleRate / 2.0);
         if (frequency < 0)
@@ -125,12 +142,22 @@ namespace rosen
         
         if (algorithm == biquadAlgorithm::LPF)
         {
-            
+            // first order LPF
+            T theta = Math::twoPi * frequency / currentSampleRate;
+            T gamma = cos(theta) / (1 + sin(theta));
+            filterCoefficients[a0] = (1 - gamma) / 2;
+            filterCoefficients[a1] = filterCoefficients[a0];
+            filterCoefficients[a2] = 0.0;
+            filterCoefficients[b1] = -gamma;
+            filterCoefficients[b2] = 0.0;
+    
+            return;
         }
         
-        else if (algorithm == biquadAlgorithm::HPF)
+        if (algorithm == biquadAlgorithm::HPF)
         {
-            
+            //first order HPF
+            return;
         }
     }
     
@@ -150,7 +177,7 @@ namespace rosen
     template <typename T>
     void Biquad<T>::resetCoefficients()
     {
-        for (int i = 0; i < filterCoef::numOfCoef; ++i)
+        for (int i = 0; i < biquadCoeff::numOfCoef; ++i)
         {
             filterCoefficients[i] = 0; // do I need an explicit cast here?
         }

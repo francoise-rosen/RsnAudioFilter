@@ -65,7 +65,7 @@ private:
     :cutoff{1000}, qualityFactor{1}, currentSampleRate{0}, algorithm{algo}
     {
         reset();
-        setCoeff();
+        //setCoeff(); // would be a mistake since currentSampleRate = 0
     }
     
     template <typename T>

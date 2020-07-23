@@ -11,23 +11,54 @@
 		</dict>
 		<key>Biquad - All.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
 		<key>Biquad - Shared Code.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
 			<integer>4</integer>
 		</dict>
 		<key>Biquad - Standalone Plugin.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
 			<integer>3</integer>
 		</dict>
 		<key>Biquad - VST3.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
 			<integer>2</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>2B78E814B3DDEDCD09072EBC</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4D93DF0B91E06317E7BD2110</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>868890D98FC42E96A6C5C01D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E61ADF7CDFD329DEC2FD2AEC</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>
