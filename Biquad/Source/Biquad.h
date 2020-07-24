@@ -21,10 +21,11 @@
 #pragma once
 
 namespace rosen
+
 {
-    enum class biquadAlgorithm {LPF, HPF, ButterLPF, ButterHPF, BPF, HiShelf, LoShelf, numOfAlgorithms};
+    enum class biquadAlgorithm {LPF, HPF, ButterLPF2, ButterHPF2, BPF, BSF, HiShelf, LoShelf, numOfAlgorithms};
     
-    enum biquadCoeff {a0, a1, a2, b1, b2, numOfCoef};
+    enum biquadCoeff {a0, a1, a2, b1, b2, numOfCoeff};
     enum zState {x_z1, x_z2, y_z1, y_z2, numOfZ};
     
     //Biquad Class
@@ -51,11 +52,11 @@ namespace rosen
         T getQ() const {return qualityFactor;}
         biquadAlgorithm getAlgorithm() const {return algorithm;}
         
-        void reset();
+        void resetState();
         void resetCoefficients();
         
         // process
-        T process(const T& sample) noexcept;
+        T process(const T& xn) noexcept;
         //T processBlock(AudioBuffer<T>& buffer) noexcept;
         
         
@@ -68,7 +69,7 @@ namespace rosen
         biquadAlgorithm algorithm;
         
         //static arrays
-        T filterCoefficients[biquadCoeff::numOfCoef];
+        T filterCoefficients[biquadCoeff::numOfCoeff];
         T zArray[zState::numOfZ];
         
         // this must be called if and only if all the member variables are initialised
@@ -157,19 +158,58 @@ namespace rosen
         if (algorithm == biquadAlgorithm::HPF)
         {
             //first order HPF
+            T theta = Math::twoPi * frequency / currentSampleRate;
+            T gamma = cos(theta) / (1 + sin(theta));
+            filterCoefficients[a0] = (1 + gamma) / 2;
+            filterCoefficients[a1] = - filterCoefficients[a0];
+            filterCoefficients[a2] = 0.0;
+            filterCoefficients[b1] = -gamma;
+            filterCoefficients[b2] = 0.0;
+            
             return;
+        }
+        
+        if (algorithm == biquadAlgorithm::ButterLPF2)
+        {
+            // ButterWorth LowPass 2nd Order
+            //
+            T theta = Math::pi * frequency / currentSampleRate;
+            if (theta >= Math::halfPi) return; //precaution! but embark on a better check
+            T mcf = 1 / tan(theta);
+            filterCoefficients[a0] = 1 / (1 + mcf * sqrt(2.0) + mcf * mcf);
+            filterCoefficients[a1] = 2 * filterCoefficients[a0];
+            filterCoefficients[a2] = filterCoefficients[a0];
+            filterCoefficients[b1] = 2 * filterCoefficients[a0] * (1 - mcf * mcf);
+            filterCoefficients[b2] = filterCoefficients[a0] * (1 - sqrt(2.0) * mcf + mcf * mcf);
+            
+            return;
+        }
+        
+        if (algorithm == biquadAlgorithm::ButterHPF2)
+        {
+            T theta = Math::pi * frequency / currentSampleRate;
+            if (theta >= Math::halfPi) return; //precaution! but embark on a better check
+            
+            T mcf = tan(theta);
+            filterCoefficients[a0] = 1 / (1 + mcf * sqrt(2.0) + mcf * mcf);
+            filterCoefficients[a1] = -2 * filterCoefficients[a0];
+            filterCoefficients[a2] = filterCoefficients[a0];
+            filterCoefficients[b1] = 2 * filterCoefficients[a0] * (mcf * mcf - 1);
+            filterCoefficients[b2] = filterCoefficients[a0] * (1 - sqrt(2.0) * mcf + mcf * mcf);
+            
         }
     }
     
     // RESET
     
     template <typename T>
-    void Biquad<T>::reset()
+    void Biquad<T>::resetState()
     {
-        for (int i = 0; i < zState::numOfZ; ++i)
-        {
-            zArray[i] = 0; // do I need an explicit cast here?
-        }
+//        for (int i = 0; i < zState::numOfZ; ++i)
+//        {
+//            zArray[i] = 0; // do I need an explicit cast here?
+//        }
+        memset(&zArray[0], 0, sizeof(T)*zState::numOfZ);
         
         // what about filterCoefficients array?
     }
@@ -177,9 +217,27 @@ namespace rosen
     template <typename T>
     void Biquad<T>::resetCoefficients()
     {
-        for (int i = 0; i < biquadCoeff::numOfCoef; ++i)
-        {
-            filterCoefficients[i] = 0; // do I need an explicit cast here?
-        }
+//        for (int i = 0; i < biquadCoeff::numOfCoef; ++i)
+//        {
+//            filterCoefficients[i] = 0; // do I need an explicit cast here?
+//        }
+        
+        //memset(&filterCoefficients[0], 0, sizeof(T)*biquadCoeff::numOfCoeff);
+        std::fill(&filterCoefficients[0], &filterCoefficients[biquadCoeff::numOfCoeff], 0);
+    }
+    
+    template <typename T>
+    T Biquad<T>::process (const T& xn) noexcept
+    {
+        
+        // biquad algorithm
+        T yn = filterCoefficients[a0] * xn + filterCoefficients[a1] * zArray[x_z1] + filterCoefficients[a2] * zArray[x_z2] - filterCoefficients[b1] * zArray[y_z1] - filterCoefficients[b2] * zArray[y_z2];
+        
+        // update registers
+        zArray[x_z2] = zArray[x_z1];
+        zArray[x_z1] = xn;
+        zArray[y_z2] = zArray[y_z1];
+        zArray[y_z1] = yn;
+        
     }
 }
