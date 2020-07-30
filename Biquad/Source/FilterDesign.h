@@ -22,19 +22,17 @@
 
 
 namespace sfd{
-    enum class filterAlgorithm {
+    
+    enum class FilterType {
         LPF, HPF, BPF, BPS, ButterLPF, ButterHPF, ButterBPF, ButterBPS, LoShelf, HiShelf
     };
-    
-    enum coeffArray {a0, a1, a2, b1, b2, c, d, numOfCoeff};
-    enum rollOff {db6=1, db12, db18, db24, db30, db36, db44};
     
     struct FilterParameters
     {
         FilterParameters() {}
         FilterParameters& operator=(const FilterParameters& params);
         
-        filterAlgorithm algorithm = filterAlgorithm::LPF;
+        FilterType algorithm = FilterType::LPF;
         double freq = 100.0;
         double Q = 0.707;
         int order = 1;
@@ -47,9 +45,22 @@ namespace sfd{
         Filter();
         ~Filter();
         
+        enum CoeffArray {a0, a1, a2, b1, b2, c, d, numOfCoeff};
+        enum rollOff {db6=1, db12, db18, db24, db30, db36, db44};
+        
         T process(const T& sample);
     private:
         FilterParameters params;
+        rosen::Biquad<float> biquad;
+        juce::OwnedArray<rosen::Biquad<float>> setOfBiquads;
         rollOff order; // will determine the number of biquads to use in process
     };
+    
+    template <typename T>
+    T Filter<T>::process(const T& sample)
+    {
+        T outputSample = sample;
+        return outputSample;
+        // do processng here
+    }
 }

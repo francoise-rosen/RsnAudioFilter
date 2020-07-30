@@ -9,6 +9,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+
 //==============================================================================
 
 
@@ -138,6 +139,11 @@ void BiquadAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
     lastFreq = freqAtom.get();
     lastQ = qAtom.get();
     lastDryWet = dryWetAtom.get();
+    
+    for (int i = 0; i < getTotalNumInputChannels(); ++i)
+    {
+        biquadSet.add(new rosen::Biquad<float>(20000, 1, sampleRate, 1, rosen::biquadAlgorithm::LPF));
+    }
 }
 
 void BiquadAudioProcessor::releaseResources()

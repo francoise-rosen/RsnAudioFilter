@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "FilterDesign.h"
 
+
 //==============================================================================
 /**
 */
@@ -91,6 +92,8 @@ private:
     float lastQ;
     float lastDryWet;
     float lastGain; // not in dB!
+    
+    juce::OwnedArray<rosen::Biquad<float>> biquadSet; 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BiquadAudioProcessor)
 };

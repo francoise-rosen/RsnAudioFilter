@@ -39,7 +39,9 @@ BiquadAudioProcessorEditor::BiquadAudioProcessorEditor (BiquadAudioProcessor& p)
     fillOrderBox(2); // here just 1 and 2 order filters
     
     // button
-    bypassButton.setName("On");
+    bypassButton.setName("Bypass");
+    bypassButton.setButtonText("ON/OFF");
+    bypassButton.setClickingTogglesState(true);
     addAndMakeVisible(&bypassButton);
     
     // attach the gui to the AudioProcessor
@@ -51,7 +53,7 @@ BiquadAudioProcessorEditor::BiquadAudioProcessorEditor (BiquadAudioProcessor& p)
     orderBoxAttachment = std::make_unique<ComboBoxAttachment>(audioProcessor.getValueTree(), audioProcessor.orderParam, orderBox);
     bypassButtonAttachment = std::make_unique<ButtonAttachment>(audioProcessor.getValueTree(), audioProcessor.bypassParam, bypassButton);
     
-    setSize (360, 240);
+    setSize (269, 420);
 }
 
 BiquadAudioProcessorEditor::~BiquadAudioProcessorEditor()
@@ -85,19 +87,17 @@ void BiquadAudioProcessorEditor::fillOrderBox(const int &order)
 void BiquadAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.fillAll (juce::Colours::black);
 
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);
+    g.drawText("Rosen::Biquad", 10, 10, 70, 30, juce::Justification::centred);
 
 }
 
 void BiquadAudioProcessorEditor::resized()
 {
-    auto gainArea = getLocalBounds().removeFromRight(getWidth()/2);
+  
     
-    float dialSize = getHeight() / 3.0f;
-    float edge = 10.0f;
     
-    gainSlider.setBounds(gainArea.removeFromBottom(dialSize).reduced(edge));
 }

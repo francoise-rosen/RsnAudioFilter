@@ -141,6 +141,7 @@ namespace rosen
             frequency = std::abs(frequency);
         }
         
+        // LoPass 1st order
         if (algorithm == biquadAlgorithm::LPF)
         {
             // first order LPF
@@ -155,6 +156,7 @@ namespace rosen
             return;
         }
         
+        // HiPass 1st order
         if (algorithm == biquadAlgorithm::HPF)
         {
             //first order HPF
@@ -169,6 +171,7 @@ namespace rosen
             return;
         }
         
+        // LoPass 2nd order Butterworth
         if (algorithm == biquadAlgorithm::ButterLPF2)
         {
             // ButterWorth LowPass 2nd Order
@@ -185,6 +188,7 @@ namespace rosen
             return;
         }
         
+        // HiPass 2nd order Butterworth
         if (algorithm == biquadAlgorithm::ButterHPF2)
         {
             T theta = Math::pi * frequency / currentSampleRate;
