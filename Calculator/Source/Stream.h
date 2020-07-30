@@ -31,14 +31,18 @@ public:
     T compute(const T&);
     T compute(Operation op, const T&);
     
-    void add(const T& value); // do I need these, or just one function with switch?
-    // or use these functions via pointers? 
+    void updateState(const T& value, const Operation& op, bool updateValue = true, bool updateOperation = true); // do I need these, or just one function with switch?
+    // or use these functions via pointers?
+
     
     void storeValue(T& value) {storedValue = value;}
     T getValueFromBuffer() const {return storedValue;}
     
     void storeOperator(Operation op) {operation = op;}
     int getOperator() {return static_cast<int>(operation);}
+    
+    void setBufferState(bool b) {full = b;}
+    bool getBufferState() const {return full;}
     void reset();
     
 private:
@@ -57,13 +61,36 @@ template <typename T>
 Stream<T>::~Stream()
 {}
 
+// operations
+template <typename T>
+void Stream<T>::updateState(const T& value, const Operation& op, bool updateValue, bool updateOperation)
+{
+    if (!full && updateValue)
+    {
+        storedValue = value;
+        full = true;
+    }
+    else if (full)
+    {
+        if (updateValue)
+        {
+            storedValue = compute(value); // here change the +,-,/,*
+        }
+        if (updateOperation) operation = op;
+    }
+}
+
 template <typename T>
 T Stream<T>::compute(const T& t)
 {
     T output = storedValue;
-    if (operation == plus)
+    if (operation == Operation::plus)
     {
         output = storedValue + t;
+    }
+    else if (operation == Operation::minus)
+    {
+        output = storedValue - t;
     }
     return output;
 }
@@ -71,29 +98,10 @@ T Stream<T>::compute(const T& t)
 template <typename T>
 T Stream<T>::compute(Operation op, const T& t)
 {
-    // this is when unary operator used
-    // it must not be stored in operation buffer
-    // right?
-    // result of the computation will be shown and then will be stored in buffer
+    
     return t;
 }
 
-
-
-template <typename T>
-void Stream<T>::add(const T& value)
-{
-    if (!full)
-    {
-        storedValue = value;
-        full = true;
-    }
-    else
-    {
-        storedValue += value;
-        operation = plus;
-    }
-}
 
 template <typename T>
 void Stream<T>::reset()

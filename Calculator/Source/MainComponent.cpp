@@ -77,10 +77,17 @@ void MainComponent::makeOpVisible()
 
 void MainComponent::buttonClicked(juce::Button* button)
 {
+    double value = textEntryScreen.getText().getDoubleValue();
     if (button == arithmetic[plus])
     {
-        double value = textEntryScreen.getText().getDoubleValue();
-        stream.add(value);
+        stream.updateState(value, plus, textChanged, true);
+        textEntryScreen.setText(juce::String(stream.getValueFromBuffer()));
+        textChanged = false;
+    }
+    
+    else if (button == arithmetic[minus])
+    {
+        stream.updateState(value, minus, textChanged, true);
         textEntryScreen.setText(juce::String(stream.getValueFromBuffer()));
         textChanged = false;
     }
@@ -90,9 +97,11 @@ void MainComponent::buttonClicked(juce::Button* button)
         // stream takes care of updating its buffers
         std::cout << "equals pressed\n";
         // is there the streams buffer full, is there an op?
-        // what if user entered 16 sqrt = 
+        // what if user entered 16 sqrt =
         double valueToDisplay = stream.compute(textEntryScreen.getText().getDoubleValue());
-        textEntryScreen.setText(juce::String(valueToDisplay));
+        stream.updateState(valueToDisplay, equals, textChanged, false);
+        textEntryScreen.setText(juce::String(valueToDisplay), false);
+        textChanged = false;
     
         //std::cout << "Text Changed: " << textChanged << '\n';
         
@@ -124,6 +133,6 @@ void MainComponent::textEditorTextChanged(juce::TextEditor & text)
     if(&text == &textEntryScreen)
     {
         std::cout << "Changing the state: " << textChanged << '\n';
-        textChanged = (textChanged == false) ? true : false;
+        textChanged = true;
     }
 }
