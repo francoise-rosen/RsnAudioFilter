@@ -27,6 +27,8 @@ namespace sfd{
         LPF, HPF, BPF, BPS, ButterLPF, ButterHPF, ButterBPF, ButterBPS, LoShelf, HiShelf
     };
     
+    enum class rollOff {db6=1, db12, db18, db24, db30, db36, db44};
+    
     struct FilterParameters
     {
         FilterParameters() {}
@@ -46,7 +48,6 @@ namespace sfd{
         ~Filter();
         
         enum CoeffArray {a0, a1, a2, b1, b2, c, d, numOfCoeff};
-        enum rollOff {db6=1, db12, db18, db24, db30, db36, db44};
         
         T process(const T& sample);
     private:

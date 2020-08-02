@@ -73,6 +73,7 @@ public:
     static juce::String orderParam;
     static juce::String bypassParam;
     static juce::Array<juce::String> filterTypeList;
+    static juce::Array<juce::String> orderRollOff;
 
 private:
     

@@ -31,7 +31,7 @@ parameters{*this,
            {
                std::make_unique<juce::AudioParameterFloat>(freqParam,
                                                            "FREQUENCY",
-                                                           juce::NormalisableRange<float>{20.0f, 24000.0f, 0.001f, std::log(0.5f) / std::log(1000.0f/20980.0f)},
+                                                           juce::NormalisableRange<float>{20.0f, 22000.0f, 0.001f, std::log(0.5f) / std::log(1000.0f/20980.0f)},
                                                                freqAtom.get(),// default
                                                                "Hz",
                                                            juce::AudioProcessorParameter::genericParameter,
@@ -41,7 +41,7 @@ parameters{*this,
                std::make_unique<juce::AudioParameterFloat>(qParam,
                                                            "QUALITY_FACTOR",
                                                            juce::NormalisableRange<float>{
-                                                               0.1f, 200.0f, 0.01f, std::log(0.5f) / std::log(4.0f / 24.0f)},
+                                                               0.1f, 20.0f, 0.01f, std::log(0.5f) / std::log(4.0f / 24.0f)},
                                                            qAtom.get()
                                                            ),
                std::make_unique<juce::AudioParameterFloat>(dryWetParam,
@@ -142,7 +142,7 @@ void BiquadAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
     
     for (int i = 0; i < getTotalNumInputChannels(); ++i)
     {
-        biquadSet.add(new rosen::Biquad<float>(20000, 1, sampleRate, 1, rosen::biquadAlgorithm::LPF));
+        biquadSet.add(new rosen::Biquad<float>(19000, 1, sampleRate, 1, rosen::biquadAlgorithm::LPF));
     }
 }
 
@@ -185,6 +185,11 @@ void BiquadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     auto totalNumOutputChannels = getTotalNumOutputChannels();
     
     const float gain = juce::Decibels::decibelsToGain(gainAtom.get());
+    const float freq = freqAtom.get();
+    const float q = qAtom.get();
+    const float dryWet = dryWetAtom.get();
+    const int algo = typeAtom.get();
+    
 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
@@ -192,10 +197,12 @@ void BiquadAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer (channel);
+        biquadSet[channel]->setParameters(freq, q, algo);
         
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
         {
-            channelData[sample] *= gain;
+            auto filteredSample = biquadSet[channel]->process(channelData[sample]);
+            channelData[sample] = filteredSample * gain;
         }
 
     }
@@ -311,3 +318,4 @@ juce::String BiquadAudioProcessor::typeParam {"filterTypeID"};
 juce::String BiquadAudioProcessor::orderParam {"filterOrderID"};
 juce::String BiquadAudioProcessor::bypassParam {"bypassID"};
 juce::Array<juce::String> BiquadAudioProcessor::filterTypeList {"LPF", "HPF"};
+juce::Array<juce::String> BiquadAudioProcessor::orderRollOff {"6dB", "12dB"};

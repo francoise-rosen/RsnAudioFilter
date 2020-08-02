@@ -65,16 +65,46 @@ Stream<T>::~Stream()
 template <typename T>
 void Stream<T>::updateState(const T& value, const Operation& op, bool updateValue, bool updateOperation)
 {
-    if (!full && updateValue)
+    
+    // Stored Value is the last entered value, not the result of the
+    // previous operation?
+    std::cout << "updating state\n";
+    if ((!full) && updateValue)
     {
+        // the start
+        std::cout << "1st branch buffer: " << full << " updateValue " << updateValue << '\n';
+        std::cout << "value " << value << '\n';
+        
         storedValue = value;
         full = true;
+        if (updateOperation) operation = op;
     }
     else if (full)
     {
+        std::cout << "2nd branch buffer " << full << '\n';
+        std::cout << "value " << value << '\n';
+        std::cout << "update value " << updateValue << '\n';
+        std::cout << "operation " << operation << '\n';
+        
         if (updateValue)
         {
-            storedValue = compute(value); // here change the +,-,/,*
+            if (operation == Operation::plus)
+            {
+                storedValue += value; // here change the +,-,/,*
+                
+                std::cout << "stored value plus branch: " << storedValue << '\n';
+            }
+            else if (operation == Operation::minus)
+            {
+                storedValue -= value;
+                
+            }
+            else if (operation == Operation::multiply)
+            {
+                storedValue *= value;
+                std::cout << "stored value mul branch: " << storedValue << '\n';
+            }
+            
         }
         if (updateOperation) operation = op;
     }
@@ -108,4 +138,21 @@ void Stream<T>::reset()
 {
     storedValue = 0;
     operation = Operation::equals;
+    full = false;
+}
+
+template <typename T>
+T binaryOp(const T& val1, const T& val2, Operation op)
+{
+    T result = 0;
+    if (op == Operation::plus) result = val1 + val2;
+    else if (op == Operation::minus) result = val1 - val2;
+    else if (op == Operation::multiply) result = val1 * val2;
+    else if (op == Operation::divide)
+    {
+        assert (val2 != 0);
+        result = val1 / val2;
+    }
+    
+    return result;
 }

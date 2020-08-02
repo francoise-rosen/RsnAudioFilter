@@ -54,6 +54,8 @@ private:
     
     void fillTypeBox(int numOfTypes);
     void fillOrderBox(const int& order);
+    
+    int edge{5};
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BiquadAudioProcessorEditor)
 };

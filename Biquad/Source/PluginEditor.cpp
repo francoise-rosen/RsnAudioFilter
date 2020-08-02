@@ -16,7 +16,7 @@ BiquadAudioProcessorEditor::BiquadAudioProcessorEditor (BiquadAudioProcessor& p)
 {
     // set up the gui
     // SLIDERS
-    freqSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
+    freqSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     freqSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, guiTextWidth, guiTextHeight);
     addAndMakeVisible(&freqSlider);
     
@@ -53,7 +53,7 @@ BiquadAudioProcessorEditor::BiquadAudioProcessorEditor (BiquadAudioProcessor& p)
     orderBoxAttachment = std::make_unique<ComboBoxAttachment>(audioProcessor.getValueTree(), audioProcessor.orderParam, orderBox);
     bypassButtonAttachment = std::make_unique<ButtonAttachment>(audioProcessor.getValueTree(), audioProcessor.bypassParam, bypassButton);
     
-    setSize (269, 420);
+    setSize (300, 420);
 }
 
 BiquadAudioProcessorEditor::~BiquadAudioProcessorEditor()
@@ -79,7 +79,7 @@ void BiquadAudioProcessorEditor::fillOrderBox(const int &order)
     if (order < 1) return;
     for (int i = 0; i < order; ++i)
     {
-        orderBox.addItem(juce::String(i), 100 + i);
+        orderBox.addItem(juce::String(audioProcessor.orderRollOff[i]), 100 + i);
     }
 }
 
@@ -91,13 +91,26 @@ void BiquadAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);
-    g.drawText("Rosen::Biquad", 10, 10, 70, 30, juce::Justification::centred);
+    g.drawText("Rosen::Biquad", 10, 10, getWidth()/3, 30, juce::Justification::centred);
 
 }
 
 void BiquadAudioProcessorEditor::resized()
 {
-  
+   
+    // freq slider, q slider, wet/dry, gain, type box, bypass button, order box (prints rolloff in Hz)
+    
+    auto filterArea = getLocalBounds().removeFromLeft(getWidth()/2);
+    auto gainArea = getLocalBounds().removeFromRight(getWidth()/2);
+    typeBox.setBounds(filterArea.removeFromBottom(filterArea.getHeight() / 4).reduced(edge, edge * 7));
+    qSlider.setBounds(filterArea.removeFromBottom(filterArea.getHeight() / 3).reduced(edge));
+    freqSlider.setBounds(filterArea.removeFromBottom(filterArea.getHeight() * 3/4).reduced(edge * 2));
+    
+    gainSlider.setBounds(gainArea.removeFromBottom(gainArea.getHeight() * 3 / 8).reduced(edge * 4));
+    dryWetSlider.setBounds(gainArea.removeFromBottom(getHeight() * 3 / 8).reduced(edge * 4));
+    orderBox.setBounds(gainArea.removeFromLeft(gainArea.getWidth()/2).reduced(edge * 2, edge * 7));
+    bypassButton.setBounds(gainArea.reduced(edge));
+    
     
     
 }

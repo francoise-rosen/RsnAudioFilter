@@ -46,6 +46,7 @@ namespace rosen
         void setQ(const T& q);
         void setBiquadAlgorithm(const int&);
         void setSampleRate(const double& sampleRate);
+        void setParameters(const T& freq, const T& q, const int& algo);
         
         // getters
         T getFreq() const {return frequency;}
@@ -97,7 +98,9 @@ namespace rosen
     {
         if (currentSampleRate == sampleRate) return;
         currentSampleRate = sampleRate;
-        setCoefficients();
+        setCoefficients(); // does it make sense to invoke this upon every set?
+        // alternatively make a struct with all the setters and then as this is changed
+        // invoke the setCoefficients() member function
     }
     
     template <typename T>
@@ -105,7 +108,7 @@ namespace rosen
     {
         if (frequency == freq) return;
         frequency = freq;
-        setCoefficients();
+    
     }
     
     template <typename T>
@@ -113,7 +116,7 @@ namespace rosen
     {
         if (qualityFactor == q) return;
         qualityFactor = q;
-        setCoefficients();
+
     }
     
     template <typename T>
@@ -126,6 +129,15 @@ namespace rosen
             algorithm = biquadAlgorithm::LPF;
         }
         else algorithm = (biquadAlgorithm)filterType;
+
+    }
+    
+    template <typename T>
+    void Biquad<T>::setParameters(const T& freq, const T& q, const int& algo)
+    {
+        setFrequency(freq);
+        setQ(q);
+        setBiquadAlgorithm(algo);
         setCoefficients();
     }
     
@@ -243,5 +255,6 @@ namespace rosen
         zArray[y_z2] = zArray[y_z1];
         zArray[y_z1] = yn;
         
+        return yn;
     }
 }
