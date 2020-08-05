@@ -12,13 +12,17 @@
 #include "Biquad.h"
 
 // this filter object must be able to host several biquads
-// up to 6 order
+// up to 6-10th order
 // for instance 3rd order ButterLPF with have 1 2nd Order ButterLPF Biquad followed
 // by 1st order ButterLPF Biquad
 
 // this version has no peak filter!
 
 // for delay plugin use only butter and lo / hi shelves
+
+// This version: FilterDesign(algorithm::LPF, order=4, frequency=2000, Q=0.707, dryWet=100%)
+// Next version: FilterDesign(int numOfBands=5, FilterType algorithms[numOfBands], orderOfEveryBand, frequencies, q's, dryWet=100%, int bandProcessingType[numOfBand](MS or stereo)) <- cascade filter as prototype for Matrix (Morph) Filter.
+// Employ
 
 
 namespace sfd{
@@ -36,7 +40,7 @@ namespace sfd{
         
         FilterType algorithm = FilterType::LPF;
         double freq = 100.0;
-        double Q = 0.707;
+        double Q = 0.707; // that would be disabled for Butterworth
         int order = 1;
     };
     

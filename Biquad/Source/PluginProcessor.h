@@ -94,6 +94,7 @@ private:
     float lastDryWet;
     float lastGain; // not in dB!
     
+    // depends on how many input channels are there
     juce::OwnedArray<rosen::Biquad<float>> biquadSet; 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BiquadAudioProcessor)

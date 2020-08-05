@@ -23,7 +23,7 @@
 namespace rosen
 
 {
-    enum class biquadAlgorithm {LPF, HPF, ButterLPF2, ButterHPF2, BPF, BSF, HiShelf, LoShelf, numOfAlgorithms};
+    enum class biquadAlgorithm {LPF, HPF, LPF2, HPF2, ButterLPF2, ButterHPF2, BPF, BSF, HiShelf, LoShelf, numOfAlgorithms};
     
     enum biquadCoeff {a0, a1, a2, b1, b2, numOfCoeff};
     enum zState {x_z1, x_z2, y_z1, y_z2, numOfZ};
@@ -135,6 +135,8 @@ namespace rosen
     template <typename T>
     void Biquad<T>::setParameters(const T& freq, const T& q, const int& algo)
     {
+        if (freq == frequency && q == qualityFactor && algo == (int)algorithm) return;
+        
         setFrequency(freq);
         setQ(q);
         setBiquadAlgorithm(algo);
@@ -183,13 +185,51 @@ namespace rosen
             return;
         }
         
+        if (algorithm == biquadAlgorithm::LPF2)
+        {
+            T theta = Math::twoPi * frequency / currentSampleRate;
+            if (theta >= Math::pi) return; //precaution! but embark on a better check
+            
+            T d = 1 / qualityFactor;
+            
+            T beta = 0.5 * (1 - sin(theta) * d * 0.5) / (1 + sin(theta) * d * 0.5);
+            T gamma = (0.5 + beta) * cos(theta);
+            
+            filterCoefficients[a0] = (0.5 + beta - gamma) * 0.5;
+            filterCoefficients[a1] = 0.5 + beta - gamma;
+            filterCoefficients[a2] = filterCoefficients[a0];
+            filterCoefficients[b1] = -2 * gamma;
+            filterCoefficients[b2] = 2 * beta;
+            
+            return;
+        }
+        
+        if (algorithm == biquadAlgorithm::HPF2)
+        {
+            T theta = Math::twoPi * frequency / currentSampleRate;
+            if (theta >= Math::pi) return;
+            
+            T d = 1 / qualityFactor;
+            T beta = 0.5 * (1 - sin(theta) * d * 0.5) / (1 + sin(theta) * d * 0.5);
+            T gamma = (0.5 + beta) * cos(theta);
+            
+            filterCoefficients[a0] = (0.5 + beta + gamma) * 0.5;
+            filterCoefficients[a1] = -(0.5 + beta + gamma);
+            filterCoefficients[a2] = filterCoefficients[a0];
+            filterCoefficients[b1] = -2 * gamma;
+            filterCoefficients[b2] = 2 * beta;
+            
+            return;
+        }
+        
         // LoPass 2nd order Butterworth
         if (algorithm == biquadAlgorithm::ButterLPF2)
         {
             // ButterWorth LowPass 2nd Order
             //
             T theta = Math::pi * frequency / currentSampleRate;
-            if (theta >= Math::halfPi) return; //precaution! but embark on a better check
+            if (theta >= Math::pi) return; //precaution! but embark on a better check
+            if (theta == Math::halfPi) theta = Math::halfPi + 0.01;
             T mcf = 1 / tan(theta);
             filterCoefficients[a0] = 1 / (1 + mcf * sqrt(2.0) + mcf * mcf);
             filterCoefficients[a1] = 2 * filterCoefficients[a0];
@@ -212,8 +252,9 @@ namespace rosen
             filterCoefficients[a2] = filterCoefficients[a0];
             filterCoefficients[b1] = 2 * filterCoefficients[a0] * (mcf * mcf - 1);
             filterCoefficients[b2] = filterCoefficients[a0] * (1 - sqrt(2.0) * mcf + mcf * mcf);
-            
+            return;
         }
+        
     }
     
     // RESET

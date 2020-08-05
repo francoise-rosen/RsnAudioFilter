@@ -142,7 +142,7 @@ void BiquadAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
     
     for (int i = 0; i < getTotalNumInputChannels(); ++i)
     {
-        biquadSet.add(new rosen::Biquad<float>(19000, 1, sampleRate, 1, rosen::biquadAlgorithm::LPF));
+        biquadSet.add(new rosen::Biquad<float>(lastFreq, 1, sampleRate, 1, rosen::biquadAlgorithm::LPF));
     }
 }
 
@@ -317,5 +317,5 @@ juce::String BiquadAudioProcessor::gainParam {"gainID"};
 juce::String BiquadAudioProcessor::typeParam {"filterTypeID"};
 juce::String BiquadAudioProcessor::orderParam {"filterOrderID"};
 juce::String BiquadAudioProcessor::bypassParam {"bypassID"};
-juce::Array<juce::String> BiquadAudioProcessor::filterTypeList {"LPF", "HPF"};
+juce::Array<juce::String> BiquadAudioProcessor::filterTypeList {"LPF", "HPF", "LPF2", "HPF2", "ButterLPF2", "ButterHPF"};
 juce::Array<juce::String> BiquadAudioProcessor::orderRollOff {"6dB", "12dB"};

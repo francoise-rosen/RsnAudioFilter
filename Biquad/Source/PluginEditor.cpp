@@ -35,7 +35,7 @@ BiquadAudioProcessorEditor::BiquadAudioProcessorEditor (BiquadAudioProcessor& p)
     // ComboBoxes
     addAndMakeVisible(&typeBox);
     addAndMakeVisible(&orderBox);
-    fillTypeBox(2); // test with just HPF and LPF
+    fillTypeBox(6); // test with just HPF and LPF
     fillOrderBox(2); // here just 1 and 2 order filters
     
     // button
@@ -91,7 +91,7 @@ void BiquadAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);
-    g.drawText("Rosen::Biquad", 10, 10, getWidth()/3, 30, juce::Justification::centred);
+    g.drawText("Rosen::Biquaddd", 10, 10, getWidth()/3, 30, juce::Justification::centred);
 
 }
 

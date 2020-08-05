@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
+
 //==============================================================================
 /**
 */
@@ -46,7 +47,7 @@ private:
     std::unique_ptr<SliderAttachment> dryWetSliderAttachment;
     std::unique_ptr<SliderAttachment> gainSliderAttachment;
     std::unique_ptr<ComboBoxAttachment> typeBoxAttachment;
-    std::unique_ptr<ComboBoxAttachment> orderBoxAttachment;
+    std::unique_ptr<ComboBoxAttachment> orderBoxAttachment; // redundant in this version
     std::unique_ptr<ButtonAttachment> bypassButtonAttachment;
     
     int guiTextWidth{65};
