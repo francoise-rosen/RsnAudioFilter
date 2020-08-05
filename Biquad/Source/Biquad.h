@@ -23,7 +23,7 @@
 namespace rosen
 
 {
-    enum class biquadAlgorithm {LPF, HPF, LPF2, HPF2, ButterLPF2, ButterHPF2, BPF, BSF, HiShelf, LoShelf, numOfAlgorithms};
+    enum class biquadAlgorithm {LPF, HPF, LPF2, HPF2, ButterLPF2, ButterHPF2, LinkwitzRileyLPF2, LinkwitzRileyHPF2, BPF, BSF, HiShelf, LoShelf, numOfAlgorithms};
     
     enum biquadCoeff {a0, a1, a2, b1, b2, numOfCoeff};
     enum zState {x_z1, x_z2, y_z1, y_z2, numOfZ};
@@ -149,11 +149,17 @@ namespace rosen
         assert (qualityFactor > 0);
         assert (filterOrder == 1 || filterOrder == 2);
         // freq must be smaller than nyquist!
-        assert (std::abs(frequency) < currentSampleRate / 2.0);
+        // make sure we're not approaching nyqist
+        // assert or better wrap around? what if uses is using very low samplerate?
+        assert (std::abs(frequency) < currentSampleRate * 0.49);
         if (frequency < 0)
         {
             frequency = std::abs(frequency);
         }
+        
+        //=======================
+        // LPF and HPF algorithms
+        //=======================
         
         // LoPass 1st order
         if (algorithm == biquadAlgorithm::LPF)
@@ -228,8 +234,9 @@ namespace rosen
             // ButterWorth LowPass 2nd Order
             //
             T theta = Math::pi * frequency / currentSampleRate;
-            if (theta >= Math::pi) return; //precaution! but embark on a better check
-            if (theta == Math::halfPi) theta = Math::halfPi + 0.01;
+            
+            // we shouldn't reach this state, but still precausion
+            if (theta >= Math::halfPi * 0.95) theta = Math::halfPi * 0.9;
             T mcf = 1 / tan(theta);
             filterCoefficients[a0] = 1 / (1 + mcf * sqrt(2.0) + mcf * mcf);
             filterCoefficients[a1] = 2 * filterCoefficients[a0];
@@ -244,7 +251,7 @@ namespace rosen
         if (algorithm == biquadAlgorithm::ButterHPF2)
         {
             T theta = Math::pi * frequency / currentSampleRate;
-            if (theta >= Math::halfPi) return; //precaution! but embark on a better check
+            if (theta >= Math::halfPi * 0.95) theta = Math::halfPi * 0.95;
             
             T mcf = tan(theta);
             filterCoefficients[a0] = 1 / (1 + mcf * sqrt(2.0) + mcf * mcf);
@@ -254,6 +261,48 @@ namespace rosen
             filterCoefficients[b2] = filterCoefficients[a0] * (1 - sqrt(2.0) * mcf + mcf * mcf);
             return;
         }
+        
+        // linkwitz
+        
+        if (algorithm == biquadAlgorithm::LinkwitzRileyLPF2)
+        {
+            T omega = Math::pi * frequency;
+            T theta = omega / currentSampleRate;
+            if (theta >= Math::halfPi * 0.97) theta = Math::halfPi * 0.97;
+            
+            T k = omega / tan(theta);
+            T delta = k * k + omega * omega + 2 * k * omega;
+            filterCoefficients[a0] = omega * omega / delta;
+            filterCoefficients[a1] = 2 * filterCoefficients[a0];
+            filterCoefficients[a2] = filterCoefficients[a0];
+            filterCoefficients[b1] = (-2 * k * k + 2 * omega * omega) / delta;
+            filterCoefficients[b2] = (-2 * k * omega + k * k + omega * omega) / delta;
+            
+            return;
+        }
+        
+        if (algorithm == biquadAlgorithm::LinkwitzRileyHPF2)
+        {
+            T omega = Math::pi * frequency;
+            T theta = omega / currentSampleRate;
+            if (theta >= Math::halfPi * 0.97) theta = Math::halfPi * 0.97;
+            
+            T k = omega / tan(theta);
+            T delta = k * k + omega * omega + 2 * k * omega;
+            filterCoefficients[a0] = k * k / delta;
+            filterCoefficients[a1] = -2 * filterCoefficients[a0];
+            filterCoefficients[a2] = filterCoefficients[a0];
+            filterCoefficients[b1] = (-2 * k * k + 2 * omega * omega) / delta;
+            filterCoefficients[b2] = (-2 * k * omega + k * k + omega * omega) / delta;
+            
+            return;
+        }
+        
+        // all pole
+        
+        // vicanek
+        
+        // inpulse invariant
         
     }
     

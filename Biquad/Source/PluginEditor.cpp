@@ -35,7 +35,7 @@ BiquadAudioProcessorEditor::BiquadAudioProcessorEditor (BiquadAudioProcessor& p)
     // ComboBoxes
     addAndMakeVisible(&typeBox);
     addAndMakeVisible(&orderBox);
-    fillTypeBox(6); // test with just HPF and LPF
+    fillTypeBox(8); // test with just HPF and LPF
     fillOrderBox(2); // here just 1 and 2 order filters
     
     // button

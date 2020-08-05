@@ -317,5 +317,5 @@ juce::String BiquadAudioProcessor::gainParam {"gainID"};
 juce::String BiquadAudioProcessor::typeParam {"filterTypeID"};
 juce::String BiquadAudioProcessor::orderParam {"filterOrderID"};
 juce::String BiquadAudioProcessor::bypassParam {"bypassID"};
-juce::Array<juce::String> BiquadAudioProcessor::filterTypeList {"LPF", "HPF", "LPF2", "HPF2", "ButterLPF2", "ButterHPF"};
+juce::Array<juce::String> BiquadAudioProcessor::filterTypeList {"LPF", "HPF", "LPF2", "HPF2", "ButterLPF2", "ButterHPF", "LPF2-LR", "HPF2-LR"};
 juce::Array<juce::String> BiquadAudioProcessor::orderRollOff {"6dB", "12dB"};
