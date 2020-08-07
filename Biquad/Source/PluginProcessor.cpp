@@ -41,7 +41,7 @@ parameters{*this,
                std::make_unique<juce::AudioParameterFloat>(qParam,
                                                            "QUALITY_FACTOR",
                                                            juce::NormalisableRange<float>{
-                                                               0.1f, 20.0f, 0.01f, std::log(0.5f) / std::log(4.0f / 24.0f)},
+                                                               0.01f, 40.0f, 0.01f, std::log(0.5f) / std::log(0.707f / 39.99f)},
                                                            qAtom.get()
                                                            ),
                std::make_unique<juce::AudioParameterFloat>(dryWetParam,
@@ -142,7 +142,7 @@ void BiquadAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
     
     for (int i = 0; i < getTotalNumInputChannels(); ++i)
     {
-        biquadSet.add(new rosen::Biquad<float>(lastFreq, 1, sampleRate, 1, rosen::biquadAlgorithm::LPF));
+        biquadSet.add(new rosen::Biquad<float>(lastFreq, 0.707f, sampleRate, 1, rosen::biquadAlgorithm::LPF));
     }
 }
 
@@ -317,5 +317,5 @@ juce::String BiquadAudioProcessor::gainParam {"gainID"};
 juce::String BiquadAudioProcessor::typeParam {"filterTypeID"};
 juce::String BiquadAudioProcessor::orderParam {"filterOrderID"};
 juce::String BiquadAudioProcessor::bypassParam {"bypassID"};
-juce::Array<juce::String> BiquadAudioProcessor::filterTypeList {"LPF", "HPF", "LPF2", "HPF2", "ButterLPF2", "ButterHPF", "LPF2-LR", "HPF2-LR"};
+juce::Array<juce::String> BiquadAudioProcessor::filterTypeList {"LPF", "HPF", "LPF2", "HPF2", "ButterLPF2", "ButterHPF", "LPF2-LR", "HPF2-LR", "AllPole1", "AllPole2", "AllPole1HPF", "BPF2", "Notch2", "(!)ButterBPF2", "(!)ButterNotch2"};
 juce::Array<juce::String> BiquadAudioProcessor::orderRollOff {"6dB", "12dB"};

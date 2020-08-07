@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="Ae5u8q" name="DBTOA" projectType="guiapp" jucerVersion="5.4.7">
+<JUCERPROJECT id="Ae5u8q" name="DBTOA" projectType="guiapp" displaySplashScreen="1"
+              jucerFormatVersion="1">
   <MAINGROUP id="wUF1Mq" name="DBTOA">
     <GROUP id="{8095DE71-9E01-AE14-9237-6E1F03510014}" name="Source">
       <FILE id="TiGpKE" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>

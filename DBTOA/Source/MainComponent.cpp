@@ -30,7 +30,7 @@ MainComponent::MainComponent()
     dBGain.setTextValueSuffix("dB");
     dBGain.setSliderStyle(Slider::SliderStyle::LinearVertical);
     dBGain.setTextBoxStyle(Slider::TextBoxBelow, false, 70, 30);
-    dBGain.setRange(-100.0, 6.0);
+    dBGain.setRange(-200.0, 6.0);
     dBGain.setValue(0.0);
     dBGain.addListener(this);
     addAndMakeVisible(&dBGain);

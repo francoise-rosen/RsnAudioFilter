@@ -23,7 +23,7 @@
 namespace rosen
 
 {
-    enum class biquadAlgorithm {LPF, HPF, LPF2, HPF2, ButterLPF2, ButterHPF2, LinkwitzRileyLPF2, LinkwitzRileyHPF2, BPF, BSF, HiShelf, LoShelf, numOfAlgorithms};
+    enum class biquadAlgorithm {LPF, HPF, LPF2, HPF2, ButterLPF2, ButterHPF2, LinkwitzRileyLPF2, LinkwitzRileyHPF2, AllPole1, AllPole2, AllPole1HPF, BPF2, Notch2, ButterBPF2, ButterNotch2, HiShelf, LoShelf, numOfAlgorithms};
     
     enum biquadCoeff {a0, a1, a2, b1, b2, numOfCoeff};
     enum zState {x_z1, x_z2, y_z1, y_z2, numOfZ};
@@ -88,6 +88,7 @@ namespace rosen
     Biquad<T>::Biquad(const T& freq, const T& q, double sampleRate, const unsigned& order, biquadAlgorithm algo)
     :frequency{freq}, qualityFactor{q}, currentSampleRate{sampleRate}, filterOrder{order}, algorithm{algo}
     {
+        resetState();
         assert (currentSampleRate > 0);
         setCoefficients();
     }
@@ -98,9 +99,7 @@ namespace rosen
     {
         if (currentSampleRate == sampleRate) return;
         currentSampleRate = sampleRate;
-        setCoefficients(); // does it make sense to invoke this upon every set?
-        // alternatively make a struct with all the setters and then as this is changed
-        // invoke the setCoefficients() member function
+        setCoefficients();
     }
     
     template <typename T>
@@ -135,6 +134,7 @@ namespace rosen
     template <typename T>
     void Biquad<T>::setParameters(const T& freq, const T& q, const int& algo)
     {
+        // updated parameters only if they are being changed!
         if (freq == frequency && q == qualityFactor && algo == (int)algorithm) return;
         
         setFrequency(freq);
@@ -300,9 +300,121 @@ namespace rosen
         
         // all pole
         
+        if (algorithm == biquadAlgorithm::AllPole1)
+        {
+            // first order, has just one pole
+            T theta = Math::twoPi * frequency / currentSampleRate;
+            T gamma = 2 - cos(theta);
+            filterCoefficients[a1] = 0;
+            filterCoefficients[a2] = 0;
+            filterCoefficients[b1] = sqrt(gamma * gamma - 1) - gamma;
+            filterCoefficients[a0] = 1 + filterCoefficients[b1];
+            filterCoefficients[b2] = 0;
+            
+            return;
+        }
+        
+        if (algorithm == biquadAlgorithm::AllPole2)
+        {
+            T theta = Math::twoPi * frequency / currentSampleRate;
+            T resonance = (qualityFactor > 0.707) ? (20.0 * std::log10(qualityFactor * qualityFactor / sqrt(qualityFactor * qualityFactor - 0.25))) : 0;
+            
+            T rNum = cos(theta) + sin(theta) * sqrt(pow(10, resonance / 10) - 1);
+            T rDen = pow(10, resonance / 20) * sin(theta) + 1;
+            T rad = rNum / rDen;
+            //T g = pow(10, -(juce::Decibels::gainToDecibels(resonance)) / 40); - blows up if resonance = 0
+            T g = pow(10, -resonance / 40);
+            //T g = 1;
+            filterCoefficients[a1] = 0;
+            filterCoefficients[a2] = 0;
+            filterCoefficients[b1] = -2 * rad * cos(theta);
+            filterCoefficients[b2] = rad * rad;
+            filterCoefficients[a0] = g * (1 + filterCoefficients[b1] + filterCoefficients[b2]);
+            
+            return;
+        }
+        
+        // this does not do anything
+        if (algorithm == biquadAlgorithm::AllPole1HPF)
+        {
+            T theta = Math::twoPi * frequency / currentSampleRate;
+            T gamma = 2 - cos(theta);
+            filterCoefficients[a1] = 0;
+            filterCoefficients[a2] = 0;
+            filterCoefficients[b1] = - sqrt(gamma * gamma - 1) + gamma;
+            filterCoefficients[a0] = 1 + filterCoefficients[b1];
+            filterCoefficients[b2] = 0;
+            
+            return;
+        }
+        
         // vicanek
         
+        
         // inpulse invariant
+        
+        // BANDPASS
+        
+        if (algorithm == biquadAlgorithm::BPF2)
+        {
+            T K = tan(Math::pi * frequency / currentSampleRate);
+            T rDelta = 1 / (K * K * qualityFactor + K + qualityFactor);
+            
+            filterCoefficients[a0] = K * rDelta;
+            filterCoefficients[a1] = 0;
+            filterCoefficients[a2] = -K * rDelta;
+            filterCoefficients[b1] = (2 * qualityFactor * (K * K - 1)) * rDelta;
+            filterCoefficients[b2] = (K * K * qualityFactor - K + qualityFactor) * rDelta;
+            return;
+        }
+        
+        if (algorithm == biquadAlgorithm::Notch2)
+        {
+            T K = tan(Math::pi * frequency / currentSampleRate);
+            T rDelta = 1 / (K * K * qualityFactor + K + qualityFactor);
+            
+            filterCoefficients[a0] = qualityFactor * (K * K + 1) * rDelta;
+            filterCoefficients[a1] = 2 * qualityFactor * (K * K - 1) * rDelta;
+            filterCoefficients[a2] = filterCoefficients[a0];
+            
+            filterCoefficients[b1] = 2 * qualityFactor * (K * K - 1) * rDelta;
+            filterCoefficients[b2] = (K * K * qualityFactor - K + qualityFactor) * rDelta;
+            return;
+        }
+        
+        // BLOWS UP!
+        if (algorithm == biquadAlgorithm::ButterBPF2)
+        {
+            T bandWidth = frequency / qualityFactor;
+            T C = 1 / tan(Math::pi * frequency * bandWidth / currentSampleRate);
+            T D = 2 * cos(Math::twoPi * frequency / currentSampleRate);
+            
+            filterCoefficients[a0] = 1 / (1 + C);
+            filterCoefficients[a1] = 0.0;
+            filterCoefficients[a2] = -filterCoefficients[a0];
+            filterCoefficients[b1] = -filterCoefficients[a0] * C * D;
+            filterCoefficients[b2] = filterCoefficients[a0] * (C - 1);
+            
+            return;
+        }
+        
+        // BLOWS UP!
+        if (algorithm == biquadAlgorithm::ButterNotch2)
+        {
+            T bandWidth = frequency / qualityFactor;
+            T C = tan(Math::pi * frequency * bandWidth / currentSampleRate);
+            T D = 2 * cos(Math::twoPi * frequency / currentSampleRate);
+            
+            filterCoefficients[a0] = 1 / (1 + C);
+            filterCoefficients[a1] = -filterCoefficients[a0] * D;
+            filterCoefficients[a2] = filterCoefficients[a0];
+            filterCoefficients[b1] = -filterCoefficients[a0] * D;
+            filterCoefficients[b2] = filterCoefficients[a0] * (1 - C);
+            
+            return;
+            
+        }
+
         
     }
     
@@ -336,7 +448,7 @@ namespace rosen
     T Biquad<T>::process (const T& xn) noexcept
     {
         
-        // biquad algorithm
+        // biquad algorithm - direct forms
         T yn = filterCoefficients[a0] * xn + filterCoefficients[a1] * zArray[x_z1] + filterCoefficients[a2] * zArray[x_z2] - filterCoefficients[b1] * zArray[y_z1] - filterCoefficients[b2] * zArray[y_z2];
         
         // update registers
