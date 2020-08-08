@@ -78,8 +78,8 @@ public:
 private:
     
     // wrap the data in Atomic
-    juce::Atomic<float> freqAtom{1000.0f};
-    juce::Atomic<float> qAtom{1.0f};
+    juce::Atomic<float> freqAtom{1200.0f};
+    juce::Atomic<float> qAtom{40.0f};
     juce::Atomic<float> dryWetAtom{0.0f}; // range 0.0f - 1.0f, show 0 - 100%
     juce::Atomic<float> gainAtom{-12.0f}; // in dB
     juce::Atomic<int> typeAtom{0}; // LPF

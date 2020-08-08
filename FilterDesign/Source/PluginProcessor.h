@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Filter.h"
 
 //==============================================================================
 /**
@@ -55,5 +56,6 @@ public:
 
 private:
     //==============================================================================
+    rosen::Filter<float> filter;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterDesignAudioProcessor)
 };

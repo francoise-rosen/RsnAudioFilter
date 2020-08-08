@@ -382,11 +382,14 @@ namespace rosen
             return;
         }
         
-        // BLOWS UP!
+        // BLOWS UP UPON FREQ AND Q change! Does not blow anymore, but also
+        // does not work as expected
         if (algorithm == biquadAlgorithm::ButterBPF2)
         {
-            T bandWidth = frequency / qualityFactor;
-            T C = 1 / tan(Math::pi * frequency * bandWidth / currentSampleRate);
+            T tanArg = Math::pi * frequency * (frequency / qualityFactor) / currentSampleRate;
+            if (abs(tanArg) >= Math::pi/2) tanArg = Math::pi/2 * 0.95;
+            
+            T C = 1 / tan(tanArg);
             T D = 2 * cos(Math::twoPi * frequency / currentSampleRate);
             
             filterCoefficients[a0] = 1 / (1 + C);
@@ -401,8 +404,11 @@ namespace rosen
         // BLOWS UP!
         if (algorithm == biquadAlgorithm::ButterNotch2)
         {
-            T bandWidth = frequency / qualityFactor;
-            T C = tan(Math::pi * frequency * bandWidth / currentSampleRate);
+            
+            T tanArg = Math::pi * frequency * (frequency / qualityFactor) / currentSampleRate;
+            if (abs(tanArg) >= Math::pi/2) tanArg = Math::pi/2 * 0.95;
+            
+            T C = tan(tanArg);
             T D = 2 * cos(Math::twoPi * frequency / currentSampleRate);
             
             filterCoefficients[a0] = 1 / (1 + C);
