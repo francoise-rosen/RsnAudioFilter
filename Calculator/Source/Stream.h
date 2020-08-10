@@ -19,6 +19,9 @@
 // 60 + 60 etc, must be 60 + 30. Fixed!
 // Problem 2. 3 + 3 + 1 = 7 + (and here it'll compute it to 14)
 
+// TO DO
+// make + work. 10+2+= will equal to 12, must be 24 - done
+
 enum Operation {plus, minus, multiply, divide, squareRoot, cosine, sine, tangent, equals, flush, numOfOperators};
 
 template <typename T>
@@ -41,8 +44,8 @@ public:
     void storeOperator(Operation op) {operation = op;}
     int getOperator() {return static_cast<int>(operation);}
     
-    void setBufferState(bool b) {full = b;}
-    bool getBufferState() const {return full;}
+    void setFull(bool b) {full = b;}
+    bool isFull() const {return full;}
     void reset();
     
 private:
@@ -50,11 +53,12 @@ private:
     T storedValue;
     Operation operation;
     bool full;
+    bool loop;
 };
 
 template <typename T>
 Stream<T>::Stream()
-:storedValue{0}, operation{Operation::equals}, full(false)
+:storedValue{0}, operation{Operation::plus}, full(false), loop{false}
 {}
 
 template <typename T>
@@ -66,70 +70,93 @@ template <typename T>
 void Stream<T>::updateState(const T& value, const Operation& op, bool updateValue, bool updateOperation)
 {
     
-    // Stored Value is the last entered value, not the result of the
-    // previous operation?
-    std::cout << "updating state\n";
-    if ((!full) && updateValue)
+//    if ((!full) && updateValue)
+//    {
+//        storedValue = value;
+//        full = true;
+//        if (updateOperation) operation = op;
+//    }
+//
+//    // there's a value in the buffer
+//    // we need
+//    else if (full)
+//    {
+//
+//        if (updateValue)
+//        {
+//            storedValue = value;
+//        }
+//
+//    }
+//     if (updateOperation) operation = op;
+    if (updateValue && !loop) storedValue = value;
+    if (updateOperation)
     {
-        // the start
-        std::cout << "1st branch buffer: " << full << " updateValue " << updateValue << '\n';
-        std::cout << "value " << value << '\n';
-        
-        storedValue = value;
+        operation = op;
         full = true;
-        if (updateOperation) operation = op;
-    }
-    else if (full)
-    {
-        std::cout << "2nd branch buffer " << full << '\n';
-        std::cout << "value " << value << '\n';
-        std::cout << "update value " << updateValue << '\n';
-        std::cout << "operation " << operation << '\n';
-        
-        if (updateValue)
-        {
-            if (operation == Operation::plus)
-            {
-                storedValue += value; // here change the +,-,/,*
-                
-                std::cout << "stored value plus branch: " << storedValue << '\n';
-            }
-            else if (operation == Operation::minus)
-            {
-                storedValue -= value;
-                
-            }
-            else if (operation == Operation::multiply)
-            {
-                storedValue *= value;
-                std::cout << "stored value mul branch: " << storedValue << '\n';
-            }
-            
-        }
-        if (updateOperation) operation = op;
     }
 }
 
 template <typename T>
 T Stream<T>::compute(const T& t)
 {
-    T output = storedValue;
+    
+    std::cout << "operation: " << operation << '\n';
+    T output = t;
+    
     if (operation == Operation::plus)
     {
-        output = storedValue + t;
+        if (loop)
+        {
+            storedValue = t;
+            loop = false;
+            output = storedValue;
+        }
+        else output = storedValue + t;
+        
     }
     else if (operation == Operation::minus)
     {
         output = storedValue - t;
     }
+    
+    else if (operation == Operation::multiply)
+    {
+        output = storedValue * t;
+    }
+    
+    else if (operation == Operation::divide)
+    {
+        output = storedValue / t;
+        storedValue = t;
+    }
+
+    std::cout << "Value In Buffer: " << storedValue << '\n';
+ 
     return output;
 }
 
 template <typename T>
 T Stream<T>::compute(Operation op, const T& t)
 {
+    double output = t;
+    if (op == Operation::equals)
+    {
+        
+        if (loop == true)
+        {
+            if (operation == divide)
+            {
+                output = t / storedValue;
+            }
+            else if (operation == minus) output = t - storedValue;
+        }
+        else output = compute(t);
+    }
     
-    return t;
+    loop = true;
+    
+    return output;
 }
 
 
@@ -137,8 +164,9 @@ template <typename T>
 void Stream<T>::reset()
 {
     storedValue = 0;
-    operation = Operation::equals;
+    operation = Operation::plus;
     full = false;
+    loop = false;
 }
 
 template <typename T>

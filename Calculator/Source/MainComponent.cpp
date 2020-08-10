@@ -4,10 +4,9 @@
 std::vector<std::string> MainComponent::operators {"+", "-", "*", "/", "sqrt", "cos", "sin", "tan", "=", "C"};
 //==============================================================================
 MainComponent::MainComponent()
-:textChanged{false}
+:textEntered{false}
 {
     stream.reset();
-    std::cout << "constructor. text changed: " << textChanged << '\n';
     makeOperators();
     makeOpVisible();
     textEntryScreen.setText(juce::String(0));
@@ -24,7 +23,6 @@ MainComponent::~MainComponent()
 //==============================================================================
 void MainComponent::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
     g.setFont (juce::Font (16.0f));
@@ -78,73 +76,90 @@ void MainComponent::makeOpVisible()
 
 void MainComponent::buttonClicked(juce::Button* button)
 {
-    double value = textEntryScreen.getText().getDoubleValue();
+    double valueOnScreen = textEntryScreen.getText().getDoubleValue();
     if (button == arithmetic[plus])
     {
-        std::cout << "plus. text changed: " << textChanged << '\n';
-        stream.updateState(value, plus, textChanged, true);
-        textEntryScreen.setText(juce::String(stream.getValueFromBuffer()));
-        textChanged = false;
+        if (!textEntered)
+        {
+            stream.updateState(valueOnScreen, plus, false, false);
+            return;
+        }
+        //double valueToDisplay = (stream.isFull()) ? stream.compute(valueOnScreen) : valueOnScreen;
+        double valueToDisplay = stream.compute(valueOnScreen);
+        stream.updateState(valueToDisplay, plus, textEntered, true);
+        textEntryScreen.setText(juce::String(valueToDisplay), false);
+        textEntered = false;
     }
     
     else if (button == arithmetic[minus])
     {
-        std::cout << "minus. text changed: " << textChanged << '\n';
-        stream.updateState(value, Operation::minus, textChanged, true);
-        textEntryScreen.setText(juce::String(stream.getValueFromBuffer()));
-        textChanged = false;
+        if (!textEntered)
+        {
+            stream.updateState(valueOnScreen, minus, false, false);
+            return;
+        }
+        double valueToDisplay = stream.compute(valueOnScreen);
+        stream.updateState(valueToDisplay, Operation::minus, textEntered, true);
+        textEntryScreen.setText(juce::String(valueToDisplay), false);
+        textEntered = false;
+    
     }
     
     else if (button == arithmetic[multiply])
     {
-        stream.updateState(value, Operation::multiply, textChanged, true);
-        textEntryScreen.setText(juce::String(stream.getValueFromBuffer()));
-        textChanged = false;
+        if (!textEntered)
+        {
+            stream.updateState(valueOnScreen, multiply, false, false);
+            return;
+        }
+        
+        double valueToDisplay = stream.compute(valueOnScreen);
+        stream.updateState(valueToDisplay, multiply, true, true);
+        textEntryScreen.setText(juce::String(valueToDisplay), false);
+        textEntered = false;
+
     }
     
     else if (button == arithmetic[divide])
     {
-        stream.updateState(value, Operation::divide, textChanged, true);
-        textEntryScreen.setText(juce::String(stream.getValueFromBuffer()));
-        textChanged = false;
+        if (!textEntered)
+        {
+            stream.updateState(valueOnScreen, divide, false, false);
+            return;
+        }
+        if (valueOnScreen == 0)
+        {
+            textEntryScreen.setText(juce::String("NAN"));
+            stream.reset();
+            return;
+        }
+        double valueToDisplay = stream.compute(valueOnScreen);
+        stream.updateState(valueToDisplay, divide, true, true);
+        textEntryScreen.setText(juce::String(valueToDisplay), false);
+        textEntered = false;
+
     }
     
     else if (button == arithmetic[equals])
     {
-        // stream takes care of updating its buffers
-        std::cout << "equals. text changed: " << textChanged << '\n';
-        // is there the streams buffer full, is there an op?
-        // what if user entered 16 sqrt =
-        double valueToDisplay = stream.compute(textEntryScreen.getText().getDoubleValue());
+   
+        double valueToDisplay = stream.compute(equals, valueOnScreen);
         
         // in case of equals keep the previous operator in buffer
-        stream.updateState(valueToDisplay, equals, textChanged, false);
-        textEntryScreen.setText(juce::String(valueToDisplay), false);
-        textChanged = false;
-    
-        //std::cout << "Text Changed: " << textChanged << '\n';
-        
-//        if (textChanged)
-//        {
-//            double value = stream.compute(textEntryScreen.getText().getDoubleValue());
-//            textEntryScreen.setText(juce::String(value));
-//        }
-//
-//        else if (!textChanged)
-//        {
-//            std::cout << "here\n";
-//
-//            textEntryScreen.setText(juce::String(stream.getValueFromBuffer()));
-//        }
-        
+        bool opOverride = (stream.isFull()) ? false : true;
+        std::cout << "stream is full: " << std::boolalpha << stream.isFull() << '\n';
+        stream.updateState(valueOnScreen, equals, true, opOverride);
+        textEntryScreen.setText(juce::String(valueToDisplay), true);
+        textEntered = true;
+
     }
     
     else if (button == arithmetic[flush])
     {
         stream.reset();
         textEntryScreen.setText(juce::String(0), false);
-        textChanged = false;
-        std::cout << "flashed\n";
+        textEntered = false;
+
     }
 }
 
@@ -153,9 +168,7 @@ void MainComponent::textEditorTextChanged(juce::TextEditor & text)
 {
     if(&text == &textEntryScreen)
     {
-        
-        std::cout << "the state before change: " << textChanged << '\n';
-        textChanged = true;
-        std::cout << "Changing the state to: " << textChanged << '\n';
+        std::cout << "textEntered " << std::boolalpha << textEntered << '\n'; ;
+        textEntered = true;
     }
 }

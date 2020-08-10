@@ -98,6 +98,7 @@ namespace rosen
         // biquad algorithm - direct forms
         Type outputSample = coeffArray[a0] * inputSample + coeffArray[a1] * zArray[x_z1] + coeffArray[a2] * zArray[x_z2] - coeffArray[b1] * zArray[y_z1] - coeffArray[b2] * zArray[y_z2];
         
+        
         // update registers
         zArray[x_z2] = zArray[x_z1];
         zArray[x_z1] = inputSample;

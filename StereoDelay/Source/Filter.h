@@ -9,3 +9,8 @@
 */
 
 #pragma once
+
+namespace sfd
+{
+    
+}

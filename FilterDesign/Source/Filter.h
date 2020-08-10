@@ -34,6 +34,10 @@ namespace rosen
         HiShelf, Peak, NumOfTypes
     };
     
+    enum gains {c0, d0, c1, d1, c2, d2, maxOrder};
+    
+    //enum filterCoeff {a0, a1, a2, b1, b2, c, d, totalCoeff};
+    
     enum class rollOff {db6 = 1, db12, db18, db24, db30, db36,
         db48 = 8, db60 = 10, db72 = 12};
     
@@ -55,22 +59,30 @@ namespace rosen
     {
     public:
         Filter();
+        Filter(FilterParameters<Type>& params);
         ~Filter();
         
         // this uses additional c and d coeffs (c - dry, d - wet multiplier)
-        enum coeffArray {a0, a1, a2, b1, b2, c, d, NumOfCoeff};
         
-        Type process(const Type& sample);
+        
+        Type process(const Type& sample) noexcept;
+        void resetAll(); // reset all biquads and state
+        
+        
+        
     private:
-        FilterParameters<Type> params;
+   
+        FilterParameters<Type> parameters;
         
         // 1-2 order
         std::unique_ptr<rosen::Biquad<Type>> biquad;
         
         // 2+ order
-        juce::OwnedArray<rosen::Biquad<Type>> setOfBiquads;
+        //juce::OwnedArray<rosen::Biquad<Type>> setOfBiquads;
         rollOff order; // will determine the number of biquads to use in process
-        void resetAll(); // reset all biquads and state
+        Type coeffs[numCoeffs];
+        void computeCoeffs();
+        
         
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Filter)
     };
@@ -82,16 +94,30 @@ namespace rosen
     }
     
     template <typename Type>
+    Filter<Type>::Filter(FilterParameters<Type>& params)
+    :parameters{params}
+    {
+        
+    }
+    
+    template <typename Type>
     Filter<Type>::~Filter()
     {
 
     }
     
     template <typename Type>
-    Type Filter<Type>::process(const Type& sample)
+    Type Filter<Type>::process(const Type& sample) noexcept
     {
-        Type outputSample = sample;
+        Type outputSample = c0 * sample + d0 * biquad->process(sample);
         return outputSample;
         // do processng here
+    }
+    
+    template <typename Type>
+    void Filter<Type>::computeCoeffs()
+    {
+        std::fill(coeffs, coeffs + numCoeffs, 0);
+        
     }
 }

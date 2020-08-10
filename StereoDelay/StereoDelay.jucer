@@ -4,6 +4,7 @@
               jucerFormatVersion="1">
   <MAINGROUP id="uOReUB" name="StereoDelay">
     <GROUP id="{332EEA9E-BD67-FABE-BFF3-2FC33AB42A3C}" name="Source">
+      <FILE id="QjJERM" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
       <FILE id="Yv0fLS" name="CircularBuffer2.h" compile="0" resource="0"
             file="Source/CircularBuffer2.h"/>
       <FILE id="DKiFmo" name="CircularBuffer.h" compile="0" resource="0"

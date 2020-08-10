@@ -319,6 +319,13 @@
 			path = "../../JuceLibraryCode/include_juce_audio_plugin_client_AU_2.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		5002F8D494A2713F72390854 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = Filter.h;
+			path = ../../Source/Filter.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		503A9DB538C9F28711382446 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -616,6 +623,7 @@
 		5B0127BEC1342A53D88A5DD1 = {
 			isa = PBXGroup;
 			children = (
+				5002F8D494A2713F72390854,
 				DAF657E72CE0935861F58B78,
 				1D4F06576A4C2C9888AE677D,
 				503A9DB538C9F28711382446,

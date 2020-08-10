@@ -38,7 +38,7 @@ private:
     juce::Label lastOperation;
     juce::Label result;
     
-    bool textChanged;
+    bool textEntered;
     
     Stream<double> stream;
 
