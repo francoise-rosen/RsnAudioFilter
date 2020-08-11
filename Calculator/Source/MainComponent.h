@@ -30,6 +30,7 @@ public:
     void textEditorTextChanged(juce::TextEditor&) override;
     
     void updateStream(Stream<double>* thisStream, Operation op, double valueOnScreen);
+    void updateStreamUn(Stream<double>* thisStream, Operation op, double valueOnScreen);
 
 private:
     //==============================================================================
@@ -41,6 +42,7 @@ private:
     juce::Label result;
     
     bool textEntered;
+    //InputFilter screenFilter;
     
     Stream<double> stream;
 

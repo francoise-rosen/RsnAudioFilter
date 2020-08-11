@@ -12,6 +12,7 @@ MainComponent::MainComponent()
     textEntryScreen.setText(juce::String(0));
     addAndMakeVisible(&textEntryScreen);
     textEntryScreen.addListener(this);
+    textEntryScreen.setCaretVisible(false);
     setSize (250, 400);
 }
 
@@ -96,7 +97,26 @@ void MainComponent::buttonClicked(juce::Button* button)
     else if (button == arithmetic[divide])
     {
         updateStream(&stream, divide, valueOnScreen);
-
+    }
+    
+    else if (button == arithmetic[cosine])
+    {
+        updateStreamUn(&stream, cosine, valueOnScreen);
+    }
+    
+    else if (button == arithmetic[sine])
+    {
+        updateStreamUn(&stream, sine, valueOnScreen);
+    }
+    
+    else if (button == arithmetic[tangent])
+    {
+        updateStreamUn(&stream, tangent, valueOnScreen);
+    }
+    
+    else if (button == arithmetic[squareRoot])
+    {
+        updateStreamUn(&stream, squareRoot, valueOnScreen);
     }
     
     else if (button == arithmetic[equals])
@@ -125,6 +145,7 @@ void MainComponent::textEditorTextChanged(juce::TextEditor & text)
 {
     if(&text == &textEntryScreen)
     {
+       
         textEntered = true;
     }
 }
@@ -143,8 +164,17 @@ void MainComponent::updateStream(Stream<double> *thisStream
         return;
     }
     
-    double valueToDisplay = stream.compute(valueOnScreen);
+    double valueToDisplay = stream.computeBinary(valueOnScreen);
     stream.updateBuffer(valueToDisplay, op, textEntered, true);
     textEntryScreen.setText(juce::String(valueToDisplay), false);
     textEntered = false;
+}
+
+void MainComponent::updateStreamUn(Stream<double> *thisStream
+                                   , Operation op
+                                   , double valueOnScreen)
+{
+    juce::String res = stream.computeUnary(valueOnScreen, op);
+    textEntryScreen.setText(res, true);
+    textEntered = true;
 }

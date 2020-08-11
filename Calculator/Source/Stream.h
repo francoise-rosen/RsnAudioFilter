@@ -20,12 +20,7 @@
 
 
 // PROBLEMS:
-// 100/2=50=25=12.5+ (end here it displays 0.38). It does not update + as operator
-// it must break the loop, set buffer to full=false, add value to storedValue and + to
-// stored operator and then wait for the next value, as if just 12.5+ was entered
-// fixed with / and +, check other two!
-
-// it looks like there's too much going on in buttonClicked()
+// division by 0
 
 
 enum Operation {plus, minus, multiply, divide, squareRoot, cosine, sine, tangent, equals, flush, numOfOperators};
@@ -37,7 +32,8 @@ public:
     Stream();
     ~Stream();
     
-    T compute(const T&);
+    T computeBinary(const T&);
+    juce::String computeUnary(const T&, Operation uOp);
     T result(const T&);
     
     void updateBuffer(const T& value, const Operation& op, bool updateValue = true, bool updateOperation = true); // do I need these, or just one function with switch?
@@ -83,7 +79,7 @@ void Stream<T>::updateBuffer(const T& value, const Operation& op, bool updateVal
 }
 
 template <typename T>
-T Stream<T>::compute(const T& t)
+T Stream<T>::computeBinary(const T& t)
 {
     
     T output = t;
@@ -124,9 +120,18 @@ T Stream<T>::compute(const T& t)
 }
 
 template <typename T>
+juce::String Stream<T>::computeUnary(const T& val, Operation uOp)
+{
+    juce::String output = unaryOp(val, uOp);
+    operation = uOp;
+    
+    return output;
+}
+
+template <typename T>
 T Stream<T>::result(const T& t)
 {
-    double output = t;
+    T output = t;
    
     if (loop == true)
     {
@@ -139,7 +144,7 @@ T Stream<T>::result(const T& t)
         else if (operation == plus) output = t + storedValue;
         else if (operation == multiply) output = t * storedValue;
     }
-    else output = compute(t);
+    else output = computeBinary(t);
     loop = true;
     
     return output;
@@ -156,7 +161,7 @@ void Stream<T>::reset()
 }
 
 template <typename T>
-T binaryOp(const T& val1, const T& val2, Operation op)
+juce::String binaryOp(const T& val1, const T& val2, Operation op)
 {
     T result = 0;
     if (op == Operation::plus) result = val1 + val2;
@@ -164,9 +169,25 @@ T binaryOp(const T& val1, const T& val2, Operation op)
     else if (op == Operation::multiply) result = val1 * val2;
     else if (op == Operation::divide)
     {
-        assert (val2 != 0);
+        if (val2 == 0) return "NAN";
         result = val1 / val2;
     }
+
+    return juce::String(result);
+}
+
+template <typename T>
+juce::String unaryOp(const T& val, Operation op)
+{
+    T result = 0;
+    if (op == Operation::cosine) result = cos(val);
+    else if (op == Operation::sine) result = sin(val);
+    else if (op == Operation::tangent) result = tan(val);
+    else if (op == Operation::squareRoot)
+    {
+        if (val < 0) return "NAN";
+        result = sqrt(val);
+    }
     
-    return result;
+    return juce::String(result);
 }
