@@ -10,17 +10,23 @@
 
 #pragma once
 
-// for binary operation store a value and an operator
-// then enter another value
-// and when another binary, unary or = operator pressed
-// invoke storedValue, stored operator and the current value using the function compute()
+// rewrite everything using other logic:
+// after +,-,/,*,cos,sin,tan pressed the value off the screen will be
+// stored in  bufferValue
+// the operator will be stored operator = OPERATOR A
+// next value entered
+// next operator entered (not equals)
+// bufferValue = bufferValue OPERATOR B valueOffTheScreen
 
-// Problem 1. 30+= will produce 30 + 30 - it's how apple calculator works, but then it'll do
-// 60 + 60 etc, must be 60 + 30. Fixed!
-// Problem 2. 3 + 3 + 1 = 7 + (and here it'll compute it to 14)
 
-// TO DO
-// make + work. 10+2+= will equal to 12, must be 24 - done
+// PROBLEMS:
+// 100/2=50=25=12.5+ (end here it displays 0.38). It does not update + as operator
+// it must break the loop, set buffer to full=false, add value to storedValue and + to
+// stored operator and then wait for the next value, as if just 12.5+ was entered
+// fixed with / and +, check other two!
+
+// it looks like there's too much going on in buttonClicked()
+
 
 enum Operation {plus, minus, multiply, divide, squareRoot, cosine, sine, tangent, equals, flush, numOfOperators};
 
@@ -32,9 +38,9 @@ public:
     ~Stream();
     
     T compute(const T&);
-    T compute(Operation op, const T&);
+    T result(const T&);
     
-    void updateState(const T& value, const Operation& op, bool updateValue = true, bool updateOperation = true); // do I need these, or just one function with switch?
+    void updateBuffer(const T& value, const Operation& op, bool updateValue = true, bool updateOperation = true); // do I need these, or just one function with switch?
     // or use these functions via pointers?
 
     
@@ -49,7 +55,6 @@ public:
     void reset();
     
 private:
-    
     T storedValue;
     Operation operation;
     bool full;
@@ -67,28 +72,8 @@ Stream<T>::~Stream()
 
 // operations
 template <typename T>
-void Stream<T>::updateState(const T& value, const Operation& op, bool updateValue, bool updateOperation)
+void Stream<T>::updateBuffer(const T& value, const Operation& op, bool updateValue, bool updateOperation)
 {
-    
-//    if ((!full) && updateValue)
-//    {
-//        storedValue = value;
-//        full = true;
-//        if (updateOperation) operation = op;
-//    }
-//
-//    // there's a value in the buffer
-//    // we need
-//    else if (full)
-//    {
-//
-//        if (updateValue)
-//        {
-//            storedValue = value;
-//        }
-//
-//    }
-//     if (updateOperation) operation = op;
     if (updateValue && !loop) storedValue = value;
     if (updateOperation)
     {
@@ -101,18 +86,20 @@ template <typename T>
 T Stream<T>::compute(const T& t)
 {
     
-    std::cout << "operation: " << operation << '\n';
     T output = t;
+    if (loop) // previous operator was =
+    {
+        storedValue = t;
+        loop = false;
+        output = storedValue;
+        return output;
+    }
     
     if (operation == Operation::plus)
     {
-        if (loop)
-        {
-            storedValue = t;
-            loop = false;
-            output = storedValue;
-        }
-        else output = storedValue + t;
+        
+        output = storedValue + t;
+        storedValue = t;
         
     }
     else if (operation == Operation::minus)
@@ -137,23 +124,22 @@ T Stream<T>::compute(const T& t)
 }
 
 template <typename T>
-T Stream<T>::compute(Operation op, const T& t)
+T Stream<T>::result(const T& t)
 {
     double output = t;
-    if (op == Operation::equals)
+   
+    if (loop == true)
     {
-        
-        if (loop == true)
+        if (operation == divide)
         {
-            if (operation == divide)
-            {
-                output = t / storedValue;
-            }
-            else if (operation == minus) output = t - storedValue;
+            if(storedValue == 0) return -999;
+            output = t / storedValue;
         }
-        else output = compute(t);
+        else if (operation == minus) output = t - storedValue;
+        else if (operation == plus) output = t + storedValue;
+        else if (operation == multiply) output = t * storedValue;
     }
-    
+    else output = compute(t);
     loop = true;
     
     return output;

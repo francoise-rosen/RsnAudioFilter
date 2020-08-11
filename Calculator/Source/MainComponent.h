@@ -28,6 +28,8 @@ public:
     
     void buttonClicked(juce::Button*) override;
     void textEditorTextChanged(juce::TextEditor&) override;
+    
+    void updateStream(Stream<double>* thisStream, Operation op, double valueOnScreen);
 
 private:
     //==============================================================================

@@ -77,78 +77,35 @@ void MainComponent::makeOpVisible()
 void MainComponent::buttonClicked(juce::Button* button)
 {
     double valueOnScreen = textEntryScreen.getText().getDoubleValue();
+    
     if (button == arithmetic[plus])
     {
-        if (!textEntered)
-        {
-            stream.updateState(valueOnScreen, plus, false, false);
-            return;
-        }
-        //double valueToDisplay = (stream.isFull()) ? stream.compute(valueOnScreen) : valueOnScreen;
-        double valueToDisplay = stream.compute(valueOnScreen);
-        stream.updateState(valueToDisplay, plus, textEntered, true);
-        textEntryScreen.setText(juce::String(valueToDisplay), false);
-        textEntered = false;
+        updateStream(&stream, plus, valueOnScreen);
     }
     
     else if (button == arithmetic[minus])
     {
-        if (!textEntered)
-        {
-            stream.updateState(valueOnScreen, minus, false, false);
-            return;
-        }
-        double valueToDisplay = stream.compute(valueOnScreen);
-        stream.updateState(valueToDisplay, Operation::minus, textEntered, true);
-        textEntryScreen.setText(juce::String(valueToDisplay), false);
-        textEntered = false;
-    
+        updateStream(&stream, minus, valueOnScreen);
     }
     
     else if (button == arithmetic[multiply])
     {
-        if (!textEntered)
-        {
-            stream.updateState(valueOnScreen, multiply, false, false);
-            return;
-        }
-        
-        double valueToDisplay = stream.compute(valueOnScreen);
-        stream.updateState(valueToDisplay, multiply, true, true);
-        textEntryScreen.setText(juce::String(valueToDisplay), false);
-        textEntered = false;
-
+        updateStream(&stream, multiply, valueOnScreen);
     }
     
     else if (button == arithmetic[divide])
     {
-        if (!textEntered)
-        {
-            stream.updateState(valueOnScreen, divide, false, false);
-            return;
-        }
-        if (valueOnScreen == 0)
-        {
-            textEntryScreen.setText(juce::String("NAN"));
-            stream.reset();
-            return;
-        }
-        double valueToDisplay = stream.compute(valueOnScreen);
-        stream.updateState(valueToDisplay, divide, true, true);
-        textEntryScreen.setText(juce::String(valueToDisplay), false);
-        textEntered = false;
+        updateStream(&stream, divide, valueOnScreen);
 
     }
     
     else if (button == arithmetic[equals])
     {
    
-        double valueToDisplay = stream.compute(equals, valueOnScreen);
-        
-        // in case of equals keep the previous operator in buffer
+        double valueToDisplay = stream.result(valueOnScreen);
+    
         bool opOverride = (stream.isFull()) ? false : true;
-        std::cout << "stream is full: " << std::boolalpha << stream.isFull() << '\n';
-        stream.updateState(valueOnScreen, equals, true, opOverride);
+        stream.updateBuffer(valueOnScreen, equals, true, opOverride);
         textEntryScreen.setText(juce::String(valueToDisplay), true);
         textEntered = true;
 
@@ -168,7 +125,26 @@ void MainComponent::textEditorTextChanged(juce::TextEditor & text)
 {
     if(&text == &textEntryScreen)
     {
-        std::cout << "textEntered " << std::boolalpha << textEntered << '\n'; ;
         textEntered = true;
     }
+}
+
+void MainComponent::updateStream(Stream<double> *thisStream
+                                 , Operation op, double valueOnScreen)
+{
+    if(!textEntered) return;
+    
+    if(!stream.isFull()) // initialise the stream
+    {
+        stream.storeValue(valueOnScreen);
+        stream.storeOperator(op);
+        stream.setFull(true);
+        textEntered = false;
+        return;
+    }
+    
+    double valueToDisplay = stream.compute(valueOnScreen);
+    stream.updateBuffer(valueToDisplay, op, textEntered, true);
+    textEntryScreen.setText(juce::String(valueToDisplay), false);
+    textEntered = false;
 }

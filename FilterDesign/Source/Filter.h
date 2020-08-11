@@ -34,6 +34,7 @@ namespace rosen
         HiShelf, Peak, NumOfTypes
     };
     
+    // 6th order max here
     enum gains {c0, d0, c1, d1, c2, d2, maxOrder};
     
     //enum filterCoeff {a0, a1, a2, b1, b2, c, d, totalCoeff};
@@ -62,13 +63,8 @@ namespace rosen
         Filter(FilterParameters<Type>& params);
         ~Filter();
         
-        // this uses additional c and d coeffs (c - dry, d - wet multiplier)
-        
-        
         Type process(const Type& sample) noexcept;
         void resetAll(); // reset all biquads and state
-        
-        
         
     private:
    
@@ -97,7 +93,7 @@ namespace rosen
     Filter<Type>::Filter(FilterParameters<Type>& params)
     :parameters{params}
     {
-        
+        biquad = std::make_unique<rosen::Biquad<Type>>();
     }
     
     template <typename Type>
