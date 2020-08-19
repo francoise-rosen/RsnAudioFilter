@@ -14,7 +14,9 @@
 //==============================================================================
 /**
 */
-class FilterDesignAudioProcessor  : public juce::AudioProcessor
+
+class FilterDesignAudioProcessor  : public juce::AudioProcessor,
+public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -53,9 +55,39 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    //==============================================================================
+    // Parameters
+    static juce::Array<juce::String> algorithmIDs;
+    static juce::Array<juce::String> filterRollOff;
+    static juce::String freqParam;
+    static juce::String qParam;
+    static juce::String gainParam;
+    static juce::String dryWetParam;
+    static juce::String filterTypeParam;
+    static juce::String orderParam;
+    static juce::String bypassParam;
+    
+    juce::AudioProcessorValueTreeState& getValueTree();
+    
+    //==============================================================================
+    void parameterChanged (const juce::String& parameterID, float newValue) override;
 
 private:
     //==============================================================================
-    rosen::Filter<float> filter;
+    juce::OwnedArray<rosen::Filter<double>> filter;
+    
+    // parameter data wrapped in atomic
+    juce::Atomic<double> freqAtom, qAtom, dryWetAtom, gainAtom;
+    juce::Atomic<int> typeAtom, orderAtom;
+    juce::Atomic<bool> bypassAtom;
+    
+    double lastDryWetGain, lastOutputGain;
+    rosen::FilterParameters<double> filterParameters;
+    
+    // processor's value tree state
+    juce::AudioProcessorValueTreeState parameters;
+    
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterDesignAudioProcessor)
 };

@@ -28,8 +28,9 @@
 namespace rosen
 
 {
-    enum biquadCoeff {a0, a1, a2, b1, b2, numCoeffs};
+    
     enum state {x_z1, x_z2, y_z1, y_z2, numStates};
+    enum biquadCoeff {a0, a1, a2, b1, b2, c0, d0, numCoeffs};
     
 
     template <typename Type>
@@ -41,7 +42,7 @@ namespace rosen
         
         ~Biquad();
         
-        void setCoefficients(Type* coefficients, const int& num);
+        void setCoefficients(Type* coefficients);
         Type process(const Type& inputSample) noexcept;
         
         void reset();
@@ -58,9 +59,7 @@ namespace rosen
     {
         reset();
         memset(&coeffArray[0], 0, sizeof(Type)*numCoeffs);
-        
-        // this is just for testing, remove it later
-        
+
     }
     
     template <typename Type>
@@ -84,11 +83,9 @@ namespace rosen
     }
     
     template <typename Type>
-    void Biquad<Type>::setCoefficients(Type* coefficients, const int& num)
+    void Biquad<Type>::setCoefficients(Type* coefficients)
     {
-        // num is passed to be sure we pass the same length array
-        // is the local filterCoeff
-        if (num != numCoeffs) return;
+        memset(&coeffArray[0], 0, sizeof(Type)*numCoeffs); // clear coeffs
         std::copy(coefficients, coefficients + numCoeffs, coeffArray);
     }
     

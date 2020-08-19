@@ -4,6 +4,7 @@
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="PA281L" name="FilterDesign">
     <GROUP id="{57FA762F-9E2D-B37A-812D-548B10AD688C}" name="Source">
+      <FILE id="YwhW8H" name="Cascade.h" compile="0" resource="0" file="Source/Cascade.h"/>
       <FILE id="fMmXj1" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
       <FILE id="k29epF" name="Biquad.h" compile="0" resource="0" file="Source/Biquad.h"/>
       <FILE id="YlnYuC" name="PluginProcessor.cpp" compile="1" resource="0"

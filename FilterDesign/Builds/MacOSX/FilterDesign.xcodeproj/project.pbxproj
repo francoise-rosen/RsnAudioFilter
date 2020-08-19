@@ -195,13 +195,6 @@
 			path = ../../Source/PluginEditor.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
-		3DDEE4AA12866F45797A66BA = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.objcpp;
-			name = "include_juce_gui_extra.mm";
-			path = "../../JuceLibraryCode/include_juce_gui_extra.mm";
-			sourceTree = "SOURCE_ROOT";
-		};
 		71494B7E12851EB7CEFEA90E = {
 			isa = PBXFileReference;
 			explicitFileType = wrapper.cfbundle;
@@ -236,6 +229,13 @@
 			name = QuartzCore.framework;
 			path = System/Library/Frameworks/QuartzCore.framework;
 			sourceTree = SDKROOT;
+		};
+		3DDEE4AA12866F45797A66BA = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
+			name = "include_juce_gui_extra.mm";
+			path = "../../JuceLibraryCode/include_juce_gui_extra.mm";
+			sourceTree = "SOURCE_ROOT";
 		};
 		3E5ABDBBF0B6806D16F9A708 = {
 			isa = PBXFileReference;
@@ -475,6 +475,13 @@
 			path = "../../JuceLibraryCode/include_juce_audio_basics.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		DCD9C723F95D516831CABE21 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = Cascade.h;
+			path = ../../Source/Cascade.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		DF018FE1AD54BC0E4D3B35A1 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -562,6 +569,7 @@
 		12B14C1FCFEA38CBD4B174D5 = {
 			isa = PBXGroup;
 			children = (
+				DCD9C723F95D516831CABE21,
 				967E48677B266A56C8829244,
 				319A8B4C6FABA729C9223FAD,
 				ACC8CF53B3ADD930A4B40263,
