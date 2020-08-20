@@ -16,18 +16,19 @@ CircularBuffer - for Public GIT
     1.2 Clip, Fold, and Wrap functions (use fold in feedback path, to prevent blowup, test in gen). Only for sample-wise read and write
     1.3 Switch Mono - Stereo (2 different delays for L and R)
     1. SEND or MIX (dry/wet) option - low priority
-    2. Add biquad (or VCF?) filter in feedback path (what out for Q values, no peak filters!). Perhaps FIR?
-    3. Add biquad filter in the input
+    2. Add biquad (or VCF?) filter in feedback path (whatch out for Q values, no peak filters!). Perhaps FIR? - private
+ 3. Butterworth BandPass 1-4 orders with: Upper Freq, Lower Freq, Order parameters (only these!)
     4. Class CircularBuffer with functions .read(readPos, blockSize), .write(writePos, blockSize) - done
     4.1 Class Delay - up to 1 sample delay (not block related). Check SC DelayN, DelayC etc. - Karpus Strong algo etc. (don't check implementation of Karpus Strong yet!) - done
     5. Wire-And-Ing (page 396) - for a class with sample-wise read and write - done
-    6. Smooth delay controls
+    6. Smooth delay controls - add OnePole Filter
     7. Fractional Delay - for a class only, for now just linear interpolation. - done
     7.1 Lagrange, Cubic, Spline interpolation?
     8. Pack the sliders in OwnedArray<Slider> rotarySliders and Lables in OwnedArray<Label> labels
  
  
  PRIVATE, CREATIVE
+    1. Cascade of Biquads Filter in fb path - 2 filters with classical waveforms 1-10 order, but make each biquad drywet controlled (w/ modulation possibilities)
     4. Modulator for Delay (L and R) - LFO
     5. Modulator for Feedback - LFO
     6. Tempo based delay. How do I get this kind of info from a host?

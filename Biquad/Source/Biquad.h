@@ -23,6 +23,16 @@
 namespace rosen
 
 {
+    
+    template <typename T>
+    T scale(T& valueToScale, const T inMin, const T inMax, const T outMin, const T outMax)
+    {
+        jassert(inMin < inMax);
+        if(outMin == outMax) return outMin;
+        const T factor = (outMax - outMin) / (inMax - inMin);
+        return factor * (valueToScale - inMin) + outMin;
+    }
+    
     enum class biquadAlgorithm {LPF, HPF, LPF2, HPF2, ButterLPF2, ButterHPF2, LinkwitzRileyLPF2, LinkwitzRileyHPF2, AllPole1, AllPole2, AllPole1HPF, BPF2, Notch2, ButterBPF2, ButterNotch2, HiShelf, LoShelf, numOfAlgorithms};
     
     enum biquadCoeff {a0, a1, a2, b1, b2, numOfCoeff};
@@ -341,8 +351,8 @@ namespace rosen
             T gamma = 2 - cos(theta);
             filterCoefficients[a1] = 0;
             filterCoefficients[a2] = 0;
-            filterCoefficients[b1] = - sqrt(gamma * gamma - 1) + gamma;
-            filterCoefficients[a0] = 1 + filterCoefficients[b1];
+            filterCoefficients[b1] = sqrt(gamma * gamma - 1) + gamma;
+            filterCoefficients[a0] = -(1 + filterCoefficients[b1]);
             filterCoefficients[b2] = 0;
             
             return;
@@ -382,11 +392,12 @@ namespace rosen
             return;
         }
         
-        // BLOWS UP UPON FREQ AND Q change! Does not blow anymore, but also
-        // does not work as expected
+        // works. but maybe better to use Bandwith Parameter instead of Q?
         if (algorithm == biquadAlgorithm::ButterBPF2)
         {
-            T tanArg = Math::pi * frequency * (frequency / qualityFactor) / currentSampleRate;
+            T local_q = scale(qualityFactor, 0.01f, 40.0f, 1.0f, frequency);
+            T BW = frequency / local_q;
+            T tanArg = Math::pi * frequency * BW / currentSampleRate;
             if (abs(tanArg) >= Math::pi/2) tanArg = Math::pi/2 * 0.95;
             
             T C = 1 / tan(tanArg);

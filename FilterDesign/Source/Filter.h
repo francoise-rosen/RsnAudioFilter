@@ -32,9 +32,18 @@ namespace rosen
     using Math = juce::MathConstants<double>;
     
     enum class FilterType {
-        LPF6, HPF6, LPF12, HPF12, ButterLPF6, ButterHPF6, ButterLPF12, ButterHPF12, BPF, BSF, LoShelf,
+        LPF6, HPF6, LPF12, HPF12, ButterLPF6, ButterHPF6, ButterLPF12, ButterHPF12, ButterBPF6, BPF, BSF, LoShelf,
         HiShelf, Peak, NumOfTypes
     };
+    
+    template <typename T>
+    T scale(T& valueToScale, const T inMin, const T inMax, const T outMin, const T outMax)
+    {
+        jassert(inMin < inMax);
+        if(outMin == outMax) return outMin;
+        const T factor = (outMax - outMin) / (inMax - inMin);
+        return factor * (valueToScale - inMin) + outMin;
+    }
 
     //==============================================================================
     template <typename Type>
@@ -240,7 +249,17 @@ namespace rosen
         
         if (algorithm == FilterType::ButterHPF6)
         {
+            Type tArg = juce::jmin(Math::pi * freq / currentSampleRate, Math::halfPi * 0.95);
+            Type omega_a = tan(tArg);
             
+            coefficients[a0] = 1 / (omega_a + 1);
+            coefficients[a1] = - coefficients[a0];
+            coefficients[a2] = 0.0;
+            coefficients[b1] = (omega_a - 1) / (omega_a + 1);
+            coefficients[b2] = 0.0;
+            
+            biquad->setCoefficients(coefficients);
+            return;
         }
         
         if (algorithm == FilterType::ButterLPF12)
@@ -279,6 +298,11 @@ namespace rosen
             biquad->setCoefficients(coefficients);
             return;
             
+        }
+        
+        if (algorithm == FilterType::ButterBPF6)
+        {
+            Type local_Q = scale(q, 0.02, 40.0, 1.0, freq);
         }
         
     }

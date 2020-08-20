@@ -235,7 +235,7 @@ void FilterDesignAudioProcessor::parameterChanged(const juce::String &parameterI
     }
 }
 
-juce::Array<juce::String> FilterDesignAudioProcessor::algorithmIDs {"LPF6", "HPF6", "LPF12", "HPF12","LPFButter", "HPFButter", "LPF2Butter", "HPF2Butter"};
+juce::Array<juce::String> FilterDesignAudioProcessor::algorithmIDs {"LPF6", "HPF6", "LPF12", "HPF12","LPF6Butter", "HPF6Butter", "LPF12Butter", "HPF12Butter", "BPF6Butter"};
 juce::Array<juce::String> FilterDesignAudioProcessor::filterRollOff {"6dB", "12dB"};
 juce::String FilterDesignAudioProcessor::freqParam {"frqID"};
 juce::String FilterDesignAudioProcessor::qParam {"QID"};
