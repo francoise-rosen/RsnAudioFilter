@@ -32,7 +32,7 @@ namespace rosen
     using Math = juce::MathConstants<double>;
     
     enum class FilterType {
-        LPF6, HPF6, LPF12, HPF12, BPF, BSF, ButterLPF, ButterHPF, LoShelf,
+        LPF6, HPF6, LPF12, HPF12, ButterLPF6, ButterHPF6, ButterLPF12, ButterHPF12, BPF, BSF, LoShelf,
         HiShelf, Peak, NumOfTypes
     };
 
@@ -204,7 +204,7 @@ namespace rosen
             return;
         }
         
-        else if (algorithm == FilterType::HPF12)
+        if (algorithm == FilterType::HPF12)
         {
             Type theta = Math::twoPi * freq / currentSampleRate;
             if (theta >= Math::pi) return;
@@ -221,6 +221,64 @@ namespace rosen
             
             biquad->setCoefficients(coefficients);
             return;
+        }
+        
+        if (algorithm == FilterType::ButterLPF6)
+        {
+            Type tArg = juce::jmin(Math::pi * freq / currentSampleRate, Math::halfPi * 0.95);
+            Type omega_a = tan(tArg);
+            
+            coefficients[a0] = omega_a / (omega_a + 1);
+            coefficients[a1] = coefficients[a0];
+            coefficients[a2] = 0.0;
+            coefficients[b1] = (omega_a - 1) / (omega_a + 1);
+            coefficients[b2] = 0.0;
+            
+            biquad->setCoefficients(coefficients);
+            return;
+        }
+        
+        if (algorithm == FilterType::ButterHPF6)
+        {
+            
+        }
+        
+        if (algorithm == FilterType::ButterLPF12)
+        {
+            Type tArg = Math::pi * freq / currentSampleRate;
+            if (tArg > Math::halfPi * 0.95) tArg = Math::halfPi * 0.95;
+            Type C = 1 / tan(tArg);
+            
+            // nominator
+            coefficients[a0] = 1 / (1 + sqrt(2.0) * C + C * C);
+            coefficients[a1] = 2 * coefficients[a0];
+            coefficients[a2] = coefficients[a0];
+            // denominator
+            coefficients[b1] = 2 * coefficients[a0] * (1 - C * C);
+            coefficients[b2] = coefficients[a0] * (1 - sqrt(2) * C + C * C);
+            
+            biquad->setCoefficients(coefficients);
+            return;
+        }
+        
+        // gains 2 dB! when freq is low
+        if (algorithm == FilterType::ButterHPF12)
+        {
+            Type tArg = Math::pi * freq / currentSampleRate;
+            if (tArg > Math::halfPi * 0.95) tArg = Math::halfPi * 0.95;
+            Type C = tan(tArg);
+            
+            coefficients[a0] = 1 / (1 + sqrt(2.0) * C + C * C);
+            coefficients[a1] = - 2 * coefficients[a0];
+            coefficients[a2] = coefficients[a0];
+            
+            // denominator
+            coefficients[b1] = 2 * coefficients[a0] * (C * C - 1);
+            coefficients[b2] = coefficients[a0] * (1 - sqrt(2.0) * C + C * C);
+            
+            biquad->setCoefficients(coefficients);
+            return;
+            
         }
         
     }

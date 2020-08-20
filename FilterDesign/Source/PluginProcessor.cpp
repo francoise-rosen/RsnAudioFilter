@@ -105,7 +105,6 @@ void FilterDesignAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
     for (int i = 0; i < getTotalNumInputChannels(); ++i)
     {
         filter.add(new rosen::Filter<double>(filterParameters, sampleRate));
-        
     }
 }
 
@@ -236,7 +235,7 @@ void FilterDesignAudioProcessor::parameterChanged(const juce::String &parameterI
     }
 }
 
-juce::Array<juce::String> FilterDesignAudioProcessor::algorithmIDs {"LPF6", "HPF6", "LPF12", "HPF12"};
+juce::Array<juce::String> FilterDesignAudioProcessor::algorithmIDs {"LPF6", "HPF6", "LPF12", "HPF12","LPFButter", "HPFButter", "LPF2Butter", "HPF2Butter"};
 juce::Array<juce::String> FilterDesignAudioProcessor::filterRollOff {"6dB", "12dB"};
 juce::String FilterDesignAudioProcessor::freqParam {"frqID"};
 juce::String FilterDesignAudioProcessor::qParam {"QID"};
