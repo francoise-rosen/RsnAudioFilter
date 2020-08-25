@@ -11,36 +11,95 @@
 #pragma once
 #include <JuceHeader.h>
 
-namespace rosen {
+namespace sfd {
     
-enum class biquadAlgorithm {basicReson, symmetricalReson, numOfAlgorithms};
+enum class FilterAlgorithm {basicReson, symmetricalReson, BPF, AnalogueMatchedMagnitude, numOfAlgorithms};
 
 
 // 2 pole / 2 zero coefficients and state (from biquad algo)
 enum filterCoeff {a0, a1, a2, b1, b2, numCoeff};
 enum stateZ {x_z1, x_z2, y_z1, y_z2, numStates};
 
+    
+// ================================================
+// FILTER PARAMETERS
+// =================================================
+    
+
+template <typename T>
+struct FilterParameters
+    {
+        FilterParameters()
+        :frequency{1000}, Q{0.7071}, algorithm{FilterAlgorithm::symmetricalReson}
+        {}
+        
+//        FilterParameters(T frq, T q, FFilterAlgorithms algo)
+//        :frequency{frq}, Q{q}, filterAlgorithm{algo}
+//        {}
+        
+        ~FilterParameters() {}
+        
+        // OR MOVE?
+        FilterParameters(const FilterParameters&);
+        FilterParameters& operator=(const FilterParameters&);
+        
+        inline bool operator==(const FilterParameters&);
+        inline bool operator!=(const FilterParameters&);
+        
+        T frequency;
+        T Q;
+        FilterAlgorithm algorithm;
+        static constexpr double Q_MIN = 0.01;
+        static constexpr double Q_MAX = 200.0;
+    };
+    
+    template <typename T>
+    FilterParameters<T>::FilterParameters(const FilterParameters& params)
+    :frequency{params.frequency}, Q{juce::jmax(params.Q, Q_MIN)}, algorithm{params.algorithm}
+    {
+    }
+    
+    template <typename T>
+    FilterParameters<T>& FilterParameters<T>::operator=(const FilterParameters& params)
+    {
+        if (*this == params) return *this;
+        frequency = params.frequency;
+        Q = juce::jmax(params.Q, Q_MIN);
+        algorithm = params.algorithm;
+        return *this;
+    }
+    
+    template <typename T>
+    inline bool FilterParameters<T>::operator==(const FilterParameters<T>& params)
+    {
+        return (frequency == params.frequency && Q == params.Q && algorithm == params.algorithm);
+    }
+    
+    template <typename T>
+    inline bool FilterParameters<T>::operator!=(const FilterParameters& params)
+    {
+        return !(this == params);
+    }
+
+// =================================================
+// RESONATOR
+// =================================================
+    
 template <typename T>
 class Resonator
 {
     
 public:
     
-    Resonator(biquadAlgorithm algo = biquadAlgorithm::symmetricalReson);
-    Resonator(const T& freq, const T& q, double sampleRate, biquadAlgorithm algo = biquadAlgorithm::symmetricalReson);
+    Resonator();
+    Resonator(const FilterParameters<T>&, const double& sampleRate);
     
     ~Resonator() {}
     
     //==============================================================================
     
-    void setFreq(const T& cutOffValue);
-    void setQ(const T& q);
-    void setAlgorithm(const int&);
-    
-    //==============================================================================
-    T getCutOff() const {return cutoff;}
-    T getQ() const {return qualityFactor;}
-    biquadAlgorithm getAlgorithm() const {return algorithm;}
+    void setParameters(const FilterParameters<T>& params);
+    void setSampleRate(const double& sampleRate);
     
     //==============================================================================
     T process(const T& sample) noexcept;
@@ -48,66 +107,101 @@ public:
     
 private:
     using Math = juce::MathConstants<double>;
-    T cutoff;
-    T qualityFactor;
     double currentSampleRate;
-    biquadAlgorithm algorithm;
+    FilterParameters<T> filterParameters;
+    
     T coeffArray[filterCoeff::numCoeff];
     T stateArray[stateZ::numStates];
     
-    void setCoeff();
+    void setCoefficients();
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Resonator)
 };
     
     template <typename T>
-    Resonator<T>::Resonator(biquadAlgorithm algo)
-    :cutoff{1000}, qualityFactor{1}, currentSampleRate{0}, algorithm{algo}
+    Resonator<T>::Resonator()
+    :currentSampleRate{0}
     {
+        std::memset(&coeffArray, 0, sizeof(T)*numCoeff);
         reset();
-        //setCoeff(); // would be a mistake since currentSampleRate = 0
     }
     
     template <typename T>
-    Resonator<T>::Resonator(const T& freq, const T& q, double sampleRate, biquadAlgorithm algo)
-    :cutoff{freq}, currentSampleRate{sampleRate}, algorithm{algo}
+    Resonator<T>::Resonator(const FilterParameters<T>& params, const double& sampleRate)
+    :currentSampleRate{sampleRate}, filterParameters{params} 
     {
-        assert( q > (T)0.001 && q < 200.0); // check this!
+        assert( filterParameters.Q > FilterParameters<T>::Q_MIN && filterParameters.Q < FilterParameters<T>::Q_MAX);
         reset();
-        setCoeff();
+        setCoefficients();
     }
     
     
     template <typename T>
-    void Resonator<T>::setCoeff()
+    void Resonator<T>::setCoefficients()
     {
-        if (algorithm == biquadAlgorithm::symmetricalReson)
+        assert(currentSampleRate > 0); // shouldn't call this method before setting the sample rate
+        std::memset(&coeffArray[0], 0, sizeof(T)*numCoeff);
+        
+        T frequency = filterParameters.frequency;
+        T Q = filterParameters.Q;
+        FilterAlgorithm algorithm = filterParameters.algorithm;
+        if (algorithm == FilterAlgorithm::symmetricalReson)
         {
-            T theta = Math::twoPi * cutoff / currentSampleRate;
-            T bandwidth = cutoff / qualityFactor;
+            T theta = Math::twoPi * frequency / currentSampleRate;
+            T bandwidth = frequency / Q;
             coeffArray[b2] = pow(Math::euler, (-2 * Math::twoPi * bandwidth / currentSampleRate));
             coeffArray[b1] = -4 * coeffArray[b2] * cos(theta) / (1 + coeffArray[b2]);
             coeffArray[a0] = 1 - sqrt(coeffArray[b2]);
             coeffArray[a2] = -coeffArray[a0];
             coeffArray[a1] = 0;
+            
+            return;
         }
-        else if (algorithm == biquadAlgorithm::basicReson)
+        if (algorithm == FilterAlgorithm::basicReson)
         {
-            T theta = Math::twoPi * cutoff / currentSampleRate;
-            T bandwidth = cutoff / qualityFactor;
+            T theta = Math::twoPi * frequency / currentSampleRate;
+            T bandwidth = frequency / Q;
             coeffArray[b2] = pow(Math::euler, (-2 * Math::twoPi * bandwidth / currentSampleRate));
             coeffArray[b1] = -4 * coeffArray[b2] * cos(theta) / (1 + coeffArray[b2]);
             coeffArray[a0] = (1 - coeffArray[b2]) * sqrt(1 - coeffArray[b1] * coeffArray[b1] / (4 * coeffArray[b2]));
             
             coeffArray[a1] = 0;
             coeffArray[a2] = 0;
+            
+            return;
+        }
+        
+        if (algorithm == FilterAlgorithm::BPF)
+        {
+            
+        }
+        
+        if (algorithm == FilterAlgorithm::AnalogueMatchedMagnitude)
+        {
+            // Vicanek's BPF Loose Fit
+            T omega_c = Math::twoPi * frequency /  currentSampleRate;
+            T q = 0.5 / Q;
+            T exp_c = pow(Math::euler, - (q * omega_c));
+            T f0 = omega_c / Math::pi;
+            
+            coeffArray[b1] = (q <= 1) ? (-2 * exp_c * cos(omega_c * sqrt(1 - q * q))) : (-2 * exp_c * cosh(omega_c * sqrt(q * q - 1)));
+            coeffArray[b2] = pow(Math::euler, - (2 * q * omega_c));
+            
+            T r0 = (1 + coeffArray[b1] * coeffArray[b2]) / omega_c * Q;
+            T r1 = (1 - coeffArray[b1] * coeffArray[b2]) * (f0 / Q) / sqrt((1 - f0 * f0) * (1 - f0 * f0) + f0 * f0 / (Q * Q));
+            
+            coeffArray[a1] = - r1 / 2;
+            coeffArray[a0] = (r0 - coeffArray[a1]) / 2;
+            coeffArray[a2] = -coeffArray[a0] - coeffArray[a1];
+            
+            return;
         }
     }
     
     template <typename T>
     T Resonator<T>::process(const T& xn) noexcept
     {
-        // biquad topology
+        // biquad Direct II topology
         // y(n) = a0 * x(n) + a1 * x(n - 1) + a2 * x(n - 2) - b1 * y(n - 1) - b2 * y(n - 2);
         T yn = coeffArray[a0] * xn + coeffArray[a1] * stateArray[x_z1] + coeffArray[a2] * stateArray[x_z2] - coeffArray[b1] * stateArray[y_z1] - coeffArray[b2] * stateArray[y_z2];
         
@@ -121,32 +215,19 @@ private:
     }
     
     template <typename T>
-    void Resonator<T>::setFreq(const T& freq)
+    void Resonator<T>::setParameters(const FilterParameters<T>& params)
     {
-        cutoff = freq;
-        setCoeff();
-    }
-    
-    template <typename T>
-    void Resonator<T>::setQ(const T &q)
-    {
-        qualityFactor = q;
-        setCoeff();
+        
+        filterParameters = params;
+        setCoefficients();
     }
     
     template <typename T>
     void Resonator<T>::reset()
     {
-        for(int i = 0; i  < stateZ::numStates; ++i)
-            stateArray[i] = 0;
-        
+        std::memset(&stateArray[0], 0, sizeof(T)*numStates);
     }
-    
-    template <typename T>
-    void Resonator<T>::setAlgorithm(const int& algo)
-    {
-        algorithm = static_cast<biquadAlgorithm>(algo);
-    }
+
     
 }
 

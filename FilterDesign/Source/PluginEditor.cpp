@@ -30,7 +30,7 @@ FilterDesignAudioProcessorEditor::FilterDesignAudioProcessorEditor (FilterDesign
     dryWetSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, guiTextWidth, guiTextHeight);
     addAndMakeVisible(&dryWetSlider);
     
-    fillFilterTypeBox(8);
+    fillFilterTypeBox(9);
     addAndMakeVisible(&filterType);
     fillOrderBox(audioProcessor.filterRollOff.size());
     addAndMakeVisible(&order);

@@ -300,9 +300,24 @@ namespace rosen
             
         }
         
+        // blows up!
         if (algorithm == FilterType::ButterBPF6)
         {
             Type local_Q = scale(q, 0.02, 40.0, 1.0, freq);
+            Type tArg = Math::pi * freq / currentSampleRate;
+            if (tArg > Math::halfPi * 0.95) tArg = Math::halfPi * 0.95;
+            Type omega_o = tan(tArg);
+            //Type BW = freq / local_Q;
+            
+            Type D = local_Q + local_Q * omega_o + omega_o;
+            coefficients[a0] = omega_o / D;
+            coefficients[a1] = 1 / D;
+            coefficients[a2] = 0.0;
+            coefficients[b1] = - (local_Q + local_Q * omega_o + 1) * coefficients[a1];
+            coefficients[b2] = 0.0;
+            
+            biquad->setCoefficients(coefficients);
+            return;
         }
         
     }

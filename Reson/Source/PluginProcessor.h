@@ -80,7 +80,8 @@ private:
     float lastQValue;
     float lastFreqValue;
     
-    juce::OwnedArray<rosen::Resonator<float>> stereoResonator;
+    juce::OwnedArray<sfd::Resonator<double>> stereoResonator;
+    sfd::FilterParameters<double> resonParameters;
 
     
     juce::AudioProcessorValueTreeState parameters;

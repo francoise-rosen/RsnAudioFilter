@@ -16,7 +16,7 @@ juce::String ResonAudioProcessor::paramQ = "qualityFactor";
 juce::String ResonAudioProcessor::paramGain = "gain";
 juce::String ResonAudioProcessor::paramBypass = "bypass";
 juce::String ResonAudioProcessor::paramAlgorithm = "algorithm";
-juce::StringArray ResonAudioProcessor::filterAlgorithms {"Simple Resonator", "Symmetrical Resonator"};
+juce::StringArray ResonAudioProcessor::filterAlgorithms {"Simple Resonator", "Symmetrical Resonator", "BZT", "Analogue"};
 
 //==============================================================================
 ResonAudioProcessor::ResonAudioProcessor()
@@ -43,7 +43,7 @@ parameters{*this,
     // ParameterLayout
     {
     std::make_unique<juce::AudioParameterFloat>(paramFreq,
-                                                "CUTOFF",
+                                                "FREQUENCY",
                                                 juce::NormalisableRange<float>(20.0f, 19000.0f,
                                                     0.01f,
                                                 std::log(0.5f) / std::log(1000.0f / 18980.0f)),
@@ -56,7 +56,7 @@ parameters{*this,
         ),
         std::make_unique<juce::AudioParameterFloat>(paramQ,
                                                     "QUALITY_FACTOR",
-                                                    0.1f, 200.0f, qAtom.get()),
+                                                    (float)sfd::FilterParameters<double>::Q_MIN, (float)sfd::FilterParameters<double>::Q_MAX, qAtom.get()),
         std::make_unique<juce::AudioParameterFloat>(paramGain,
                                                     "GAIN",
                                                     juce::NormalisableRange<float>(-100.0f, 12.0f, 0.01f,
@@ -84,6 +84,14 @@ parameters{*this,
     parameters.addParameterListener(paramGain, this);
     parameters.addParameterListener(paramBypass, this);
     parameters.addParameterListener(paramAlgorithm, this);
+    
+    lastGain = gainAtom.get();
+    lastQValue = qAtom.get();
+    lastFreqValue = freqAtom.get();
+    
+    resonParameters.frequency = freqAtom.get();
+    resonParameters.Q = qAtom.get();
+    resonParameters.algorithm = static_cast<sfd::FilterAlgorithm>(algorithmAtom.get());
 }
 
 ResonAudioProcessor::~ResonAudioProcessor()
@@ -95,12 +103,10 @@ void ResonAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     for (int i = 0; i < getTotalNumOutputChannels(); ++i)
     {
-        stereoResonator.add(new rosen::Resonator<float>(1000.0f, 1.0f, sampleRate, rosen::biquadAlgorithm::symmetricalReson));
+        stereoResonator.add(new sfd::Resonator<double>(resonParameters, sampleRate));
     }
     
-    lastGain = gainAtom.get();
-    lastQValue = qAtom.get();
-    lastFreqValue = freqAtom.get();
+    
 }
 
 void ResonAudioProcessor::releaseResources()
@@ -179,9 +185,7 @@ void ResonAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer (channel);
-        stereoResonator[channel]->setQ(q);
-        stereoResonator[channel]->setFreq(freq);
-       // stereoResonator[channel]->setAlgorithm((rosen::biquadAlgorithm)algo);
+        stereoResonator[channel]->setParameters(resonParameters);
 
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
         {
