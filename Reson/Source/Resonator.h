@@ -13,7 +13,7 @@
 
 namespace sfd {
     
-enum class FilterAlgorithm {basicReson, symmetricalReson, BPF, AnalogueMatchedMagnitude, numOfAlgorithms};
+enum class FilterAlgorithm {BPF, AnalogueMatchedMagnitude, basicReson, symmetricalReson, numOfAlgorithms};
 
 
 // 2 pole / 2 zero coefficients and state (from biquad algo)
@@ -65,6 +65,7 @@ struct FilterParameters
         if (*this == params) return *this;
         frequency = params.frequency;
         Q = juce::jmax(params.Q, Q_MIN);
+        //Q = params.Q;
         algorithm = params.algorithm;
         return *this;
     }
@@ -122,7 +123,7 @@ private:
     Resonator<T>::Resonator()
     :currentSampleRate{0}
     {
-        std::memset(&coeffArray, 0, sizeof(T)*numCoeff);
+        std::memset(&coeffArray[0], 0, sizeof(T)*numCoeff);
         reset();
     }
     
@@ -130,7 +131,7 @@ private:
     Resonator<T>::Resonator(const FilterParameters<T>& params, const double& sampleRate)
     :currentSampleRate{sampleRate}, filterParameters{params} 
     {
-        assert( filterParameters.Q > FilterParameters<T>::Q_MIN && filterParameters.Q < FilterParameters<T>::Q_MAX);
+        assert( (filterParameters.Q >= FilterParameters<T>::Q_MIN) && (filterParameters.Q <= FilterParameters<T>::Q_MAX));
         reset();
         setCoefficients();
     }
@@ -145,10 +146,12 @@ private:
         T frequency = filterParameters.frequency;
         T Q = filterParameters.Q;
         FilterAlgorithm algorithm = filterParameters.algorithm;
+        
         if (algorithm == FilterAlgorithm::symmetricalReson)
         {
             T theta = Math::twoPi * frequency / currentSampleRate;
             T bandwidth = frequency / Q;
+            
             coeffArray[b2] = pow(Math::euler, (-2 * Math::twoPi * bandwidth / currentSampleRate));
             coeffArray[b1] = -4 * coeffArray[b2] * cos(theta) / (1 + coeffArray[b2]);
             coeffArray[a0] = 1 - sqrt(coeffArray[b2]);
@@ -173,7 +176,16 @@ private:
         
         if (algorithm == FilterAlgorithm::BPF)
         {
+            T K = tan(Math::pi * frequency / currentSampleRate);
+            T rDelta = 1 / (K * K * Q + K + Q);
             
+            coeffArray[a0] = K * rDelta;
+            coeffArray[a1] = 0;
+            coeffArray[a2] = -K * rDelta;
+            coeffArray[b1] = (2 * Q * (K * K - 1)) * rDelta;
+            coeffArray[b2] = (K * K * Q - K + Q) * rDelta;
+            
+            return;
         }
         
         if (algorithm == FilterAlgorithm::AnalogueMatchedMagnitude)
@@ -187,8 +199,8 @@ private:
             coeffArray[b1] = (q <= 1) ? (-2 * exp_c * cos(omega_c * sqrt(1 - q * q))) : (-2 * exp_c * cosh(omega_c * sqrt(q * q - 1)));
             coeffArray[b2] = pow(Math::euler, - (2 * q * omega_c));
             
-            T r0 = (1 + coeffArray[b1] * coeffArray[b2]) / omega_c * Q;
-            T r1 = (1 - coeffArray[b1] * coeffArray[b2]) * (f0 / Q) / sqrt((1 - f0 * f0) * (1 - f0 * f0) + f0 * f0 / (Q * Q));
+            T r0 = (1 + coeffArray[b1] + coeffArray[b2]) / omega_c * Q;
+            T r1 = (1 - coeffArray[b1] + coeffArray[b2]) * (f0 / Q) / sqrt((1 - f0 * f0) * (1 - f0 * f0) + f0 * f0 / (Q * Q));
             
             coeffArray[a1] = - r1 / 2;
             coeffArray[a0] = (r0 - coeffArray[a1]) / 2;

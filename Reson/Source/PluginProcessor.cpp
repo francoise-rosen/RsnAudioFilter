@@ -16,7 +16,7 @@ juce::String ResonAudioProcessor::paramQ = "qualityFactor";
 juce::String ResonAudioProcessor::paramGain = "gain";
 juce::String ResonAudioProcessor::paramBypass = "bypass";
 juce::String ResonAudioProcessor::paramAlgorithm = "algorithm";
-juce::StringArray ResonAudioProcessor::filterAlgorithms {"Simple Resonator", "Symmetrical Resonator", "BZT", "Analogue"};
+juce::StringArray ResonAudioProcessor::filterAlgorithms {"BZT", "Analogue", "Simple Resonator", "Symmetrical Resonator"};
 
 //==============================================================================
 ResonAudioProcessor::ResonAudioProcessor()
@@ -56,7 +56,7 @@ parameters{*this,
         ),
         std::make_unique<juce::AudioParameterFloat>(paramQ,
                                                     "QUALITY_FACTOR",
-                                                    (float)sfd::FilterParameters<double>::Q_MIN, (float)sfd::FilterParameters<double>::Q_MAX, qAtom.get()),
+                                                    0.01f, 200.0f, qAtom.get()),
         std::make_unique<juce::AudioParameterFloat>(paramGain,
                                                     "GAIN",
                                                     juce::NormalisableRange<float>(-100.0f, 12.0f, 0.01f,
@@ -86,8 +86,6 @@ parameters{*this,
     parameters.addParameterListener(paramAlgorithm, this);
     
     lastGain = gainAtom.get();
-    lastQValue = qAtom.get();
-    lastFreqValue = freqAtom.get();
     
     resonParameters.frequency = freqAtom.get();
     resonParameters.Q = qAtom.get();
@@ -173,10 +171,11 @@ void ResonAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     auto totalNumOutputChannels = getTotalNumOutputChannels();
     
     const float gain = juce::Decibels::decibelsToGain(gainAtom.get());
-    const float freq = freqAtom.get();
-    const float q = qAtom.get();
     const bool bypass = bypassAtom.get();
-    const int algo = algorithmAtom.get();
+    
+    resonParameters.frequency = freqAtom.get();
+    resonParameters.Q = qAtom.get();
+    resonParameters.algorithm = static_cast<sfd::FilterAlgorithm>(algorithmAtom.get());
 
     
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)

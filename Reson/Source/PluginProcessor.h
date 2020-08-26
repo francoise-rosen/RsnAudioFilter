@@ -70,15 +70,13 @@ public:
 
 private:
     //==============================================================================
-    juce::Atomic<float> freqAtom;
-    juce::Atomic<float> qAtom;
-    juce::Atomic<float> gainAtom;
+    juce::Atomic<double> freqAtom;
+    juce::Atomic<double> qAtom;
+    juce::Atomic<double> gainAtom;
     juce::Atomic<bool> bypassAtom;
     juce::Atomic<int> algorithmAtom;
     
-    float lastGain;
-    float lastQValue;
-    float lastFreqValue;
+    double lastGain;
     
     juce::OwnedArray<sfd::Resonator<double>> stereoResonator;
     sfd::FilterParameters<double> resonParameters;

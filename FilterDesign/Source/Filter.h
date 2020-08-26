@@ -300,7 +300,7 @@ namespace rosen
             
         }
         
-        // blows up!
+        // blows up! Recalculate!
         if (algorithm == FilterType::ButterBPF6)
         {
             Type local_Q = scale(q, 0.02, 40.0, 1.0, freq);
