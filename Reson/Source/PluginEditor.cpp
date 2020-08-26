@@ -53,10 +53,10 @@ void ResonAudioProcessorEditor::fillAlgoBox()
 {
     // so far just 2 algorithms
     // size of enum matches size of array names
-    assert (ResonAudioProcessor::filterAlgorithms.size() == (int)sfd::FilterAlgorithm::numOfAlgorithms);
+    assert (ResonAudioProcessor::listOfAlgorithms.size() == (int)sfd::FilterAlgorithm::numOfAlgorithms);
     for (int i = 0; i < (int)sfd::FilterAlgorithm::numOfAlgorithms; ++i)
     {
-        algoBox.addItem(ResonAudioProcessor::filterAlgorithms[i], 100 + i);
+        algoBox.addItem(ResonAudioProcessor::listOfAlgorithms[i], 100 + i);
     }
 }
 

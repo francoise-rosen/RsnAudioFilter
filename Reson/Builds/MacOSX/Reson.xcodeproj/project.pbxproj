@@ -461,6 +461,13 @@
 			path = "../../JuceLibraryCode/include_juce_events.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		C1C679AD8DE8039C5B92F245 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = OnePole.h;
+			path = ../../Source/OnePole.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		C34AD2B0E27B81BE501B2491 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -555,6 +562,7 @@
 		3618B3A1FB8E2512F77D7F1B = {
 			isa = PBXGroup;
 			children = (
+				C1C679AD8DE8039C5B92F245,
 				F165DC546F46F8430D719640,
 				530A199A471F4FE9CEF3356A,
 				9DDD4CFDC639F59D5A22E74C,

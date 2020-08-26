@@ -16,7 +16,7 @@ juce::String ResonAudioProcessor::paramQ = "qualityFactor";
 juce::String ResonAudioProcessor::paramGain = "gain";
 juce::String ResonAudioProcessor::paramBypass = "bypass";
 juce::String ResonAudioProcessor::paramAlgorithm = "algorithm";
-juce::StringArray ResonAudioProcessor::filterAlgorithms {"BZT", "Analogue", "Simple Resonator", "Symmetrical Resonator"};
+juce::StringArray ResonAudioProcessor::listOfAlgorithms {"BZT", "Analogue", "Simple Resonator", "Symmetrical Resonator"};
 
 //==============================================================================
 ResonAudioProcessor::ResonAudioProcessor()
@@ -56,7 +56,7 @@ parameters{*this,
         ),
         std::make_unique<juce::AudioParameterFloat>(paramQ,
                                                     "QUALITY_FACTOR",
-                                                    0.01f, 200.0f, qAtom.get()),
+                                                   (float)sfd::FilterParameters<double>::Q_MIN, (float)sfd::FilterParameters<double>::Q_MAX, qAtom.get()),
         std::make_unique<juce::AudioParameterFloat>(paramGain,
                                                     "GAIN",
                                                     juce::NormalisableRange<float>(-100.0f, 12.0f, 0.01f,
@@ -66,9 +66,9 @@ parameters{*this,
                                                     [](float val, int) {return juce::String(val, 3) + "dB";},
                                                     [](const juce::String& str_value) {return str_value.dropLastCharacters(3).getFloatValue();}
                                                     ),
-        std::make_unique<juce::AudioParameterInt>(paramAlgorithm,
+        std::make_unique<juce::AudioParameterChoice>(paramAlgorithm,
                                                   "ALGORITHM",
-                                                  0, filterAlgorithms.size(), algorithmAtom.get()),
+                                                  listOfAlgorithms, algorithmAtom.get()),
         std::make_unique<juce::AudioParameterBool>(paramBypass,
                                                    "BYPASS",
                                                    bypassAtom.get())

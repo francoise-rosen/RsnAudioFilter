@@ -11,6 +11,7 @@
 #pragma once
 #include <JuceHeader.h>
 
+
 namespace sfd {
     
 enum class FilterAlgorithm {BPF, AnalogueMatchedMagnitude, basicReson, symmetricalReson, numOfAlgorithms};
@@ -192,18 +193,26 @@ private:
         {
             // Vicanek's BPF Loose Fit
             T omega_c = Math::twoPi * frequency /  currentSampleRate;
-            T q = 0.5 / Q;
-            T exp_c = pow(Math::euler, - (q * omega_c));
+            T q = 1 / (2 * Q);
+            T exp_c = pow(Math::euler, (-q * omega_c));
             T f0 = omega_c / Math::pi;
             
-            coeffArray[b1] = (q <= 1) ? (-2 * exp_c * cos(omega_c * sqrt(1 - q * q))) : (-2 * exp_c * cosh(omega_c * sqrt(q * q - 1)));
-            coeffArray[b2] = pow(Math::euler, - (2 * q * omega_c));
+//            coeffArray[b1] = (q <= 1) ? (-2 * exp_c * cos(omega_c * sqrt(1 - q * q))) : (-2 * exp_c * cosh(omega_c * sqrt(q * q - 1)));
+            if (q <= 1)
+            {
+                coeffArray[b1] = -2 * exp_c * cos (omega_c * sqrt(1 - q * q));
+            }
+            else
+            {
+                coeffArray[b1] = -2 * exp_c * cosh(omega_c * sqrt(q * q - 1));
+            }
+            coeffArray[b2] = pow(Math::euler, (-2 * q * omega_c));
             
-            T r0 = (1 + coeffArray[b1] + coeffArray[b2]) / omega_c * Q;
-            T r1 = (1 - coeffArray[b1] + coeffArray[b2]) * (f0 / Q) / sqrt((1 - f0 * f0) * (1 - f0 * f0) + f0 * f0 / (Q * Q));
-            
-            coeffArray[a1] = - r1 / 2;
-            coeffArray[a0] = (r0 - coeffArray[a1]) / 2;
+            T r0 = (1 + coeffArray[b1] + coeffArray[b2]) / (Math::pi * f0 * Q);
+            T f0_2 = f0 * f0;
+            T r1 = (1 - coeffArray[b1] + coeffArray[b2]) * (f0 / Q) / sqrt((1 - f0_2) * (1 - f0_2) + f0_2/(Q * Q));
+            coeffArray[a1] = - r1 / 2.0;
+            coeffArray[a0] = (r0 - coeffArray[a1]) / 2.0;
             coeffArray[a2] = -coeffArray[a0] - coeffArray[a1];
             
             return;

@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Resonator.h"
+#include "OnePole.h"
 
 
 //==============================================================================
@@ -66,7 +67,7 @@ public:
     static juce::String paramGain;
     static juce::String paramBypass;
     static juce::String paramAlgorithm;
-    static juce::StringArray filterAlgorithms;
+    static juce::StringArray listOfAlgorithms;
 
 private:
     //==============================================================================
