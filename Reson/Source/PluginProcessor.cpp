@@ -104,7 +104,7 @@ void ResonAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
         stereoResonator.add(new sfd::Resonator<double>(resonParameters, sampleRate));
     }
     
-    
+    onePole = std::make_unique<sfd::OnePole<double>>(10000.0, sampleRate);
 }
 
 void ResonAudioProcessor::releaseResources()
@@ -173,7 +173,8 @@ void ResonAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     const float gain = juce::Decibels::decibelsToGain(gainAtom.get());
     const bool bypass = bypassAtom.get();
     
-    resonParameters.frequency = freqAtom.get();
+    // smooth out the frequency parameter signam
+    resonParameters.frequency = onePole->process(freqAtom.get());
     resonParameters.Q = qAtom.get();
     resonParameters.algorithm = static_cast<sfd::FilterAlgorithm>(algorithmAtom.get());
 

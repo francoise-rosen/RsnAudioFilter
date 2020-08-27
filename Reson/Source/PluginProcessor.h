@@ -81,6 +81,7 @@ private:
     
     juce::OwnedArray<sfd::Resonator<double>> stereoResonator;
     sfd::FilterParameters<double> resonParameters;
+    std::unique_ptr<sfd::OnePole<double>> onePole;
 
     
     juce::AudioProcessorValueTreeState parameters;

@@ -33,10 +33,7 @@ struct FilterParameters
         FilterParameters()
         :frequency{1000}, Q{0.7071}, algorithm{FilterAlgorithm::symmetricalReson}
         {}
-        
-//        FilterParameters(T frq, T q, FFilterAlgorithms algo)
-//        :frequency{frq}, Q{q}, filterAlgorithm{algo}
-//        {}
+
         
         ~FilterParameters() {}
         
