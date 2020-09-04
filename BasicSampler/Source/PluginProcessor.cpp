@@ -107,7 +107,7 @@ void BasicSamplerAudioProcessor::loadFile()
 
 juce::AudioBuffer<float> BasicSamplerAudioProcessor::getWaveform() const
 {
-    assert (waveform.getNumSamples() > 0);
+    //assert (waveform.getNumSamples() > 0);
     return waveform;
 }
 

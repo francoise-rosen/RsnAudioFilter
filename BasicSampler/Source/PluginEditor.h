@@ -44,6 +44,8 @@ private:
     const int segmentLength{70};
     std::pair<int, int> xy;
     const int edge{5};
+    
+    bool waveformChanged;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicSamplerAudioProcessorEditor)
 };
