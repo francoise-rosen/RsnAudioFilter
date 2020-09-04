@@ -447,8 +447,6 @@ private:
        // file path to the background thread
     String chosenPath;
     
-    
-
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

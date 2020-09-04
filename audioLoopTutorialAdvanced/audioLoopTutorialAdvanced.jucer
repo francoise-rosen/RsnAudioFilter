@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="cGKRLP" name="audioLoopTutorialAdvanced" projectType="guiapp"
-              jucerVersion="5.4.5">
+              displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="b4JcVb" name="audioLoopTutorialAdvanced">
     <GROUP id="{2107ECD6-6BAD-8E29-7168-D73F2DFA2768}" name="Source">
       <FILE id="QAlwi9" name="audioLoopSmoothLevel.h" compile="0" resource="0"

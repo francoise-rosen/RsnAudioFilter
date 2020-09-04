@@ -104,6 +104,7 @@ void ResonAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
         stereoResonator.add(new sfd::Resonator<double>(resonParameters, sampleRate));
     }
     
+    // 10kHz lopass to smooth out discontinuities of rapid change of the frequency parameter
     onePole = std::make_unique<sfd::OnePole<double>>(10000.0, sampleRate);
 }
 
