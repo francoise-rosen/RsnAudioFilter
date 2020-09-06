@@ -21,8 +21,8 @@ BasicSamplerAudioProcessorEditor::BasicSamplerAudioProcessorEditor (BasicSampler
         audioProcessor.openButtonClicked();
         repaint();
     };
-    setResizable(true, true);
-    setResizeLimits(segmentLength * 5 / 2, segmentLength, segmentLength * 20, segmentLength * 8);
+    //setResizable(true, true);
+    //setResizeLimits(segmentLength * 5 / 2, segmentLength, segmentLength * 20, segmentLength * 8);
     setSize (xy.first * segmentLength, xy.second * segmentLength);
 }
 
@@ -51,13 +51,17 @@ void BasicSamplerAudioProcessorEditor::paint (juce::Graphics& g)
         g.drawRoundedRectangle(frames[i]->toFloat(), 7, 2);
     }
     
+    g.setColour(juce::Colours::orange);
+
+    
     // MAKE SCREEN A CHILD with its own paint() ?
     if (audioProcessor.filePathChanged)
     {
         // make a vector of samples
+        audioProcessor.filePathChanged = false;
         waveformPoints.clear();
         auto numSamples = audioProcessor.getWaveform().getNumSamples();
-        auto xRatio = numSamples / (frames[screenFrame]->getWidth() - edge);
+        auto xRatio = numSamples / (frames[screenFrame]->getWidth() - 3 * edge);
         auto buffer = audioProcessor.getWaveform().getReadPointer(0);
         for (int i = 0; i < numSamples; i += xRatio)
         {
@@ -74,11 +78,11 @@ void BasicSamplerAudioProcessorEditor::paint (juce::Graphics& g)
         
         int pointX = frames[screenFrame]->getX() + 1 + edge;
         
-        g.drawFittedText("Screen width: " + juce::String(frames[screenFrame]->getWidth()), *frames[topBar] , juce::Justification::centred, 1);
-                         
+//        g.drawFittedText("Screen width: " + juce::String(frames[screenFrame]->getWidth()), *frames[topBar] , juce::Justification::centred, 1);
+        
         g.drawFittedText("Number of samples: " + juce::String(waveformPoints.size()), *frames[bottomBar], juce::Justification::centred, 1);
         
-        for (int i = 1; i < waveformPoints.size(); ++i)
+        for (int i = 0; i < waveformPoints.size(); ++i)
         {
             auto pointY = juce::jmap(waveformPoints[i], -1.0f, 1.0f, static_cast<float>(frames[screenFrame]->getBottom()), static_cast<float>(frames[screenFrame]->getY()));
             ++pointX;
@@ -87,16 +91,17 @@ void BasicSamplerAudioProcessorEditor::paint (juce::Graphics& g)
         g.setColour(juce::Colours::olivedrab);
         g.strokePath(p, juce::PathStrokeType(2));
         
-        audioProcessor.filePathChanged = false;
+        return;
+        
     }
+
     
 }
 
 void BasicSamplerAudioProcessorEditor::resized()
 {
     setFrames();
-    auto buttonArea = getLocalBounds();
-    openButton.setBounds(buttonArea.removeFromTop(getHeight()/4).removeFromRight(getWidth()/5).reduced(10));
+    openButton.setBounds(frames[rightBar]->removeFromTop(getHeight()/6).reduced(edge));
    // audioProcessor.filePathChanged = true; // does not work! We may want to draw on a child
     // and resize that one?
 }
@@ -148,3 +153,5 @@ void BasicSamplerAudioProcessorEditor::setFrames()
         assert(frames[i] != nullptr);
     }
 }
+
+int BasicSamplerAudioProcessorEditor::count{0};

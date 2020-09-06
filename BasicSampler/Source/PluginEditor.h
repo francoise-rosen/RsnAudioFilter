@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "WaveformThumbnail.h"
 
 //==============================================================================
 /**
@@ -46,6 +47,8 @@ private:
     const int edge{5};
     
     bool waveformChanged;
+    
+    static int count;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicSamplerAudioProcessorEditor)
 };

@@ -73,6 +73,10 @@
 			isa = PBXBuildFile;
 			fileRef = 92AF360E61E1277076B629D2;
 		};
+		967E5CD33EC3B61A3999E986 = {
+			isa = PBXBuildFile;
+			fileRef = C909FFA8C5EB6B3EC885ECCA;
+		};
 		56C82B16690CB03FD1F0E62D = {
 			isa = PBXBuildFile;
 			fileRef = 21F6F9F98039469FB0B527E8;
@@ -419,6 +423,13 @@
 			path = "../../JuceLibraryCode/include_juce_audio_plugin_client_utils.cpp";
 			sourceTree = "SOURCE_ROOT";
 		};
+		C909FFA8C5EB6B3EC885ECCA = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = WaveformThumbnail.cpp;
+			path = ../../Source/WaveformThumbnail.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		CA51790EB3AEF02C552438F9 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
@@ -531,6 +542,13 @@
 			path = "../../JuceLibraryCode/include_juce_gui_extra.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		F564485F171F295FD62E6F2D = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = WaveformThumbnail.h;
+			path = ../../Source/WaveformThumbnail.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		FA75460A12105CA75500DD2C = {
 			isa = PBXFileReference;
 			lastKnownFileType = text.plist.xml;
@@ -548,6 +566,8 @@
 		8E252C39E401ADF9AF47DD3C = {
 			isa = PBXGroup;
 			children = (
+				C909FFA8C5EB6B3EC885ECCA,
+				F564485F171F295FD62E6F2D,
 				21F6F9F98039469FB0B527E8,
 				99BDE37FDAE6C327D55F2723,
 				A1A93B9FB3B20431F7251C8B,
@@ -1908,6 +1928,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				967E5CD33EC3B61A3999E986,
 				56C82B16690CB03FD1F0E62D,
 				77BDD8065EB72F46C4E4796A,
 				718BD190DF87CF4D30D628DE,
