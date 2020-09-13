@@ -1,13 +1,14 @@
 /*
   ==============================================================================
 
-    1. Draw custom slider
+    1. Draw custom slider - done
     2. Add label
     3. Add curve
     4. Make 4 sliders with different colour background and slider colour
     5. Come up with formulae for the slider geometry and the curve so it'll be reusable
     6. Add an on/off button, make custom look for the button
     7. try several looks per project (for instance, if I need different silder mods in one window)
+    8. Figure out how to use several L+F (how to destruct them?)
 
   ==============================================================================
 */

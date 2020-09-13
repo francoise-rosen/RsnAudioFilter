@@ -22,6 +22,8 @@ public:
         setColour(juce::PopupMenu::backgroundColourId, colourArray[backgroundColour].withAlpha(0.4f));
     }
     
+    virtual ~SliderMidLookAndFeel() {}
+    
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider& slider) override
     {
         // smaller distance from centre to the edge of the slider's area
@@ -40,7 +42,7 @@ public:
         juce::Point<float> rimEllipseXY {centre.getX() - rimRadius, centre.getY() - rimRadius};
         // knob gradient
         juce::Colour outerColour = colourArray[outerRimColour];
-        juce::Colour innerColour = colourArray[outerRimColour].withBrightness(0.40f);
+        juce::Colour innerColour = colourArray[outerRimColour].withBrightness(0.27f);
         
         if (knobWithGradient)
         {
