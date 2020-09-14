@@ -9,6 +9,7 @@
     6. Add an on/off button, make custom look for the button
     7. try several looks per project (for instance, if I need different silder mods in one window)
     8. Figure out how to use several L+F (how to destruct them?)
+    9. How to set Slider layout so that TextBox can be set say TopRight or so (see the forum thread)
 
   ==============================================================================
 */

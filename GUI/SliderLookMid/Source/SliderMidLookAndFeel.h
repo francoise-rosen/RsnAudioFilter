@@ -68,6 +68,14 @@ public:
                                           
     }
     
+    juce::Label* createSliderTextBox(juce::Slider& slider) override
+    {
+        std::unique_ptr<juce::Label> label;
+        label->setText("this", juce::dontSendNotification);
+        return label.get();
+        
+    }
+    
     void setBackgroundColour(juce::Colour background)
     {
         colourArray[backgroundColour] = background;

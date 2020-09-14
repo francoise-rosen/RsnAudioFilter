@@ -204,6 +204,13 @@
 			path = ../../Source/SliderFrame.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		E8DDE0B81C0E53CCC0B57B10 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = DelaySection.h;
+			path = ../../Source/DelaySection.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		EE49FE4A643BD822C612C800 = {
 			isa = PBXFileReference;
 			lastKnownFileType = file;
@@ -224,6 +231,7 @@
 				AADDB4632A9E9B05324C369D,
 				3DC82C3B2060FFA906F77230,
 				94DF87313C450CE883A704DF,
+				E8DDE0B81C0E53CCC0B57B10,
 				DEF0B0CE69361573C3694C64,
 				D06C320D01DDCDB4E96001EC,
 			);

@@ -8,6 +8,7 @@
       <FILE id="RwuB3d" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
       <FILE id="fJ6ea4" name="MainComponent.cpp" compile="1" resource="0"
             file="Source/MainComponent.cpp"/>
+      <FILE id="QIit7d" name="DelaySection.h" compile="0" resource="0" file="Source/DelaySection.h"/>
       <FILE id="TZ8DRR" name="SliderFrame.h" compile="0" resource="0" file="Source/SliderFrame.h"/>
       <FILE id="XqJ8Va" name="SliderMidLookAndFeel.h" compile="0" resource="0"
             file="Source/SliderMidLookAndFeel.h"/>

@@ -39,11 +39,11 @@ public:
 
     void paint (juce::Graphics& g) override
     {
-        juce::Colour background = juce::Colours::lightcyan.withBrightness(0.75f).withAlpha(0.85f);
+        juce::Colour background = juce::Colours::lightcyan.withBrightness(0.75f).withAlpha(0.75f);
         g.fillAll(background);
         customSliderMid.setBackgroundColour(background);
         
-        g.setColour(juce::Colours::yellow.withHue(0.70f).withBrightness(0.25f));
+        g.setColour(juce::Colours::yellow.withHue(0.90f).withBrightness(0.25f).withAlpha(0.35f));
         
         // DRAW TRIANGLES
         
@@ -54,8 +54,9 @@ public:
         leftTriangle.lineTo(leftTriangleArea.getX(), leftTriangleArea.getBottom());
         leftTriangle.lineTo(leftTriangleArea.getRight(), leftTriangleArea.getBottom());
         leftTriangle.closeSubPath();
-        leftTriangle = leftTriangle.createPathWithRoundedCorners(10.0f);
+        leftTriangle = leftTriangle.createPathWithRoundedCorners(20.0f);
         g.fillPath(leftTriangle);
+        //g.strokePath(leftTriangle, juce::PathStrokeType(3.0f));
         
         g.setColour(juce::Colours::yellow.withHue(0.77f).withBrightness(0.25f));
         
@@ -67,7 +68,8 @@ public:
         rightTriangle.lineTo(rightTriangleArea.getRight(), rightTriangleArea.getBottom());
         rightTriangle.closeSubPath();
         rightTriangle = rightTriangle.createPathWithRoundedCorners(25.0f);
-        g.fillPath(rightTriangle);
+        //g.fillPath(rightTriangle);
+        g.strokePath(rightTriangle, juce::PathStrokeType(4.0f));
         
         // DRAW LABELS
         
