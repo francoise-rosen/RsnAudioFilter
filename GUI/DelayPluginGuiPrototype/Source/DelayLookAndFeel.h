@@ -28,7 +28,9 @@ class DelayLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
     DelayLookAndFeel()
-    {}
+    {
+        
+    }
     
     virtual ~DelayLookAndFeel()
     {}
@@ -77,17 +79,26 @@ public:
         g.fillEllipse(innerPlaneXY.getX(), innerPlaneXY.getY(), diameter, diameter);
         juce::Point<float> topPlaneCentre {centre.getX() + xShift, centre.getY() + yShift};
         
-//        if (withTopPlaneRim)
-//        {
-//            auto ratio = 0.8f;
-//            juce::Point<float> thisRimXY {}
-//        }
-        
         /* draw a pointer */
         g.setColour(colourPalette[rim]);
         drawSliderThumb(g, topPlaneCentre, radius, angle);
         
+        g.setColour(juce::Colours::red);
+        g.drawRect(x, y, width, height);
         
+    }
+    
+    juce::Label* createSliderTextBox(juce::Slider& slider) override
+    {
+        std::unique_ptr<juce::Label> newLabel = std::make_unique<juce::Label>("Slider", "New");
+        return newLabel.get();
+    }
+    
+    void drawLabel(juce::Graphics& g, juce::Label& label) override
+    {
+        g.setColour(colourPalette[background]);
+        auto area = label.getLocalBounds().reduced(2.0f);
+        g.drawRoundedRectangle(area.toFloat(), 3.0f, 1.0f);
     }
     
     void setBackgroundColour(const juce::Colour& colour)
@@ -110,6 +121,11 @@ public:
         colourPalette[shadow] = colour;
     }
     
+    void setObjectScale(float val)
+    {
+        objectScale = val;
+    }
+    
 private:
     enum ColourTarget {background, object, rim, shadow, numOfTargets};
     std::array<juce::Colour, numOfTargets> colourPalette
@@ -119,7 +135,7 @@ private:
         juce::Colours::white,
         juce::Colours::black
     };
-    const float objectScale {0.5f}; /* slider's top area relative to entire slider's area */
+    float objectScale {0.5f}; /* slider's top area relative to entire slider's area */
     bool withGradient {true}; /* sets gradient on / off for the part that's being drawn */
     bool withTopPlaneRim {false};
     bool withBottomPlaneRim {false};
@@ -137,4 +153,13 @@ private:
         g.fillPath(p);
     }
     
+    juce::Font createTextBoxFont()
+    {
+        return juce::Font("Monaco", "Plane", 14.0f);
+    }
+    
 };
+
+// SLIDER look and feel (with inner and outer rim)
+
+// Big Slider look and feel (line make noise big slider)

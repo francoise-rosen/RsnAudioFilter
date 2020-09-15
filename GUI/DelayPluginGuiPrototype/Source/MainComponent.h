@@ -63,7 +63,7 @@ private:
     };
     
     ColourPalette colourPalette;
-    float fontHeight {14.0f};
+    float fontHeight {17.0f};
     const juce::Font font {"Monaco", "Bold", fontHeight};
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)

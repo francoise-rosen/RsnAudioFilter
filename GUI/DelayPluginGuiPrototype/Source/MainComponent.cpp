@@ -18,6 +18,8 @@ MainComponent::MainComponent()
     filterSection.setBackgroundColour(colourPalette.backgroundColour);
     delaySection.setBackgroundColour(colourPalette.backgroundColour);
     filterSection.setFont(font);
+    delaySection.setFont(font);
+    delaySection.setTextColour(colourPalette.rimColour);
     addAndMakeVisible(&filterSection);
     addAndMakeVisible(&gainSection);
     
