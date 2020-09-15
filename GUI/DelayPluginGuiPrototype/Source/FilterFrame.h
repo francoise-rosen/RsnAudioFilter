@@ -29,7 +29,7 @@ public:
         filterFrameLookAndFeel.setRimColour(juce::Colours::black);
         frequencySlider = std::make_unique<juce::Slider>(juce::Slider::SliderStyle::Rotary, juce::Slider::TextBoxBelow);
         filterTypeSlider = std::make_unique<juce::Slider>(juce::Slider::SliderStyle::Rotary, juce::Slider::TextBoxBelow);
-        qSlider = std::make_unique<juce::Slider>(juce::Slider::SliderStyle::Rotary, juce::Slider::TextBoxAbove);
+        qSlider = std::make_unique<juce::Slider>(juce::Slider::SliderStyle::Rotary, juce::Slider::TextBoxBelow);
         addAndMakeVisible(qSlider.get());
         addAndMakeVisible(frequencySlider.get());
         addAndMakeVisible(filterTypeSlider.get());
@@ -76,10 +76,13 @@ public:
         
         /* knob labels */
         g.setColour(labelColour);
-        auto freqArea = area.removeFromTop(area.getHeight() * 0.5f);
+        auto freqArea = area.removeFromTop(area.getHeight() * 0.4f);
         auto freqLabelRect = freqArea.withBottom(freqArea.getY() + getHeight() * labelHeightRatio).withLeft(getWidth() * 0.67f).reduced(edge);
+        auto qArea = area.removeFromTop(area.getHeight() * 0.5f);
+        auto qLabelRect = qArea.withBottom(qArea.getY() + getHeight() * labelHeightRatio).withLeft(getWidth() * 0.67f).reduced(edge);
         auto filterLabelRect = area.withBottom(area.getY() + getHeight() * labelHeightRatio).withLeft(getWidth() * 0.67f).reduced(edge);
         g.fillRoundedRectangle(freqLabelRect.toFloat(), 3.0f);
+        g.fillRoundedRectangle(qLabelRect.toFloat(), 3.0f);
         g.fillRoundedRectangle(filterLabelRect.toFloat(), 3.0f);
         
         /* label lines */
@@ -96,18 +99,29 @@ public:
         filterLabelLine.lineTo(getWidth() * 0.5f, area.getCentreY());
         g.strokePath(filterLabelLine, juce::PathStrokeType(3.0f));
         
+        juce::Path qLabelLine;
+        qLabelLine.startNewSubPath(qLabelRect.getCentreX(), qLabelRect.getBottom());
+        qLabelLine.lineTo(qLabelRect.getCentreX(), qArea.getCentreY());
+        qLabelLine.lineTo(getWidth() * 0.5f, qArea.getCentreY());
+        g.strokePath(qLabelLine, juce::PathStrokeType(3.0f));
+        
         /* set label text */
-        g.setFont(juce::Font("Monaco", "Plane", 12.0f));
+        g.setFont(juce::Font("Monaco", "Plane", freqLabelRect.getHeight() * 0.57f));
         g.setColour(textColour);
         g.drawFittedText("FReQ", freqLabelRect, juce::Justification::centred, 1);
+        g.drawFittedText("Kju", qLabelRect, juce::Justification::centred, 1);
         g.drawFittedText("FiLTeR", filterLabelRect, juce::Justification::centred, 1);
+        
+        g.setColour(labelColour);
+        g.drawLine(freqArea.getCentreX(), freqArea.getCentreY(), freqArea.getCentreX(), freqArea.getBottom(), 1.0f);
         
     }
 
     void resized() override
     {
         auto area = getLocalBounds().removeFromBottom(getHeight() * (1.0f - labelHeightRatio));
-        frequencySlider->setBounds(area.removeFromTop(area.getHeight() * 0.5f));
+        frequencySlider->setBounds(area.removeFromTop(area.getHeight() * 0.4f));
+        qSlider->setBounds(area.removeFromTop(area.getHeight() * 0.5f));
         filterTypeSlider->setBounds(area);
         repaint();
         
@@ -117,7 +131,7 @@ private:
     DelayLookAndFeel filterFrameLookAndFeel;
     juce::Colour windowColour;
     juce::Font localFont;
-    float labelHeightRatio {0.1f};
+    float labelHeightRatio {0.075f};
     float edge {3.0f};
     std::unique_ptr<juce::Slider> frequencySlider;
     std::unique_ptr<juce::Slider> filterTypeSlider;

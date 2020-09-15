@@ -65,9 +65,75 @@ public:
         g.setColour(textColour);
         g.setFont(textFont);
         
+        /* LABELS */
+        
         auto area = getLocalBounds().reduced(5.0f);
         g.drawFittedText("FeedBaCK", area.removeFromBottom(area.getHeight() * 0.25f), juce::Justification::centredTop, 1);
         
+        auto delayLabel = getLocalBounds().removeFromTop(getHeight() * 0.051f).removeFromLeft(getWidth() * 0.42f).reduced(edge);
+        g.fillRect(delayLabel);
+        
+        g.setColour(windowColour.withAlpha(1.0f));
+        g.drawFittedText("DeLay", delayLabel, juce::Justification::centred, 1);
+        g.setColour(textColour);
+        
+        auto thisArea = getLocalBounds();
+        auto lowerArea = thisArea.removeFromBottom(getHeight() * 0.25f);
+        auto upperSection = thisArea.removeFromTop(thisArea.getHeight() * 0.5f);
+        auto midSection = std::move(thisArea);
+        g.drawFittedText("LeFT", upperSection.withLeft(getWidth() * 0.57f).withBottom(upperSection.getHeight() * 0.45f).reduced(edge), juce::Justification::centred, 1);
+        
+        
+        g.drawFittedText("RiGHT", midSection.withLeft(getWidth() * 0.57f).withBottom(upperSection.getHeight() + midSection.getHeight() * 0.45f).reduced(edge), juce::Justification::centred, 1);
+        
+        /* SIGNAL FLOW ARROWS */
+        
+        /* to the right delay slider */
+        g.setColour(textColour);
+        juce::Path fbFlowR;
+        fbFlowR.startNewSubPath(getWidth() * 0.25f, getHeight() * 0.9f);
+        fbFlowR.lineTo(getWidth() * 0.05f, getHeight() * 0.9f);
+        fbFlowR.lineTo(getWidth() * 0.05f, getHeight() * 0.65f);
+        fbFlowR.lineTo(getWidth() * 0.15f, getHeight() * 0.6f);
+        fbFlowR = fbFlowR.createPathWithRoundedCorners(14.0f);
+        g.strokePath(fbFlowR, juce::PathStrokeType(2.0f));
+        
+        fbFlowR.addArrow(juce::Line<float>{getWidth() * 0.15f, getHeight() * 0.6f, getWidth() * 0.15f, getHeight() * 0.6f}, 0.5f, 3.0f, 15.0f);
+        
+        /* to the left delay slider */
+        juce::Path fbFlowL;
+        fbFlowL.startNewSubPath(getWidth() * 0.05f, getHeight() * 0.7f);
+        fbFlowL.lineTo(getWidth() * 0.05f, getHeight() * 0.29f);
+        fbFlowL.lineTo(getWidth() * 0.15f, getHeight() * 0.24f);
+        fbFlowL = fbFlowL.createPathWithRoundedCorners(14.0f);
+        g.strokePath(fbFlowL, juce::PathStrokeType(2.0f));
+        
+        /* left delay out */
+        
+        juce::Path leftDelayOutPath;
+        float xStart = getWidth() * 0.75f;
+        float xVertical = getWidth() * 0.9f;
+        float yCentreL = getHeight() * 0.1875f;
+        float yCentreFb = getHeight() - getHeight() * 0.125f;
+        float farX = getWidth() * 0.96f;
+        leftDelayOutPath.startNewSubPath(xStart, yCentreL);
+        leftDelayOutPath.lineTo(xVertical, yCentreL);
+        leftDelayOutPath.lineTo(xVertical, yCentreFb);
+        leftDelayOutPath.lineTo(farX, yCentreFb);
+        leftDelayOutPath = leftDelayOutPath.createPathWithRoundedCorners(14.0f);
+        g.strokePath(leftDelayOutPath, juce::PathStrokeType(2.0f));
+        
+        /* right delay out and to the VSF */
+        
+        juce::Path rightDelayOutPath;
+        float yCentreR = getHeight() * 0.5625f;
+        float yRight = yCentreR + getHeight() * 0.09f;
+        rightDelayOutPath.startNewSubPath(xStart, yCentreR);
+        rightDelayOutPath.lineTo(xVertical, yCentreR);
+        rightDelayOutPath.lineTo(xVertical, yRight);
+        rightDelayOutPath.lineTo(farX, yRight);
+        //rightDelayOutPath = rightDelayOutPath.createPathWithRoundedCorners(14.0f);
+        g.strokePath(rightDelayOutPath, juce::PathStrokeType(2.0f));
         
         
     }
@@ -92,6 +158,7 @@ private:
     std::unique_ptr<juce::Slider> rightDelaySlider;
     std::unique_ptr<juce::Slider> feedbackSlider;
     
+    const float edge {3.0f};
     juce::Font textFont;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayFrame)
 };

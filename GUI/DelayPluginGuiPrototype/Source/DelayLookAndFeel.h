@@ -84,7 +84,7 @@ public:
         drawSliderThumb(g, topPlaneCentre, radius, angle);
         
         g.setColour(juce::Colours::red);
-        g.drawRect(x, y, width, height);
+//        g.drawRect(x, y, width, height);
         
     }
     
@@ -96,9 +96,12 @@ public:
     
     void drawLabel(juce::Graphics& g, juce::Label& label) override
     {
-        g.setColour(colourPalette[background]);
-        auto area = label.getLocalBounds().reduced(2.0f);
+        
+        g.setColour(colourPalette[shadow]);
+        auto area = label.getLocalBounds().reduced(label.getWidth()* 0.1f, 1.0f);
         g.drawRoundedRectangle(area.toFloat(), 3.0f, 1.0f);
+        g.setColour(colourPalette[background]);
+        g.fillRoundedRectangle(area.toFloat(), 3.0f);
     }
     
     void setBackgroundColour(const juce::Colour& colour)

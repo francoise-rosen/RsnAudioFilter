@@ -38,6 +38,8 @@ void MainComponent::paint (juce::Graphics& g)
     g.setColour(colourPalette.grid);
     auto frame = getLocalBounds().reduced(5.0f);
     g.drawRoundedRectangle(frame.toFloat(), 5.0f, 3.0f);
+    
+    
   
 }
 
@@ -45,6 +47,6 @@ void MainComponent::resized()
 {
     auto area = getLocalBounds().reduced(5.0f);
     delaySection.setBounds(area.removeFromLeft(area.getWidth() * 0.567f));
-    filterSection.setBounds(area.removeFromTop(area.getHeight() * 0.5f));
+    filterSection.setBounds(area.removeFromTop(area.getHeight() * 0.7f));
     gainSection.setBounds(area);
 }

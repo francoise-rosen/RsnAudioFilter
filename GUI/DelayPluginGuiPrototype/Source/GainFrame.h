@@ -47,8 +47,8 @@ public:
     void resized() override
     {
         auto area = getLocalBounds().reduced(5.0f);
-        typeBox->setBounds(area.removeFromTop(area.getHeight() * 0.2f));
-        gainSlider->setBounds(area.removeFromBottom(area.getHeight() * 0.5f));
+        typeBox->setBounds(area.removeFromTop(area.getHeight() * 0.3f));
+        gainSlider->setBounds(area.removeFromRight(area.getWidth() * 0.45f));
         amountSlider->setBounds(area);
 
     }
