@@ -35,6 +35,7 @@ public:
         feedbackKnobLook.setRimColour(juce::Colours::black);
         feedbackSlider->setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
         feedbackSlider->setLookAndFeel(&feedbackKnobLook);
+
         
 
     }
@@ -44,17 +45,17 @@ public:
         setLookAndFeel(nullptr);
     }
     
-    void setBackgroundColour(juce::Colour& background)
+    void setBackgroundColour (juce::Colour& background)
     {
         windowColour = background;
     }
     
-    void setFont(const juce::Font& font)
+    void setFont (const juce::Font& font)
     {
         textFont = font;
     }
     
-    void setTextColour(const juce::Colour& colour)
+    void setTextColour (const juce::Colour& colour)
     {
         textColour = colour;
     }
@@ -89,24 +90,24 @@ public:
         /* SIGNAL FLOW ARROWS */
         
         /* to the right delay slider */
-        g.setColour(textColour);
+        g.setColour (textColour);
         juce::Path fbFlowR;
-        fbFlowR.startNewSubPath(getWidth() * 0.25f, getHeight() * 0.9f);
-        fbFlowR.lineTo(getWidth() * 0.05f, getHeight() * 0.9f);
-        fbFlowR.lineTo(getWidth() * 0.05f, getHeight() * 0.65f);
-        fbFlowR.lineTo(getWidth() * 0.15f, getHeight() * 0.6f);
+        fbFlowR.startNewSubPath (getWidth() * 0.25f, getHeight() * 0.9f);
+        fbFlowR.lineTo (getWidth() * 0.05f, getHeight() * 0.9f);
+        fbFlowR.lineTo (getWidth() * 0.05f, getHeight() * 0.65f);
+        fbFlowR.lineTo (getWidth() * 0.15f, getHeight() * 0.6f);
         fbFlowR = fbFlowR.createPathWithRoundedCorners(14.0f);
-        g.strokePath(fbFlowR, juce::PathStrokeType(2.0f));
+        g.strokePath (fbFlowR, juce::PathStrokeType(2.0f));
         
-        fbFlowR.addArrow(juce::Line<float>{getWidth() * 0.15f, getHeight() * 0.6f, getWidth() * 0.15f, getHeight() * 0.6f}, 0.5f, 3.0f, 15.0f);
+        fbFlowR.addArrow (juce::Line<float>{getWidth() * 0.15f, getHeight() * 0.6f, getWidth() * 0.15f, getHeight() * 0.6f}, 0.5f, 3.0f, 15.0f);
         
         /* to the left delay slider */
         juce::Path fbFlowL;
-        fbFlowL.startNewSubPath(getWidth() * 0.05f, getHeight() * 0.7f);
-        fbFlowL.lineTo(getWidth() * 0.05f, getHeight() * 0.29f);
-        fbFlowL.lineTo(getWidth() * 0.15f, getHeight() * 0.24f);
+        fbFlowL.startNewSubPath (getWidth() * 0.05f, getHeight() * 0.7f);
+        fbFlowL.lineTo (getWidth() * 0.05f, getHeight() * 0.29f);
+        fbFlowL.lineTo (getWidth() * 0.15f, getHeight() * 0.24f);
         fbFlowL = fbFlowL.createPathWithRoundedCorners(14.0f);
-        g.strokePath(fbFlowL, juce::PathStrokeType(2.0f));
+        g.strokePath (fbFlowL, juce::PathStrokeType(2.0f));
         
         /* left delay out */
         
@@ -138,14 +139,15 @@ public:
         
     }
 
-    void resized() override
+    void resized () override
     {
         auto area = getLocalBounds().reduced(5.0f);
-        auto feedbackKnobArea = area.removeFromBottom(getHeight() * 0.25f);
+        auto feedbackKnobArea = area.removeFromBottom (getHeight() * 0.25f);
         
-        feedbackSlider->setBounds(feedbackKnobArea);
-        leftDelaySlider->setBounds(area.removeFromTop(area.getHeight() * 0.5f).removeFromLeft(getWidth() * 0.8f));
-        rightDelaySlider->setBounds(area.removeFromLeft(getWidth() * 0.8f));
+        feedbackSlider->setBounds (feedbackKnobArea);
+        leftDelaySlider->setBounds (area.removeFromTop (area.getHeight() * 0.5f).removeFromLeft (getWidth() * 0.8f));
+        rightDelaySlider->setBounds (area.removeFromLeft (getWidth() * 0.8f));
+
 
     }
 

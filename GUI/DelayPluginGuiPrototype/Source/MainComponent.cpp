@@ -7,7 +7,7 @@ MainComponent::MainComponent()
                juce::Colours::white.withAlpha(0.92f).withHue(0.72f), /* object colours */
                juce::Colours::black.withAlpha(0.77f), /* rims and text colour */
                juce::Colours::black, /* shadows and edges */
-               juce::Colours::orange.withBrightness(0.77f)
+               juce::Colours::orange.withBrightness(0.97f)
                )
 
 {

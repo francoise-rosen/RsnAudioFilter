@@ -30,6 +30,9 @@ public:
         frequencySlider = std::make_unique<juce::Slider>(juce::Slider::SliderStyle::Rotary, juce::Slider::TextBoxBelow);
         filterTypeSlider = std::make_unique<juce::Slider>(juce::Slider::SliderStyle::Rotary, juce::Slider::TextBoxBelow);
         qSlider = std::make_unique<juce::Slider>(juce::Slider::SliderStyle::Rotary, juce::Slider::TextBoxBelow);
+        frequencySlider->setRange(20.0, 20000);
+        frequencySlider->setTextValueSuffix(" Hz");
+        frequencySlider->setNumDecimalPlacesToDisplay(2);
         addAndMakeVisible(qSlider.get());
         addAndMakeVisible(frequencySlider.get());
         addAndMakeVisible(filterTypeSlider.get());
@@ -52,7 +55,7 @@ public:
 
     void paint (juce::Graphics& g) override
     {
-        g.fillAll(windowColour.withBrightness(0.8f));
+        g.fillAll(windowColour.withBrightness(0.72f));
         g.setFont(localFont);
         juce::Colour textColour = juce::Colours::white.withAlpha(0.86f);
         juce::Colour labelColour = juce::Colours::black.withAlpha(0.77f);
@@ -62,7 +65,7 @@ public:
 
         /* edge */
         juce::Path p;
-        p.startNewSubPath(area.getX(), area.getY());
+        p.startNewSubPath(area.getX(), area.getY() + getHeight() * 0.27f);
         p.lineTo(area.getX(), area.getBottom());
         p.lineTo(area.getRight(), area.getBottom());
         g.strokePath(p, juce::PathStrokeType(3.0f));
@@ -112,8 +115,9 @@ public:
         g.drawFittedText("Kju", qLabelRect, juce::Justification::centred, 1);
         g.drawFittedText("FiLTeR", filterLabelRect, juce::Justification::centred, 1);
         
-        g.setColour(labelColour);
-        g.drawLine(freqArea.getCentreX(), freqArea.getCentreY(), freqArea.getCentreX(), freqArea.getBottom(), 1.0f);
+        /* lines to labels */
+        g.setColour(juce::Colours::black.withAlpha(1.0f));
+        g.drawLine(freqArea.getCentreX(), freqArea.getCentreY(), freqArea.getCentreX(), getBottom() - 15.0f, 2.0f);
         
     }
 

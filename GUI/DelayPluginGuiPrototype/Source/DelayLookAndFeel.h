@@ -29,7 +29,11 @@ class DelayLookAndFeel : public juce::LookAndFeel_V4
 public:
     DelayLookAndFeel()
     {
-        
+//        setColour(juce::Label::backgroundColourId, juce::Colours::red);
+//        setColour(juce::Label::backgroundWhenEditingColourId, juce::Colours::black);
+        setColour(juce::Label::outlineColourId, juce::Colours::transparentWhite);
+        setColour(juce::Slider::textBoxTextColourId, juce::Colours::orange);
+       // setColour(juce::Label::textColourId, juce::Colours::black);
     }
     
     virtual ~DelayLookAndFeel()
@@ -90,18 +94,52 @@ public:
     
     juce::Label* createSliderTextBox(juce::Slider& slider) override
     {
-        std::unique_ptr<juce::Label> newLabel = std::make_unique<juce::Label>("Slider", "New");
-        return newLabel.get();
+        auto* l = juce::LookAndFeel_V2::createSliderTextBox (slider);
+
+        if (getCurrentColourScheme() == LookAndFeel_V4::getGreyColourScheme() && (slider.getSliderStyle() == juce::Slider::LinearBar
+                                                                                  || slider.getSliderStyle() == juce::Slider::LinearBarVertical))
+        {
+            l->setColour (juce::Label::textColourId, juce::Colours::black.withAlpha (0.7f));
+        }
+        l->setFont(juce::Font("Monaco", "Italic", 4.0f));
+
+        return l;
+    }
+
+    juce::Font getLabelFont(juce::Label& label) override
+    {
+        return juce::Font("Monaco", "Plane", 14.0f);
     }
     
     void drawLabel(juce::Graphics& g, juce::Label& label) override
     {
-        
+
         g.setColour(colourPalette[shadow]);
-        auto area = label.getLocalBounds().reduced(label.getWidth()* 0.1f, 1.0f);
-        g.drawRoundedRectangle(area.toFloat(), 3.0f, 1.0f);
-        g.setColour(colourPalette[background]);
+        auto area = label.getLocalBounds().reduced(label.getWidth()* 0.02f, 1.0f);
         g.fillRoundedRectangle(area.toFloat(), 3.0f);
+
+        if (! label.isBeingEdited())
+        {
+            auto alpha = label.isEnabled() ? 1.0f : 0.05f;
+            const juce::Font font (getLabelFont(label));
+            g.setColour (label.findColour (juce::Label::textColourId).withMultipliedAlpha (alpha));
+            g.setFont (font);
+            auto textArea {label.getBorderSize().subtractedFrom(area)};
+            g.drawFittedText(label.getText(), textArea, label.getJustificationType(), juce::jmax (1, static_cast<int>(textArea.getHeight() / font.getHeight())), label.getMinimumHorizontalScale());
+            g.setColour (label.findColour (juce::Label::outlineColourId).withMultipliedAlpha (alpha));
+
+        }
+
+        else if (label.isEnabled())
+        {
+            setColour(juce::Label::outlineColourId, juce::Colours::pink);
+            g.setColour (label.findColour (juce::Label::outlineColourId));
+            setColour(juce::Label::outlineColourId, juce::Colours::yellow);
+        }
+        g.drawRoundedRectangle(area.toFloat(), 3.0f, 1.0f);
+        g.setColour(colourPalette[background].withAlpha(0.0f));
+        g.fillRoundedRectangle(area.toFloat(), 3.0f);
+
     }
     
     void setBackgroundColour(const juce::Colour& colour)
@@ -159,6 +197,62 @@ private:
     juce::Font createTextBoxFont()
     {
         return juce::Font("Monaco", "Plane", 14.0f);
+    }
+    
+};
+
+// ComboBox LookAndFeel
+
+class ComboLookAndFeel : public juce::LookAndFeel_V4
+{
+public:
+    ComboLookAndFeel()
+    {}
+    
+    virtual ~ComboLookAndFeel()
+    {}
+    
+    // set combo box font
+    juce::Font getComboBoxFont(juce::ComboBox& box) override
+    {
+        return currentComboBoxFont();
+    }
+    
+    // set combo box popup font
+    
+    juce::Font getPopupMenuFont() override
+    {
+        return currentComboBoxFont();
+    }
+    
+    void drawComboBox (juce::Graphics& g, int width, int height, bool down, int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox& box) override
+    {
+        /* box properties */
+        auto cornerSize = box.findParentComponentOfClass<juce::ChoicePropertyComponent>() != nullptr ? 0.0f : 3.0f;
+        juce::Rectangle<int> area (0, 0, width, height);
+        g.setColour (box.findColour(juce::ComboBox::backgroundColourId));
+        g.fillRoundedRectangle (area.toFloat(), cornerSize);
+        g.setColour (box.findColour (juce::ComboBox::outlineColourId));
+        g.drawRoundedRectangle (area.reduced(1.5f).toFloat(), cornerSize, 1.0f);
+        
+        /* an arrow */
+        juce::Path arrow;
+        juce::Point<float> point1 {width * 0.85f, height * 0.4f};
+        juce::Point<float> point3 {width * 0.95f, height * 0.4f};
+        juce::Point<float> point2 {width * 0.9f, height * 0.6f};
+        g.setColour (box.findColour (juce::ComboBox::arrowColourId).withAlpha ((box.isEnabled() ? 0.59f : 0.2f )));
+        arrow.addTriangle (point1, point2, point3);
+        g.fillPath (arrow);
+        
+    }
+
+    
+private:
+    int fontHeight {12};
+    
+    juce::Font currentComboBoxFont()
+    {
+        return juce::Font("Monaco", "Plain", fontHeight);
     }
     
 };

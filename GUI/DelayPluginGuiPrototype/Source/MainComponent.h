@@ -16,6 +16,7 @@
  5. Filter Type
  6. Amount (dry wet)
  7. Gain
+ 8. Q
  
  Combo:
  1. Type of delay: Stereo, Ping / Pong, LCR (dry wet affects only delayed signal)
