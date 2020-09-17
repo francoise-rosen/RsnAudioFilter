@@ -73,6 +73,7 @@ public:
         /* section label */
         g.setColour(labelColour);
         auto labelSection = area.removeFromTop(getHeight() * labelHeightRatio).reduced(getWidth() * 0.24f, edge);
+        labelSection = juce::Rectangle<int>(edge, edge, labelSection.getWidth(), labelSection.getHeight());
         g.fillRect(labelSection);
         g.setColour(textColour);
         g.drawFittedText("VSF", labelSection, juce::Justification::centred, 1);

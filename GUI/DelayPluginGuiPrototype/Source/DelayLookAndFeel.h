@@ -257,6 +257,13 @@ private:
     
 };
 
+/* Button Look And Feel */
+
+class ButtonLookAndFeel : public juce::LookAndFeel_V4
+{
+    
+};
+
 // SLIDER look and feel (with inner and outer rim)
 
 // Big Slider look and feel (line make noise big slider)
