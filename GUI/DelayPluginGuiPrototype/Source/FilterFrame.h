@@ -33,6 +33,12 @@ public:
         frequencySlider->setRange(20.0, 20000);
         frequencySlider->setTextValueSuffix(" Hz");
         frequencySlider->setNumDecimalPlacesToDisplay(2);
+        qSlider->setRange(0.1, 10.0);
+        qSlider->setSkewFactorFromMidPoint(0.7071);
+        qSlider->setValue(0.7071);
+        qSlider->setNumDecimalPlacesToDisplay(2);
+        filterTypeSlider->setRange(0.0, 1.0);
+        filterTypeSlider->setNumDecimalPlacesToDisplay(2);
         addAndMakeVisible(qSlider.get());
         addAndMakeVisible(frequencySlider.get());
         addAndMakeVisible(filterTypeSlider.get());
@@ -76,7 +82,7 @@ public:
         labelSection = juce::Rectangle<int>(edge, edge, labelSection.getWidth(), labelSection.getHeight());
         g.fillRect(labelSection);
         g.setColour(textColour);
-        g.drawFittedText("VSF", labelSection, juce::Justification::centred, 1);
+        g.drawFittedText("FiLTeR", labelSection, juce::Justification::centred, 1);
         
         /* knob labels */
         g.setColour(labelColour);
@@ -114,7 +120,7 @@ public:
         g.setColour(textColour);
         g.drawFittedText("FReQ", freqLabelRect, juce::Justification::centred, 1);
         g.drawFittedText("Kju", qLabelRect, juce::Justification::centred, 1);
-        g.drawFittedText("FiLTeR", filterLabelRect, juce::Justification::centred, 1);
+        g.drawFittedText("MOde", filterLabelRect, juce::Justification::centred, 1);
         
         /* lines to labels */
         g.setColour(juce::Colours::black.withAlpha(1.0f));

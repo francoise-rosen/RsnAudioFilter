@@ -40,7 +40,7 @@ private:
     //==============================================================================
     // Your private member variables go here...
     std::pair<float, float> dimentions {3.6f, 5.0f};
-    const float scaler {100.0f};
+    const float scaler {130.0f};
     const float edge {5.0f};
     
     DelayFrame delaySection;
@@ -66,6 +66,10 @@ private:
     ColourPalette colourPalette;
     float fontHeight {17.0f};
     const juce::Font font {"Monaco", "Bold", fontHeight};
+    
+    juce::TextButton filterButton;
+    ButtonLookAndFeel buttonLookAndFeel;
+    
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

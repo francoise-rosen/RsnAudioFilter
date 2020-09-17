@@ -261,6 +261,51 @@ private:
 
 class ButtonLookAndFeel : public juce::LookAndFeel_V4
 {
+public:
+    ButtonLookAndFeel()
+    {}
+    
+    virtual ~ButtonLookAndFeel()
+    {}
+    
+    void drawButtonBackground (juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour, bool isButtonHighlighted, bool isButtonDown) override
+    {
+      
+        auto area = button.getLocalBounds().reduced(3.0f, 3.0f);
+        auto cornerSize = juce::jmin (area.getWidth() * 0.15f, area.getHeight() * 0.15f);
+        
+        juce::Colour baseColour = backgroundColour.withMultipliedSaturation (button.hasKeyboardFocus (true) ? 1.3f : 0.95f)
+                                                  .withMultipliedAlpha (button.isEnabled() ? 1.0f : 0.05f);
+           
+        if (isButtonHighlighted || isButtonDown)
+        {
+            baseColour = baseColour.contrasting(isButtonDown ? 0.9f : 0.05f);
+            
+        }
+
+        
+        /* add shadow */
+        auto edge = juce::jmin (2.0f, juce::jmin (area.getWidth() * 0.2f, area.getHeight() * 0.2f));
+        auto buttonArea = area;
+        buttonArea.removeFromTop (edge);
+        buttonArea.removeFromLeft (edge);
+        g.setColour(backgroundColour.withMultipliedBrightness(0.12f));
+        g.fillRoundedRectangle(buttonArea.toFloat(), cornerSize);
+        
+        auto offset = isButtonDown ? edge * 0.62f : edge;
+        buttonArea.translate(offset, offset);
+        
+        
+        g.setColour(baseColour);
+        g.fillRoundedRectangle (buttonArea.toFloat(), cornerSize);
+        g.setColour (baseColour.contrasting(0.97f));
+        g.drawRoundedRectangle (buttonArea.toFloat(), cornerSize, 1.0f);
+        
+   
+        
+        
+        
+    }
     
 };
 

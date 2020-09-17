@@ -27,6 +27,12 @@ public:
         leftDelaySlider = std::make_unique<juce::Slider>(juce::Slider::SliderStyle::Rotary, juce::Slider::TextBoxBelow);
         rightDelaySlider = std::make_unique<juce::Slider>(juce::Slider::SliderStyle::Rotary, juce::Slider::TextBoxBelow);
         feedbackSlider = std::make_unique<juce::Slider>(juce::Slider::SliderStyle::Rotary, juce::Slider::TextBoxBelow);
+        leftDelaySlider->setRange(0.01, 2000.0);
+        rightDelaySlider->setRange(0.01, 2000.0);
+        leftDelaySlider->setTextValueSuffix(" ms");
+        rightDelaySlider->setTextValueSuffix(" ms");
+        leftDelaySlider->setNumDecimalPlacesToDisplay(2);
+        rightDelaySlider->setNumDecimalPlacesToDisplay(2);
         addAndMakeVisible(leftDelaySlider.get());
         addAndMakeVisible(rightDelaySlider.get());
         addAndMakeVisible(feedbackSlider.get());
@@ -35,8 +41,6 @@ public:
         feedbackKnobLook.setRimColour(juce::Colours::black);
         feedbackSlider->setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
         feedbackSlider->setLookAndFeel(&feedbackKnobLook);
-
-        
 
     }
 
@@ -67,10 +71,6 @@ public:
         g.setFont(textFont);
         
         /* LABELS */
-        
-        auto area = getLocalBounds().reduced(5.0f);
-        g.drawFittedText("FeedBaCK", area.removeFromBottom(area.getHeight() * 0.25f), juce::Justification::centredTop, 1);
-        
         auto delayLabel = getLocalBounds().removeFromTop(getHeight() * 0.051f).removeFromLeft(getWidth() * 0.42f).reduced(edge);
         g.fillRect(delayLabel);
         
@@ -82,10 +82,9 @@ public:
         auto lowerArea = thisArea.removeFromBottom(getHeight() * 0.25f);
         auto upperSection = thisArea.removeFromTop(thisArea.getHeight() * 0.5f);
         auto midSection = std::move(thisArea);
-        g.drawFittedText("LeFT", upperSection.withLeft(getWidth() * 0.57f).withBottom(upperSection.getHeight() * 0.45f).reduced(edge), juce::Justification::centred, 1);
-        
-        
-        g.drawFittedText("RiGHT", midSection.withLeft(getWidth() * 0.57f).withBottom(upperSection.getHeight() + midSection.getHeight() * 0.45f).reduced(edge), juce::Justification::centred, 1);
+        g.drawFittedText("FeedBk", lowerArea.withRight(getWidth() * 0.9f).reduced(edge, 0), juce::Justification::topRight, 1);
+        g.drawFittedText("LeFT", upperSection.withRight(getWidth() * 0.9f).withBottom(upperSection.getHeight() * 0.5f).reduced(edge), juce::Justification::centredRight, 1);
+        g.drawFittedText("RiGHT", midSection.withRight(getWidth() * 0.9f).withBottom(upperSection.getHeight() + midSection.getHeight() * 0.5f - 10.0f).reduced(edge), juce::Justification::centredRight, 1);
         
         /* SIGNAL FLOW ARROWS */
         
@@ -135,6 +134,8 @@ public:
         rightDelayOutPath.lineTo(farX, yRight);
         //rightDelayOutPath = rightDelayOutPath.createPathWithRoundedCorners(14.0f);
         g.strokePath(rightDelayOutPath, juce::PathStrokeType(2.0f));
+        
+
         
         
     }

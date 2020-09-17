@@ -12,6 +12,8 @@ MainComponent::MainComponent()
 
 {
     
+    setLookAndFeel(&buttonLookAndFeel);
+    
     auto width = dimentions.first * scaler;
     auto height = dimentions.second * scaler;
     addAndMakeVisible(&delaySection);
@@ -23,11 +25,16 @@ MainComponent::MainComponent()
     addAndMakeVisible(&filterSection);
     addAndMakeVisible(&gainSection);
     
+    filterButton.setColour(juce::TextButton::buttonColourId, juce::Colours::orange);
+    filterButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::red);
+    addAndMakeVisible(&filterButton);
+    
     setSize (width, height);
 }
 
 MainComponent::~MainComponent()
 {
+    setLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -36,17 +43,39 @@ void MainComponent::paint (juce::Graphics& g)
 
     g.fillAll (juce::Colours::white.withAlpha(0.75f));
     g.setColour(colourPalette.grid);
-    auto frame = getLocalBounds().reduced(5.0f);
-    g.drawRoundedRectangle(frame.toFloat(), 5.0f, 3.0f);
+    auto frame = getLocalBounds().reduced(edge);
+    g.drawRoundedRectangle(frame.toFloat(), edge, 3.0f);
+    
+    /* delay to filter pointer */
+    juce::Path toFilter;
+    juce::Point<float> start {getWidth() * 0.567f * 0.9f, frame.getHeight() * 0.165f};
+    juce::Point<float> end {frame.getWidth() * 0.567f + getWidth() * 0.07f, frame.getHeight() * 0.165f};
+    toFilter.startNewSubPath(start);
+    toFilter.lineTo(end);
+    g.setColour(juce::Colours::black);
+    g.strokePath(toFilter, juce::PathStrokeType(1.0f));
+    
+    /* custom arrow */
+    juce::Path arrow;
+    arrow.startNewSubPath(end.getX() + getWidth() * 0.02f, end.getY());
+    arrow.lineTo(end.getX(), end.getY() - 5.0f);
+    arrow.lineTo(end.getX(), end.getY() + 5.0f);
+    g.fillPath(arrow);
     
     
-  
+    
 }
 
 void MainComponent::resized()
 {
-    auto area = getLocalBounds().reduced(5.0f);
+    auto area = getLocalBounds().reduced(edge);
     delaySection.setBounds(area.removeFromLeft(area.getWidth() * 0.567f));
     filterSection.setBounds(area.removeFromTop(area.getHeight() * 0.7f));
     gainSection.setBounds(area);
+    
+    juce::Point<float> buttonCentre {getWidth() * 0.567f, getHeight() * 0.082f};
+    auto buttonLen = getHeight() * 0.05f;
+    juce::Point<float> buttonXY {buttonCentre.getX() - buttonLen * 0.5f, buttonCentre.getY() - buttonLen * 0.5f};
+    
+    filterButton.setBounds(buttonXY.getX(), buttonXY.getY(), buttonLen, buttonLen);
 }
