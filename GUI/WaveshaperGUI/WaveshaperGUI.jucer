@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="bp3XxQ" name="WaveshaperGUI" projectType="guiapp" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
+  <MAINGROUP id="P7AsAc" name="WaveshaperGUI">
+    <GROUP id="{A1D56B31-0608-B36F-172C-342AB4336C32}" name="Source">
+      <FILE id="gVxKZd" name="WaveshaperLookAndFeel.h" compile="0" resource="0"
+            file="Source/WaveshaperLookAndFeel.h"/>
+      <FILE id="jbFMOv" name="GainSection.h" compile="0" resource="0" file="Source/GainSection.h"/>
+      <FILE id="CQJqIr" name="CrossfadeSection.h" compile="0" resource="0"
+            file="Source/CrossfadeSection.h"/>
+      <FILE id="CoH3yR" name="SaturationSection.h" compile="0" resource="0"
+            file="Source/SaturationSection.h"/>
+      <FILE id="Pp2cXd" name="LFOSection.cpp" compile="1" resource="0" file="Source/LFOSection.cpp"/>
+      <FILE id="QIzCSe" name="LFOSection.h" compile="0" resource="0" file="Source/LFOSection.h"/>
+      <FILE id="iLHdom" name="FilterSection.cpp" compile="1" resource="0"
+            file="Source/FilterSection.cpp"/>
+      <FILE id="sYHtmF" name="FilterSection.h" compile="0" resource="0" file="Source/FilterSection.h"/>
+      <FILE id="EYpjlQ" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="oLOAUz" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
+      <FILE id="nyIMYw" name="MainComponent.cpp" compile="1" resource="0"
+            file="Source/MainComponent.cpp"/>
+    </GROUP>
+  </MAINGROUP>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="WaveshaperGUI"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="WaveshaperGUI"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../../../../../../Applications/JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <LIVE_SETTINGS>
+    <OSX/>
+  </LIVE_SETTINGS>
+</JUCERPROJECT>
