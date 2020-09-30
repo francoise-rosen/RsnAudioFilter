@@ -15,21 +15,35 @@
 class WaveshaperLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
-    WaveshaperLookAndFeel() {}
+    WaveshaperLookAndFeel()
+    {}
     virtual ~WaveshaperLookAndFeel() override
     {}
-    
+
     /** Slider functions. */
     void drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider& slider) override;
+    
+    void drawLinearSlider (juce::Graphics &, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider &) override;
+    
+//    void drawLinearSliderBackground
+//    void drawLinearSliderThumb
+
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveshaperLookAndFeel)
 };
 
 /** Slider functions. */
-void WaveshaperLookAndFeel::drawRotarySlider (juce::Graphics &g, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider &slider)
+inline void WaveshaperLookAndFeel::drawRotarySlider (juce::Graphics &g, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider &slider)
+{
+
+}
+
+inline void WaveshaperLookAndFeel::drawLinearSlider (juce::Graphics &, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider &)
 {
     
 }
+
+
 
 
 

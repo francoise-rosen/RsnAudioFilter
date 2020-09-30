@@ -185,6 +185,13 @@
 			path = System/Library/Frameworks/WebKit.framework;
 			sourceTree = SDKROOT;
 		};
+		11DE6C5193145D9562B3F650 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = Display.h;
+			path = ../../Source/Display.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		134C5660A38202AA95758B8C = {
 			isa = PBXFileReference;
 			lastKnownFileType = file;
@@ -199,6 +206,13 @@
 			path = "/Applications/JUCE/modules/juce_core";
 			sourceTree = "<absolute>";
 		};
+		1B01FB69742177A357CDDEDE = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.objcpp;
+			name = "include_juce_audio_plugin_client_AU_2.mm";
+			path = "../../JuceLibraryCode/include_juce_audio_plugin_client_AU_2.mm";
+			sourceTree = "SOURCE_ROOT";
+		};
 		5B5C6F46119DA77D0841C8C3 = {
 			isa = PBXFileReference;
 			explicitFileType = wrapper.cfbundle;
@@ -212,13 +226,6 @@
 			includeInIndex = 0;
 			path = BasicSampler.component;
 			sourceTree = "BUILT_PRODUCTS_DIR";
-		};
-		1B01FB69742177A357CDDEDE = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.objcpp;
-			name = "include_juce_audio_plugin_client_AU_2.mm";
-			path = "../../JuceLibraryCode/include_juce_audio_plugin_client_AU_2.mm";
-			sourceTree = "SOURCE_ROOT";
 		};
 		21F6F9F98039469FB0B527E8 = {
 			isa = PBXFileReference;
@@ -332,6 +339,13 @@
 			path = System/Library/Frameworks/Accelerate.framework;
 			sourceTree = SDKROOT;
 		};
+		847D9E28753D382D28C2A89B = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = RightBar.h;
+			path = ../../Source/RightBar.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		890BB73F0BEB89079C32A0D8 = {
 			isa = PBXFileReference;
 			lastKnownFileType = file;
@@ -421,6 +435,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = "include_juce_audio_plugin_client_utils.cpp";
 			path = "../../JuceLibraryCode/include_juce_audio_plugin_client_utils.cpp";
+			sourceTree = "SOURCE_ROOT";
+		};
+		BD7BF4878D21CA62CF3F43A3 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = BottomBar.h;
+			path = ../../Source/BottomBar.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		C909FFA8C5EB6B3EC885ECCA = {
@@ -566,6 +587,9 @@
 		8E252C39E401ADF9AF47DD3C = {
 			isa = PBXGroup;
 			children = (
+				847D9E28753D382D28C2A89B,
+				11DE6C5193145D9562B3F650,
+				BD7BF4878D21CA62CF3F43A3,
 				C909FFA8C5EB6B3EC885ECCA,
 				F564485F171F295FD62E6F2D,
 				21F6F9F98039469FB0B527E8,

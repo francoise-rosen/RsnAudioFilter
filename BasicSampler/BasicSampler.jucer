@@ -5,6 +5,9 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="pXZryg" name="BasicSampler">
     <GROUP id="{A400BB4F-213C-46CD-EBF7-ACC175299B00}" name="Source">
+      <FILE id="tRXboD" name="RightBar.h" compile="0" resource="0" file="Source/RightBar.h"/>
+      <FILE id="RlAa95" name="Display.h" compile="0" resource="0" file="Source/Display.h"/>
+      <FILE id="Qpej37" name="BottomBar.h" compile="0" resource="0" file="Source/BottomBar.h"/>
       <FILE id="jV3nyB" name="WaveformThumbnail.cpp" compile="1" resource="0"
             file="Source/WaveformThumbnail.cpp"/>
       <FILE id="cAtvI4" name="WaveformThumbnail.h" compile="0" resource="0"
