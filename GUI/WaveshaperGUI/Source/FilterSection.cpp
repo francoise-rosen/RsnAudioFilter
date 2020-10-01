@@ -12,10 +12,9 @@
 #include "FilterSection.h"
 
 //==============================================================================
-FilterSection::FilterSection()
+FilterSection::FilterSection(juce::Colour parentBackground)
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
+    localBackground = parentBackground;
 
 }
 
@@ -25,27 +24,34 @@ FilterSection::~FilterSection()
 
 void FilterSection::paint (juce::Graphics& g)
 {
-    /* This demo code just fills the component's background and
-       draws some placeholder text to get you started.
 
-       You should replace everything in this method with your own
-       drawing code..
-    */
-
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
-
-    g.setColour (juce::Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
-
-    g.setColour (juce::Colours::white);
-    g.setFont (14.0f);
-    g.drawText ("FilterSection", getLocalBounds(),
-                juce::Justification::centred, true);   // draw some placeholder text
+    g.fillAll (localBackground);
+    
+    auto area = getLocalBounds().reduced (edge);
+    g.setColour(juce::Colours::black);
+    
+    /** Output filter - left bottom secion triangle. */
+    juce::Path leftTri;
+    leftTri.startNewSubPath (area.getX(), area.getY() + edge);
+    leftTri.lineTo (area.getX(), area.getBottom());
+    leftTri.lineTo (area.getRight() - edge, area.getBottom());
+    leftTri.closeSubPath();
+    leftTri = leftTri.createPathWithRoundedCorners (edge * 2.0f);
+    g.fillPath(leftTri);
+    
+    /** Input filter - right upper secion triangle. */
+    juce::Path rightTri;
+    rightTri.startNewSubPath (area.getRight(), area.getY() + edge);
+    rightTri.lineTo (area.getRight(), area.getBottom());
+    rightTri.lineTo (area.getX() + edge, area.getY() + edge);
+    rightTri.closeSubPath();
+    rightTri = rightTri.createPathWithRoundedCorners (edge * 3.0f);
+    g.strokePath(rightTri, juce::PathStrokeType (2.0f));
 }
 
 void FilterSection::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
+
+    
 
 }

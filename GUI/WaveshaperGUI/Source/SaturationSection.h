@@ -18,11 +18,10 @@
 class SaturationSection  : public juce::Component
 {
 public:
-    SaturationSection()
+    SaturationSection (juce::Colour parentBackground)
     {
-        // In your constructor, you should add any child components, and
-        // initialise any special settings that your component needs.
-
+        localBackground = parentBackground;
+        addAndMakeVisible (&saturationSlider);
     }
 
     ~SaturationSection() override
@@ -31,31 +30,30 @@ public:
 
     void paint (juce::Graphics& g) override
     {
-        /* This demo code just fills the component's background and
-           draws some placeholder text to get you started.
-
-           You should replace everything in this method with your own
-           drawing code..
-        */
-
-        g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
-
-        g.setColour (juce::Colours::grey);
-        g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
-
-        g.setColour (juce::Colours::white);
-        g.setFont (14.0f);
-        g.drawText ("SaturationSection", getLocalBounds(),
-                    juce::Justification::centred, true);   // draw some placeholder text
+        g.fillAll (localBackground);
+        
+        /** draw vertical label */
+        
+        auto labelRect = getLocalBounds().removeFromLeft (getWidth() * 0.2f).removeFromBottom(getHeight() * 0.5f);
+        g.setColour (juce::Colours::black);
+        {
+            juce::Graphics::ScopedSaveState state (g);
+            g.addTransform (juce::AffineTransform::rotation (juce::MathConstants<float>::halfPi * 0.5f, getWidth() * 0.5f, getHeight() * 0.75f));
+            g.drawFittedText ("SaTuRaTioN", labelRect, juce::Justification::centred, 1);
+                            
+        }
     }
 
     void resized() override
     {
-        // This method is where you should set the bounds of any child
-        // components that your component contains..
+        auto area = getLocalBounds();
+        saturationSlider.setBounds (area.withLeft (area.getWidth() * 0.25f).reduced (edge));
 
     }
 
 private:
+    const float edge {5.0f};
+    juce::Slider saturationSlider {juce::Slider::SliderStyle::Rotary, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
+    juce::Colour localBackground;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SaturationSection)
 };

@@ -18,10 +18,23 @@
 class CrossfadeSection  : public juce::Component
 {
 public:
-    CrossfadeSection()
+    CrossfadeSection (juce::Colour parentBackground)
     {
-        // In your constructor, you should add any child components, and
-        // initialise any special settings that your component needs.
+        localBackground = parentBackground;
+        symmetrySlider.setColour (juce::Slider::thumbColourId, parentBackground);
+        symmetrySlider.setColour (juce::Slider::textBoxOutlineColourId, parentBackground.withAlpha(0.01f));
+        crossfadeSlider.setColour (juce::Slider::thumbColourId, parentBackground);
+        crossfadeSlider.setColour (juce::Slider::textBoxOutlineColourId, parentBackground.withAlpha(0.01f));
+        
+        functionA_toggle.setButtonText ("A");
+        functionB_toggle.setButtonText ("B");
+        
+        addAndMakeVisible (&symmetrySlider);
+        addAndMakeVisible (&crossfadeSlider);
+        addAndMakeVisible (&functionA_box);
+        addAndMakeVisible (&functionB_box);
+        addAndMakeVisible (&functionA_toggle);
+        addAndMakeVisible (&functionB_toggle);
 
     }
 
@@ -31,31 +44,42 @@ public:
 
     void paint (juce::Graphics& g) override
     {
-        /* This demo code just fills the component's background and
-           draws some placeholder text to get you started.
 
-           You should replace everything in this method with your own
-           drawing code..
-        */
-
-        g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
-
-        g.setColour (juce::Colours::grey);
-        g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
-
-        g.setColour (juce::Colours::white);
-        g.setFont (14.0f);
-        g.drawText ("CrossfadeSection", getLocalBounds(),
-                    juce::Justification::centred, true);   // draw some placeholder text
+        g.fillAll (localBackground);
+        
+        g.setColour (juce::Colours::black);
+        auto area = getLocalBounds().reduced (edge);
+        g.fillRoundedRectangle(area.toFloat(), edge * 2.0f);
     }
 
     void resized() override
     {
-        // This method is where you should set the bounds of any child
-        // components that your component contains..
+        auto area = getLocalBounds().reduced (edge);
+        symmetrySlider.setBounds (area.removeFromTop (area.getHeight() * 0.5f).reduced (edge));
+        crossfadeSlider.setBounds (area.removeFromBottom (area.getHeight() / 3.0f));
+        auto buttonArea = area.removeFromBottom (area.getHeight() * 0.5f);
+        functionA_toggle.setBounds (buttonArea.removeFromLeft (area.getWidth() * 0.25f).reduced(edge));
+        functionB_toggle.setBounds (buttonArea.removeFromRight (area.getWidth() * 0.25f).reduced(edge));
+        functionA_box.setBounds (area.removeFromLeft (area.getWidth() * 0.5).reduced (edge, edge + edge));
+        functionB_box.setBounds (area.reduced (edge, edge + edge));
+        
+        
 
     }
 
 private:
+    const float edge {5.0f};
+    juce::Colour localBackground;
+    
+    juce::Slider symmetrySlider {juce::Slider::SliderStyle::Rotary, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
+    juce::Slider crossfadeSlider {juce::Slider::SliderStyle::LinearHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
+    juce::ComboBox functionA_box;
+    juce::ComboBox functionB_box;
+    
+    /** Both being off results in bypass saturation stage,
+        which makes it to 2 stage filter + lfo unit.
+     */
+    juce::TextButton functionA_toggle;
+    juce::TextButton functionB_toggle;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CrossfadeSection)
 };
