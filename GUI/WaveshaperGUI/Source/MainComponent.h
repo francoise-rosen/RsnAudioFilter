@@ -39,7 +39,7 @@ private:
     LFOSection lfoSection;
     std::unique_ptr<SaturationSection> saturationSection;
     std::unique_ptr<CrossfadeSection> crossfadeSection;
-    GainSection gainSection;
+    std::unique_ptr<GainSection> gainSection;
     
     const float edge {5.0f};
     

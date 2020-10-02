@@ -9,6 +9,8 @@ MainComponent::MainComponent()
     addAndMakeVisible(*crossfadeSection);
     saturationSection = std::make_unique<SaturationSection>(backgroundTheme);
     addAndMakeVisible(*saturationSection);
+    gainSection = std::make_unique<GainSection>(backgroundTheme);
+    addAndMakeVisible(*gainSection);
     setSize (750, 400);
 }
 
@@ -26,7 +28,7 @@ void MainComponent::paint (juce::Graphics& g)
     g.drawRect (saturationSection->getBounds());
     g.drawRect (crossfadeSection->getBounds());
     g.drawRect (lfoSection.getBounds());
-    g.drawRect (gainSection.getBounds());
+    g.drawRect (gainSection->getBounds());
     
 }
 
@@ -37,6 +39,6 @@ void MainComponent::resized()
     auto midSection = windowArea.removeFromLeft (windowArea.getWidth() * 2.0f / 3.0f);
     lfoSection.setBounds (midSection.removeFromBottom (midSection.getHeight() / 3.0f));
     saturationSection->setBounds (midSection);
-    gainSection.setBounds (windowArea.removeFromBottom (windowArea.getHeight() / 3.0f));
+    gainSection->setBounds (windowArea.removeFromBottom (windowArea.getHeight() / 3.0f));
     crossfadeSection->setBounds (windowArea);
 }

@@ -36,12 +36,12 @@ public:
         
 //        auto labelRect = getLocalBounds().removeFromLeft (getWidth() * 0.5f).removeFromBottom(getHeight() * 0.5f);
         auto area = getLocalBounds().reduced (edge);
-        auto labelRect = getLocalBounds().removeFromLeft (getWidth() * 0.25f).removeFromTop (getHeight() * 0.15f).reduced (edge);
+        auto labelRect = getLocalBounds().removeFromBottom (getHeight() * 0.25f).withLeft (getWidth() * 0.25f).withRight (getWidth() * 0.75f);
         g.setColour (juce::Colours::black);
         
         {
             juce::Graphics::ScopedSaveState state (g);
-            g.addTransform (juce::AffineTransform::rotation (-juce::MathConstants<float>::halfPi, getWidth() * 0.5f, getHeight() * 0.5f));
+            g.addTransform (juce::AffineTransform::rotation (juce::MathConstants<float>::halfPi * 0.5f, getWidth() * 0.5f, getHeight() * 0.5f));
             g.drawRect (labelRect);
             g.drawFittedText ("SaTuRaTioN", labelRect, juce::Justification::centred, 1);
             g.setColour (juce::Colours::red);

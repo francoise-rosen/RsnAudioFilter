@@ -35,7 +35,6 @@ void BasicSamplerAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (juce::Colours::black);
-    setFrames();
 
     g.setColour (juce::Colours::gold);
     g.setFont (15.0f);
@@ -100,10 +99,7 @@ void BasicSamplerAudioProcessorEditor::paint (juce::Graphics& g)
 
 void BasicSamplerAudioProcessorEditor::resized()
 {
-    setFrames();
-    openButton.setBounds(frames[rightBar]->removeFromTop(getHeight()/6).reduced(edge));
-   // audioProcessor.filePathChanged = true; // does not work! We may want to draw on a child
-    // and resize that one?
+
 }
 
 //==============================================================================
@@ -132,26 +128,6 @@ void BasicSamplerAudioProcessorEditor::filesDropped(const juce::StringArray &fil
     }
     
     repaint();
-}
-
-void BasicSamplerAudioProcessorEditor::setFrames()
-{
-    frames.clear();
-    frames.resize((int)Frame::numOfFrames);
-    auto horizontalBarHeight = getHeight() / 6;
-    auto leftBarWidth = getWidth() / 10;
-    auto rightBarWidth = getWidth() / 5;
-    auto area = getLocalBounds();
-    frames[leftBar] = std::make_unique<juce::Rectangle<int>>(area.removeFromLeft(leftBarWidth));
-    frames[rightBar] = std::make_unique<juce::Rectangle<int>>(area.removeFromRight(rightBarWidth));
-    frames[topBar] = std::make_unique<juce::Rectangle<int>>(area.removeFromTop(horizontalBarHeight));
-    frames[bottomBar] = std::make_unique<juce::Rectangle<int>>(area.removeFromBottom(horizontalBarHeight));
-    frames[screenFrame] = std::make_unique<juce::Rectangle<int>>(area);
-    
-    for (int i = 0; i < frames.size(); ++i)
-    {
-        assert(frames[i] != nullptr);
-    }
 }
 
 int BasicSamplerAudioProcessorEditor::count{0};

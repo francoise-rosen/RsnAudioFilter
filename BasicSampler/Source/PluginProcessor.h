@@ -65,7 +65,6 @@ private:
     juce::Synthesiser sampler;
     const int numOfVoices = 3;
     
-    
     // File reading - register basic formats
     juce::AudioFormatManager formatManager;
     juce::BigInteger midiNoteRange;
@@ -73,6 +72,9 @@ private:
     
     juce::String filePath;
     juce::String fileText{"Load an audio file..."};
+    
+    juce::ADSR adsr;
+    juce::ADSR::Parameters adsrParams;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicSamplerAudioProcessor)

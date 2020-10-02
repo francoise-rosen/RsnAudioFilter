@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "WaveformThumbnail.h"
+#include "BottomBar.h"
 
 //==============================================================================
 /**
@@ -36,9 +37,6 @@ private:
     
     // GUI
     juce::TextButton openButton{"Open"};
-    enum Frame {screenFrame, leftBar, rightBar, topBar, bottomBar, numOfFrames};
-    std::vector<std::unique_ptr<juce::Rectangle<int>>> frames;
-    void setFrames();
     std::vector<float> waveformPoints;
  
     // Window
@@ -47,8 +45,9 @@ private:
     const int edge{5};
     
     bool waveformChanged;
-    
     static int count;
+    
+    std::unique_ptr<BottomBar> bottomBar;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicSamplerAudioProcessorEditor)
 };
