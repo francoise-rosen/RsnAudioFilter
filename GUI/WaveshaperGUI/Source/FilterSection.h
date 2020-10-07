@@ -20,7 +20,7 @@ class FilterSection  : public juce::Component
 {
 public:
     FilterSection(juce::Colour parentBackground);
-    ~FilterSection() override;
+    virtual ~FilterSection() override;
 
     void paint (juce::Graphics&) override;
     void resized() override;

@@ -12,12 +12,23 @@
  Surface: Black (filter triangles, crossfade area background)
           Dirty white / silver - the rest of background
  Rotary Slider Big (Saturation Slider)
+    Rotary Slider medium
     Rotary Slider Small (all other sliders)
-    Linear Slider
+    Linear Slider (LFO phase controls
     On Off button
     Lines, arrows. Gold for area edges, rest is black or white depending on background
     Combobox (2 colour scheme - black white, experiment with merges)
     Labels - 2 colour scheme - black white, depending on background
+ */
+
+/** LFO Parameters:
+ - Frequency (manual or sync (what's the range for sync)
+ - Waveform (Sine, Saw, Tri, Rect)
+ - SAH (how ?)
+ - Phase. LFO can output n waveforms at the same time (let's take 4). 4 slider for phase
+  control.
+ - N targets (symmetry, crossface, amount, filter cutoff, filter q, filter boost)
+ - how do I set amounts of modulation (in LFO, in the receiver?)
  */
 
 //==============================================================================

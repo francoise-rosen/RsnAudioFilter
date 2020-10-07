@@ -11,6 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "WaveshaperLookAndFeel.h"
 
 //==============================================================================
 /*
@@ -20,12 +21,14 @@ class SaturationSection  : public juce::Component
 public:
     SaturationSection (juce::Colour parentBackground)
     {
+        setLookAndFeel (&customLookAndFeel);
         localBackground = parentBackground;
         addAndMakeVisible (&saturationSlider);
     }
 
-    ~SaturationSection() override
+    virtual ~SaturationSection() override
     {
+        setLookAndFeel (nullptr);
     }
 
     void paint (juce::Graphics& g) override
@@ -61,5 +64,6 @@ private:
     const float edge {5.0f};
     juce::Slider saturationSlider {juce::Slider::SliderStyle::Rotary, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     juce::Colour localBackground;
+    WaveshaperLookAndFeel customLookAndFeel;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SaturationSection)
 };

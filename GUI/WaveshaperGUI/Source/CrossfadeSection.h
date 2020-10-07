@@ -38,7 +38,7 @@ public:
 
     }
 
-    ~CrossfadeSection() override
+    virtual ~CrossfadeSection() override
     {
     }
 

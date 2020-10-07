@@ -24,6 +24,38 @@
 // Next version: FilterDesign(int numOfBands=5, FilterType algorithms[numOfBands], orderOfEveryBand, frequencies, q's, dryWet=100%, int bandProcessingType[numOfBand](MS or stereo)) <- cascade filter as prototype for Matrix (Morph) Filter.
 // Employ
 
+/** Explore 1-2 order topologies, and some 3 order (for future cascade)
+ - LPF6 - done
+ - HPF6 - done
+ - LPF12 - done
+ - LPF12 - done
+ - BPF12
+ - BPS12
+ - ButterLPF6 - done
+ - ButterHPF6 - done
+ - ButterLPF12 - done
+ - ButterHPF12 - done
+ - ButterBPF12
+ - ButterBSF12
+ - LoShelf6
+ - HiShelf6
+ - LoShelf12
+ - HiShelf12
+ - AllPole6
+ - AllPole12
+ - LPFmatched6
+ - LPFmatched12
+ - HPFmatched6
+ - HPFmatched12
+ - BPFmatched12
+ - AllPass
+ - Peak
+ - ButterLPF18
+ - ButterHPF18
+ - ButterBPF18
+ - ButterBSF18
+ */
+
 
 namespace rosen
 
@@ -32,8 +64,21 @@ namespace rosen
     using Math = juce::MathConstants<double>;
     
     enum class FilterType {
-        LPF6, HPF6, LPF12, HPF12, ButterLPF6, ButterHPF6, ButterLPF12, ButterHPF12, ButterBPF6, BPF, BSF, LoShelf,
-        HiShelf, Peak, NumOfTypes
+        LPF6,
+        HPF6,
+        LPF12,
+        HPF12,
+        ButterLPF6,
+        ButterHPF6,
+        ButterLPF12,
+        ButterHPF12,
+        ButterBPF12,
+        BPF,
+        BSF,
+        LoShelf,
+        HiShelf,
+        Peak,
+        NumOfTypes
     };
     
     template <typename T>
@@ -108,7 +153,8 @@ namespace rosen
         FilterParameters<Type> parameters;
         double currentSampleRate;
         
-        // 1-2 order
+        // 1-2 order, otherwise use the vector of biquads, or ProcessorGraph
+        // with the sequence of Biquads
         std::unique_ptr<rosen::Biquad<Type>> biquad;
     
         // will determine the number of biquads to use in process
@@ -300,23 +346,10 @@ namespace rosen
             
         }
         
-        // blows up! Recalculate!
-        if (algorithm == FilterType::ButterBPF6)
+     
+        if (algorithm == FilterType::ButterBPF12)
         {
-            Type local_Q = scale(q, 0.02, 40.0, 1.0, freq);
-            Type tArg = Math::pi * freq / currentSampleRate;
-            if (tArg > Math::halfPi * 0.95) tArg = Math::halfPi * 0.95;
-            Type omega_o = tan(tArg);
-            //Type BW = freq / local_Q;
-            
-            Type D = local_Q + local_Q * omega_o + omega_o;
-            coefficients[a0] = omega_o / D;
-            coefficients[a1] = 1 / D;
-            coefficients[a2] = 0.0;
-            coefficients[b1] = - (local_Q + local_Q * omega_o + 1) * coefficients[a1];
-            coefficients[b2] = 0.0;
-            
-            biquad->setCoefficients(coefficients);
+        
             return;
         }
         

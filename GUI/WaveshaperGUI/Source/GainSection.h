@@ -27,7 +27,7 @@ public:
 
     }
 
-    ~GainSection() override
+    virtual ~GainSection() override
     {
     }
 

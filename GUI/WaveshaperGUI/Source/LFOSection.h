@@ -19,7 +19,7 @@ class LFOSection  : public juce::Component
 {
 public:
     LFOSection();
-    ~LFOSection() override;
+    virtual ~LFOSection() override;
 
     void paint (juce::Graphics&) override;
     void resized() override;
