@@ -21,6 +21,10 @@ public:
     GainSection(juce::Colour& parentBackground)
     :localBackground {parentBackground}
     {
+        setLookAndFeel (&gainLookAndFeel);
+        gainLookAndFeel.setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::blue.withBrightness(0.2f));
+        gainLookAndFeel.setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::blue.withBrightness(0.2f));
+        gainLookAndFeel.setColour (juce::Slider::thumbColourId, juce::Colours::blue.withBrightness(0.2f));
         addAndMakeVisible (&gainSlider);
         amountSlider.setNumDecimalPlacesToDisplay(2);
         addAndMakeVisible (&amountSlider);
@@ -29,6 +33,7 @@ public:
 
     virtual ~GainSection() override
     {
+        setLookAndFeel (nullptr);
     }
 
     void paint (juce::Graphics& g) override
@@ -50,5 +55,6 @@ private:
     juce::Colour localBackground;
     juce::Slider gainSlider {juce::Slider::SliderStyle::Rotary, juce::Slider::TextEntryBoxPosition::NoTextBox};
     juce::Slider amountSlider {juce::Slider::SliderStyle::Rotary, juce::Slider::TextEntryBoxPosition::NoTextBox};
+    WaveshaperLookAndFeel gainLookAndFeel;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GainSection)
 };

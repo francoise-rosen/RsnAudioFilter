@@ -189,7 +189,9 @@ private:
         std::pair<float, float> thumbDim {radius * 0.12f, radius * 0.57f};
         float thumbWidth = radius * 0.112f;
         float thumbLength = radius * 0.57f;
-        p.addRoundedRectangle( -thumbWidth, -radius, thumbWidth, thumbLength, juce::jmin(3.0f, thumbWidth * 0.5f), juce::jmin(3.0f, thumbWidth * 0.5f), true, true, false, true);
+        p.addRoundedRectangle( -thumbWidth, -radius, thumbWidth, thumbLength, 
+            juce::jmin(3.0f, thumbWidth * 0.5f), juce::jmin(3.0f, thumbWidth * 0.5f), 
+                true, true, false, true);
         p.applyTransform(juce::AffineTransform::rotation(angle).translated(centre));
         g.fillPath(p);
     }
