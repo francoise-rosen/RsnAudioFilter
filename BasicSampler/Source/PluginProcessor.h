@@ -67,13 +67,15 @@ private:
     
     // File reading - register basic formats
     juce::AudioFormatManager formatManager;
-    juce::BigInteger midiNoteRange;
+    juce::BigInteger midiNoteRange; // ?
     juce::AudioBuffer<float> waveform;
     
     juce::String filePath;
-    juce::String fileText{"Load an audio file..."};
+    juce::String fileText{"Load an audio file..."}; // delegate to Wavethumbnail child
     
-    juce::ADSR adsr;
+    /** In this example, no need to create an ADSR member,
+        since it is created and SamplerSound internally (private)
+     */
     juce::ADSR::Parameters adsrParams;
     
     //==============================================================================

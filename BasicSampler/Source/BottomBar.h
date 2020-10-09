@@ -20,6 +20,7 @@ class BottomBar  : public juce::Component
 {
 public:
     BottomBar(BasicSamplerAudioProcessor& audioProcessor)
+    :processor {audioProcessor}
     {
 
     }

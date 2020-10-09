@@ -1,6 +1,7 @@
 /*
   ==============================================================================
 
+    RosenAlphaOneLookAndFeel
     WaveshaperLookAndFeel.h
     Created: 20 Sep 2020 12:29:48pm
     Author:  syfo_dias
@@ -18,6 +19,8 @@
     3. Small slider - 2 colours
  */
 
+//================================================================================
+
 class WaveshaperLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
@@ -29,12 +32,14 @@ public:
     enum class OutlineType {ellipse, arcNormal, arcWithArrows, arcWithCornersOut, arcWithCornersIn, arcThreePointerEmpty, arcThreePointerFilled, noOutline};
 
     /** Slider functions. */
+    //================================================================================
     void drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider& slider) override;
     
+    int getSliderThumbRadius (juce::Slider& slider) override;
     void drawLinearSlider (juce::Graphics &, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider &) override;
     
 //    void drawLinearSliderBackground
-    int getSliderThumbRadius (juce::Slider& slider) override;
+    
     
     /** Test this (unit test).
         The drawing may overcomplicate the drawRotary method.
@@ -58,19 +63,20 @@ public:
     {
         outlineVisible = isVisible;
     }
-
-
-private:
-    const float edge {5.0f};
-    const float sliderOuterRimScaleFactor {0.92f};
-    bool outlineVisible {true};
-    OutlineType localOutlineType {OutlineType::arcNormal};
     
+    //================================================================================
+    /** Buttons. */
+    
+    
+    //================================================================================
+    /** ComboBox, Text etc. */
+    
+protected:
     /**  Draw Rotary Slider thumb.
-         Make it protected? a virtual? or make it helper, unless I want to use
-         different thumbs in derived looks
+     Make it protected? a virtual? or make it helper, unless I want to use
+     different thumbs in derived looks
      */
-    void drawRotaryThumb (juce::Graphics& g, const juce::Point<float> centre, const float& radius, const float& angle)
+    virtual void drawRotaryThumb (juce::Graphics& g, const juce::Point<float> centre, const float& radius, const float& angle)
     {
         /** Thumb dimentions (rectangle). */
         const float thumbWidth = radius * 0.27f;
@@ -81,6 +87,14 @@ private:
         p.applyTransform (juce::AffineTransform::rotation (angle).translated (centre));
         g.fillPath (p);
     }
+
+
+private:
+    const float edge {5.0f};
+    const float sliderOuterRimScaleFactor {0.92f};
+    bool outlineVisible {true};
+    OutlineType localOutlineType {OutlineType::arcNormal};
+
     
     /** Draw Linear Slider thumb. */
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveshaperLookAndFeel)
@@ -139,15 +153,18 @@ inline void WaveshaperLookAndFeel::drawRotarySlider (juce::Graphics &g, int x, i
 
 inline int WaveshaperLookAndFeel::getSliderThumbRadius (juce::Slider& slider)
 {
-    return juce::jmin (12, slider.isHorizontal() ? static_cast<int> ((float) slider.getHeight() * 0.5f)
-                 : static_cast<int> ((float) slider.getWidth()  * 0.5f));
+    return juce::jmin (12, slider.isHorizontal() ? static_cast<int> ((float) slider.getHeight() * 0.75f)
+                 : static_cast<int> ((float) slider.getWidth()  * 0.75f));
 }
 
 inline void WaveshaperLookAndFeel::drawLinearSlider (juce::Graphics &, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, const juce::Slider::SliderStyle, juce::Slider &)
 {
+    /** At first only Horizonal and Vertical Linear sliders. */
+    
     
 }
 
+//================================================================================
 /** Custom L+F for symmetrical knob. */
 
 class SymmetricalRotaryLookAndFeel : public WaveshaperLookAndFeel
@@ -201,29 +218,17 @@ public:
 
     }
     
-    
 private:
     const float edge {5.0f};
     OutlineType localOutlineType {OutlineType::arcNormal};
     float sliderOuterRimScaleFactor {0.92f};
-    
-    /**  Draw Rotary Slider thumb. */
-    void drawRotaryThumb (juce::Graphics& g, const juce::Point<float> centre, const float& radius, const float& angle)
-    {
-        /** Thumb dimentions (rectangle). */
-        const float thumbWidth = radius * 0.27f;
-        const float thumbHeight = radius * 0.33f;
-        
-        juce::Path p;
-        p.addRectangle (-thumbWidth * 0.5, -radius * 0.87f, thumbWidth, thumbHeight);
-        p.applyTransform (juce::AffineTransform::rotation (angle).translated (centre));
-        g.fillPath (p);
-    }
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SymmetricalRotaryLookAndFeel)
 };
 
 
-/** Custom L+F for the big and the small rotary slider. */
+//================================================================================
+/** Custom L+F for the big rotary slider. */
 
 class RotaryBigLookAndFeel : public WaveshaperLookAndFeel
 {

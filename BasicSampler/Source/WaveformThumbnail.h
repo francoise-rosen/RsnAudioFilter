@@ -13,7 +13,10 @@
 #include <JuceHeader.h>
 
 //==============================================================================
-/*
+/**
+   Draw a waveform using this class.
+   Add time position marker.
+   Make another version of it using AudioThumbnail class.
 */
 class WaveformThumbnail  : public juce::Component
 {

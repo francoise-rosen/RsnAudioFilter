@@ -10,8 +10,9 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "WaveformThumbnail.h"
 #include "BottomBar.h"
+#include "Display.h"
+#include "RightBar.h"
 
 //==============================================================================
 /**
@@ -48,6 +49,7 @@ private:
     static int count;
     
     std::unique_ptr<BottomBar> bottomBar;
+    std::unique_ptr<RightBar> rightBar;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicSamplerAudioProcessorEditor)
 };
