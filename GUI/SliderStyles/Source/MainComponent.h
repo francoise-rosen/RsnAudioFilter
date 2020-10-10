@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "RosenSliderLookAndFeel.h"
 
 //==============================================================================
 /*
@@ -29,6 +30,12 @@ private:
     juce::Slider linearH {juce::Slider::SliderStyle::LinearHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     juce::Slider linearBar {juce::Slider::SliderStyle::LinearBar, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     juce::Slider linearBarV {juce::Slider::SliderStyle::LinearBarVertical, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
+    
+    /** Two / Thee value sliders. */
+    juce::Slider twoValHorizontal {juce::Slider::SliderStyle::TwoValueHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxRight};
+    juce::Slider twoValVertical {juce::Slider::SliderStyle::TwoValueVertical, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
+    juce::Slider threeValHorizontal {juce::Slider::SliderStyle::ThreeValueHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxAbove};
+    juce::Slider threeValVertical {juce::Slider::SliderStyle::ThreeValueVertical, juce::Slider::TextEntryBoxPosition::TextBoxLeft};
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)

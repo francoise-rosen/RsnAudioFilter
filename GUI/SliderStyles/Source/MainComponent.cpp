@@ -10,6 +10,10 @@ MainComponent::MainComponent()
     addAndMakeVisible(&linearV);
     addAndMakeVisible(&linearBar);
     addAndMakeVisible(&linearBarV);
+    addAndMakeVisible(&twoValVertical);
+    addAndMakeVisible(&twoValHorizontal);
+    addAndMakeVisible(&threeValVertical);
+    addAndMakeVisible(&threeValHorizontal);
     setSize (600, 400);
 }
 
@@ -21,7 +25,7 @@ MainComponent::~MainComponent()
 void MainComponent::paint (juce::Graphics& g)
 {
 
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.fillAll (juce::Colours::silver.darker());
 
 }
 
@@ -34,6 +38,22 @@ void MainComponent::resized()
     
     auto linearArea = getLocalBounds().removeFromRight (getWidth() * 0.5f).removeFromTop (getHeight() * 0.5f).reduced (5.0f);
     
-    linearH.setBounds(linearArea.removeFromTop (linearArea.getHeight() * 0.5f).removeFromLeft (linearArea.getWidth() * 0.5f));
+    auto linearHArea = linearArea.removeFromLeft (linearArea.getWidth() * 0.5f);
+    linearH.setBounds(linearHArea.removeFromTop (linearHArea.getHeight() * 0.5f));
+    linearBar.setBounds(linearHArea);
+    
+    linearV.setBounds (linearArea.removeFromLeft (linearHArea.getWidth() * 0.5f));
+    linearBarV.setBounds(linearArea);
+    
+    auto threeTwoBox = getLocalBounds().removeFromBottom(getHeight() * 0.5f);
+    auto threeTwoHBox = threeTwoBox.removeFromLeft (getWidth() * 0.5f);
+    
+    twoValHorizontal.setBounds(threeTwoHBox.removeFromTop(threeTwoHBox.getHeight() * 0.5f));
+    threeValHorizontal.setBounds(threeTwoHBox);
+    
+    twoValVertical.setBounds(threeTwoBox.removeFromLeft(threeTwoBox.getWidth() * 0.5f));
+    threeValVertical.setBounds(threeTwoBox);
+    
+    
  
 }

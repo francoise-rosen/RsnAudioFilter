@@ -64,6 +64,13 @@
 			path = ../../Source/MainComponent.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		1F4FA0C276739E2FC6DA312A = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = RosenSliderLookAndFeel.h;
+			path = ../../Source/RosenSliderLookAndFeel.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		21AFCE692D50DDC8A15B1C26 = {
 			isa = PBXFileReference;
 			lastKnownFileType = file.nib;
@@ -207,6 +214,7 @@
 		D56B3FE0DB380B21E63512A1 = {
 			isa = PBXGroup;
 			children = (
+				1F4FA0C276739E2FC6DA312A,
 				F977BBC946F4A737C64556DE,
 				BCE7DE13B865360E026E9E4E,
 				1503B6B1403C91F747AEC379,
