@@ -14,18 +14,30 @@ MainComponent::MainComponent()
     addAndMakeVisible(&twoValHorizontal);
     addAndMakeVisible(&threeValVertical);
     addAndMakeVisible(&threeValHorizontal);
+    
+    rosenLookAndFeel.setColour(juce::Slider::trackColourId, juce::Colours::blue.withAlpha(0.83f));
+    linearBar.setLookAndFeel(&rosenLookAndFeel);
+    linearBarV.setLookAndFeel(&rosenLookAndFeel);
+    linearH.setLookAndFeel(&rosenLookAndFeel);
+    twoValVertical.setLookAndFeel(&rosenLookAndFeel);
+    threeValVertical.setLookAndFeel(&rosenLookAndFeel);
     setSize (600, 400);
 }
 
 MainComponent::~MainComponent()
 {
+    linearBar.setLookAndFeel (nullptr);
+    linearBarV.setLookAndFeel (nullptr);
+    linearH.setLookAndFeel (nullptr);
+    twoValVertical.setLookAndFeel (nullptr);
+    threeValVertical.setLookAndFeel (nullptr);
 }
 
 //==============================================================================
 void MainComponent::paint (juce::Graphics& g)
 {
 
-    g.fillAll (juce::Colours::silver.darker());
+    g.fillAll (juce::Colours::silver.brighter());
 
 }
 

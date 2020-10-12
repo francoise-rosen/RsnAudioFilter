@@ -37,6 +37,7 @@ private:
     juce::Slider threeValHorizontal {juce::Slider::SliderStyle::ThreeValueHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxAbove};
     juce::Slider threeValVertical {juce::Slider::SliderStyle::ThreeValueVertical, juce::Slider::TextEntryBoxPosition::TextBoxLeft};
 
+    RosenSliderLookAndFeel rosenLookAndFeel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
