@@ -4,6 +4,8 @@
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="ccsvJI" name="SliderStyles">
     <GROUP id="{48954A55-A5D7-FFC9-578E-B7F1BF1EBFD8}" name="Source">
+      <FILE id="QZY5IQ" name="AlphaOneLookAndFeel.h" compile="0" resource="0"
+            file="Source/AlphaOneLookAndFeel.h"/>
       <FILE id="uqIyOG" name="RosenSliderLookAndFeel.h" compile="0" resource="0"
             file="Source/RosenSliderLookAndFeel.h"/>
       <FILE id="zoGXIx" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>

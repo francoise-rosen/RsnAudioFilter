@@ -16,9 +16,12 @@ MainComponent::MainComponent()
     addAndMakeVisible(&threeValHorizontal);
     
     rosenLookAndFeel.setColour(juce::Slider::trackColourId, juce::Colours::blue.withAlpha(0.83f));
+    rosenLookAndFeel.setColour (juce::Slider::thumbColourId, juce::Colours::rebeccapurple);
     linearBar.setLookAndFeel(&rosenLookAndFeel);
     linearBarV.setLookAndFeel(&rosenLookAndFeel);
     linearH.setLookAndFeel(&rosenLookAndFeel);
+    linearV.setLookAndFeel(&rosenLookAndFeel);
+    rosenLookAndFeel.setThumbShape(RosenSliderLookAndFeel::ThumbShape::rhombus);
     twoValVertical.setLookAndFeel(&rosenLookAndFeel);
     threeValVertical.setLookAndFeel(&rosenLookAndFeel);
     setSize (600, 400);
@@ -29,6 +32,7 @@ MainComponent::~MainComponent()
     linearBar.setLookAndFeel (nullptr);
     linearBarV.setLookAndFeel (nullptr);
     linearH.setLookAndFeel (nullptr);
+    linearV.setLookAndFeel (nullptr);
     twoValVertical.setLookAndFeel (nullptr);
     threeValVertical.setLookAndFeel (nullptr);
 }

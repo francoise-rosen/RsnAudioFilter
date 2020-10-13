@@ -197,6 +197,13 @@
 			path = "../../JuceLibraryCode/include_juce_data_structures.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		D08B644D8A4C4923D7AE3D1D = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = AlphaOneLookAndFeel.h;
+			path = ../../Source/AlphaOneLookAndFeel.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		F6690FC277E64BAD7020BCBD = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -214,6 +221,7 @@
 		D56B3FE0DB380B21E63512A1 = {
 			isa = PBXGroup;
 			children = (
+				D08B644D8A4C4923D7AE3D1D,
 				1F4FA0C276739E2FC6DA312A,
 				F977BBC946F4A737C64556DE,
 				BCE7DE13B865360E026E9E4E,
