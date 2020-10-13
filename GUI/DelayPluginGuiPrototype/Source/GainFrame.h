@@ -69,7 +69,7 @@ public:
         juce::Path typePointer;
         typePointer.startNewSubPath(typeLabelArea.getCentreX(), typeLabelArea.getCentreY());
         typePointer.lineTo(area.getWidth() * 0.4f + 5.0f, typeLabelArea.getCentreY());
-        g.strokePath(typePointer, juce::PathStrokeType(2.0f));
+        g.strokePath(typePointer, juce::PathStrokeType(21.0f));
         
         g.setColour (juce::Colours::white.withAlpha(0.72f));
         g.drawFittedText ("TyPe", area.withBottom (area.getHeight() * 0.23f).withRight (area.getWidth() * 0.4f), juce::Justification::centred, 1);

@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 #include "RosenSliderLookAndFeel.h"
+#include "AlphaOneLookAndFeel.h"
 
 //==============================================================================
 /*
@@ -38,6 +39,7 @@ private:
     juce::Slider threeValVertical {juce::Slider::SliderStyle::ThreeValueVertical, juce::Slider::TextEntryBoxPosition::TextBoxLeft};
 
     RosenSliderLookAndFeel rosenLookAndFeel;
+    AlphaOneLookAndFeel alphaLookAndFeel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
