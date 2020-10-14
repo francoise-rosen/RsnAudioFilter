@@ -121,6 +121,18 @@ public:
         }
     }
     
+    void drawPointer (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction) noexcept
+    {
+        /** Simple triangle ? */
+        juce::Path p;
+        p.startNewSubPath (x, y);
+        p.lineTo (x + diameter * 0.5f, y - diameter * 0.5f);
+        p.lineTo (x - diameter * 0.5f, y - diameter * 0.5f);
+        p.closeSubPath();
+        g.setColour (colour);
+        g.fillPath (p);
+    }
+    
     /** ROTARY SLIDER. */
     
 private:
