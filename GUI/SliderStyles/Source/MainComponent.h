@@ -35,8 +35,8 @@ private:
     /** Two / Thee value sliders. */
     juce::Slider twoValHorizontal {juce::Slider::SliderStyle::TwoValueHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxRight};
     juce::Slider twoValVertical {juce::Slider::SliderStyle::TwoValueVertical, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
-    juce::Slider threeValHorizontal {juce::Slider::SliderStyle::ThreeValueHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxAbove};
-    juce::Slider threeValVertical {juce::Slider::SliderStyle::ThreeValueVertical, juce::Slider::TextEntryBoxPosition::TextBoxLeft};
+    juce::Slider threeValHorizontal {juce::Slider::SliderStyle::ThreeValueHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
+    juce::Slider threeValVertical {juce::Slider::SliderStyle::ThreeValueVertical, juce::Slider::TextEntryBoxPosition::NoTextBox};
 
     RosenSliderLookAndFeel rosenLookAndFeel;
     AlphaOneLookAndFeel alphaLookAndFeel;

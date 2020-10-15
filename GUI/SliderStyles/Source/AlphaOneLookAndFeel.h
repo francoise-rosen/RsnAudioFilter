@@ -81,7 +81,7 @@ public:
             minPoint = { slider.isHorizontal() ? minSliderPos : sliderWidth * 0.5f, slider.isHorizontal() ? sliderHeight * 0.5f : minSliderPos };
             if (isThreeVal)
                 thumbPoint = { slider.isHorizontal() ? sliderPos : sliderWidth * 0.5f, slider.isHorizontal() ? sliderHeight * 0.5f : sliderPos };
-            maxPoint = { slider.isHorizontal() ? maxSliderPos : sliderWidth * 0.5f, slider.isHorizontal() ? sliderWidth * 0.5f : maxSliderPos };
+            maxPoint = { slider.isHorizontal() ? maxSliderPos : sliderWidth * 0.5f, slider.isHorizontal() ? sliderHeight * 0.5f : maxSliderPos };
         }
         else
         {
@@ -117,7 +117,30 @@ public:
         
         if (isTwoVal || isThreeVal)
         {
-            
+            auto sr = juce::jmin (trackWidth, (slider.isHorizontal() ? sliderHeight : sliderWidth * 0.4f));
+            auto pointerColour = slider.findColour (juce::Slider::thumbColourId).withAlpha (0.85f).withHue (0.79f);
+            auto pointerOuterColour = juce::Colours::black;
+            if (slider.isHorizontal())
+            {
+                drawPointer (g, minSliderPos - sr,
+                             juce::jmax (0.0f, sliderY + sliderHeight * 0.5f - trackWidth * 2.0f), trackWidth * 2.0f, pointerColour, 2);
+                drawPointer (g, maxSliderPos - trackWidth,
+                             juce::jmin (sliderY + sliderHeight - trackWidth * 2.0f, sliderY + sliderHeight * 0.5f), trackWidth * 2.0f, pointerColour, 0);
+            }
+            else
+            {
+                drawPointer (g,
+                             juce::jmax (0.0f, sliderX + sliderWidth * 0.5f - trackWidth * 2.0f),
+                             minSliderPos - trackWidth,
+                             trackWidth * 2.0f,
+                             pointerColour, 1);
+                drawPointer (g,
+                             juce::jmin (sliderX + sliderWidth * 0.5f, sliderX + sliderWidth - 2.0f * trackWidth),
+                             maxSliderPos - sr,
+                             trackWidth * 2.0f,
+                             pointerColour,
+                             3);
+            }
         }
     }
     
@@ -125,10 +148,11 @@ public:
     {
         /** Simple triangle ? */
         juce::Path p;
-        p.startNewSubPath (x, y);
-        p.lineTo (x + diameter * 0.5f, y - diameter * 0.5f);
-        p.lineTo (x - diameter * 0.5f, y - diameter * 0.5f);
+        p.startNewSubPath (x + diameter * 0.5f, y);
+        p.lineTo (x + diameter, y + diameter * 0.79f);
+        p.lineTo (x, y + diameter * 0.79f);
         p.closeSubPath();
+        p.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, x + diameter * 0.5f, y + diameter * 0.5f));
         g.setColour (colour);
         g.fillPath (p);
     }
