@@ -262,7 +262,7 @@ public:
         
         /** Draw thumb. */
         auto thumbWidth = juce::jmax (static_cast<float> (getSliderThumbRadius (slider)), trackWidth);
-        auto sr = juce::jmin (trackWidth, slider.isHorizontal() ? sliderHeight : sliderWidth);
+        auto sr = juce::jmin (trackWidth, slider.isHorizontal() ? sliderHeight : sliderWidth * 0.4f);
         juce::Colour thumbColour = slider.findColour (juce::Slider::thumbColourId);
         /** Directions:
             0 - points up, 1 - points to the right, 2, points up, 3 points left
@@ -275,12 +275,20 @@ public:
         g.fillEllipse (thumbArea.withCentre (maxPoint));
         if (slider.isHorizontal() )
         {
+            /** lower thumb. */
             drawThumbLinearTri (g,
-                                maxPoint.getX(),
+                                maxPoint.getX() - sr,
                                 maxPoint.getY(),
-                                thumbWidth * 2.0f,
+                                trackWidth * 2.0f,
                                 thumbColour,
                                 0);
+            /** Upper thumb. */
+            drawThumbLinearTri (g,
+                                maxPoint.getX() - sr,
+                                maxPoint.getY() - sr * 2,
+                                trackWidth * 2.0f,
+                                thumbColour,
+                                2);
 
         }
         else
