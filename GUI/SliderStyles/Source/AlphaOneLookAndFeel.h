@@ -124,10 +124,22 @@ public:
             auto pointerOuterColour = juce::Colours::black;
             if (slider.isHorizontal())
             {
-                drawPointer (g, minSliderPos - sr,
-                             juce::jmax (0.0f, sliderY + sliderHeight * 0.5f - trackWidth * 2.0f), trackWidth * 2.0f, pointerColour, 2);
-                drawPointer (g, maxSliderPos - trackWidth,
-                             juce::jmin (sliderY + sliderHeight - trackWidth * 2.0f, sliderY + sliderHeight * 0.5f), trackWidth * 2.0f, pointerColour, 0);
+//                drawPointer (g, minSliderPos - sr,
+//                             juce::jmax (0.0f, sliderY + sliderHeight * 0.5f - trackWidth * 2.0f), trackWidth * 2.0f, pointerColour, 2);
+//                drawPointer (g, maxSliderPos - trackWidth,
+//                             juce::jmin (sliderY + sliderHeight - trackWidth * 2.0f, sliderY + sliderHeight * 0.5f), trackWidth * 2.0f, pointerColour, 0);
+                drawPointer (g,
+                             minSliderPos - trackWidth,
+                             sliderY + sliderHeight * 0.5f - trackWidth * 2.0f,
+                             trackWidth * 2.0f,
+                             pointerColour,
+                             2);
+                drawPointer (g,
+                             maxSliderPos - trackWidth,
+                             sliderY + sliderHeight * 0.5f,
+                             trackWidth * 2.0f,
+                             pointerColour,
+                             0);
             }
             else
             {
@@ -146,36 +158,36 @@ public:
         }
     }
     
-//    void drawPointer (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction) noexcept
-//    {
-//        /** Simple triangle ? */
-//        juce::Path p;
-//        p.startNewSubPath (x + diameter * 0.5f, y);
-//        p.lineTo (x + diameter, y + diameter * 0.79f);
-//        p.lineTo (x, y + diameter * 0.79f);
-//        p.closeSubPath();
-//        p.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, x + diameter * 0.5f, y + diameter * 0.5f));
-//        g.setColour (colour);
-//        g.fillPath (p);
-//
-//        juce::Path line;
-//        line.startNewSubPath (x + diameter * 0.5f, y + diameter * 0.4f);
-//        line.lineTo (x + diameter * 0.5f, y + diameter);
-//        line.closeSubPath();
-//        line.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, x + diameter * 0.5f, y + diameter * 0.5f));
-//        g.strokePath (line, { juce::jmin (2.0f, diameter * 0.25f), juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
-//    }
-    
     void drawPointer (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction) noexcept
     {
-        /** Centre. */
-        g.setColour (juce::Colours::red);
-        g.fillEllipse (juce::Rectangle<float> {2.0f, 2.0f}.withCentre ({x + diameter * 0.5f, y + diameter * 0.5f}));
-       
-        g.setColour (juce::Colours::yellow.withAlpha (0.2f));
-        g.fillEllipse (juce::Rectangle<float> {diameter, diameter}.withCentre ({x + diameter * 0.5f, y + diameter * 0.5f}));
-      
+        /** Simple triangle ? */
+        juce::Path p;
+        p.startNewSubPath (x + diameter * 0.5f, y);
+        p.lineTo (x + diameter, y + diameter * 0.79f);
+        p.lineTo (x, y + diameter * 0.79f);
+        p.closeSubPath();
+        p.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, x + diameter * 0.5f, y + diameter * 0.5f));
+        g.setColour (colour);
+        g.fillPath (p);
+
+        juce::Path line;
+        line.startNewSubPath (x + diameter * 0.5f, y + diameter * 0.4f);
+        line.lineTo (x + diameter * 0.5f, y + diameter);
+        line.closeSubPath();
+        line.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, x + diameter * 0.5f, y + diameter * 0.5f));
+        g.strokePath (line, { juce::jmin (2.0f, diameter * 0.25f), juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
     }
+    
+//    void drawPointer (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction) noexcept
+//    {
+//        /** Centre. */
+//        g.setColour (juce::Colours::red);
+//        g.fillEllipse (juce::Rectangle<float> {2.0f, 2.0f}.withCentre ({x + diameter * 0.5f, y + diameter * 0.5f}));
+//
+//        g.setColour (juce::Colours::yellow.withAlpha (0.2f));
+//        g.fillEllipse (juce::Rectangle<float> {diameter, diameter}.withCentre ({x + diameter * 0.5f, y + diameter * 0.5f}));
+//
+//    }
     
     /** ROTARY SLIDER. */
     
@@ -263,7 +275,12 @@ public:
         g.fillEllipse (thumbArea.withCentre (maxPoint));
         if (slider.isHorizontal() )
         {
-            drawThumbLinearTri (g, maxPoint.getX() - sr, maxPoint.getY(), thumbWidth * 2, thumbColour, 2);
+            drawThumbLinearTri (g,
+                                maxPoint.getX(),
+                                maxPoint.getY(),
+                                thumbWidth * 2.0f,
+                                thumbColour,
+                                0);
 
         }
         else
@@ -277,9 +294,28 @@ private:
     
     void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept
     {
-        g.setColour (juce::Colours::yellow);
-        g.fillEllipse (juce::Rectangle<float> {2.0f, 2.0f}.withCentre (juce::Point<float>{x + diameter * 0.5f, y + diameter * 0.5f}));
+        g.setColour (juce::Colours::red);
+        juce::Point<float> pivot {x + diameter * 0.5f, y + diameter * 0.5f};
+        g.fillEllipse (juce::Rectangle<float> {2.0f, 2.0f}.withCentre (pivot));
         /** Simple triangle ? */
+        g.setColour (juce::Colours::yellow.withAlpha (0.25f));
+        g.fillEllipse (juce::Rectangle<float> {diameter, diameter}.withCentre (pivot));
+        
+        g.setColour (juce::Colours::blue);
+        juce::Path tri;
+        tri.startNewSubPath (x + diameter * 0.5f, y);
+        tri.lineTo (x + diameter, y + diameter * 0.75f);
+        tri.lineTo (x, y + diameter * 0.75f);
+        tri.closeSubPath();
+        tri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
+        g.strokePath (tri, juce::PathStrokeType (3.0f));
+ 
+
+    }
+    
+//    void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept
+//    {
+//        /** Simple triangle ? */
 //        juce::Path p;
 //        p.startNewSubPath (x + diameter * 0.5f, y);
 //        p.lineTo (x + diameter, y + diameter * 0.5f);
@@ -288,8 +324,8 @@ private:
 //        p.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, x + diameter * 0.5f, y + diameter * 0.5f));
 //        g.setColour (colour);
 //        g.fillPath (p);
-
-    }
+//
+//    }
     
     void drawThumbRotary () noexcept
     {
