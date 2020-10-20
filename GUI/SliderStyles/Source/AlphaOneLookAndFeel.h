@@ -38,6 +38,7 @@ public:
         float sliderY = static_cast<float> (y);
         float sliderWidth = static_cast<float> (width);
         float sliderHeight = static_cast<float> (height);
+        juce::Colour backgroundColour = slider.findColour (juce::Slider::backgroundColourId);
         
         /** Draw a bar slyle slider. */
         if (slider.isBar())
@@ -68,6 +69,7 @@ public:
         juce::Path backgroundTrack;
         backgroundTrack.startNewSubPath (startPoint);
         backgroundTrack.lineTo (endPoint);
+        g.setColour (backgroundColour);
         g.strokePath (backgroundTrack, juce::PathStrokeType (trackWidth, juce::PathStrokeType::beveled, juce::PathStrokeType::rounded));
         
         /** Draw value track. */
@@ -117,8 +119,8 @@ public:
         
         if (isTwoVal || isThreeVal)
         {
-            auto sr = juce::jmin (trackWidth, (slider.isHorizontal() ? sliderHeight : sliderWidth * 0.4f));
-            auto pointerColour = slider.findColour (juce::Slider::thumbColourId).withAlpha (0.85f).withHue (0.79f);
+            auto sr = juce::jmin (trackWidth, (slider.isHorizontal() ? sliderHeight : sliderWidth) * 0.4f);
+            auto pointerColour = slider.findColour (juce::Slider::thumbColourId).withAlpha (0.85f).withHue (0.89f);
             auto pointerOuterColour = juce::Colours::black;
             if (slider.isHorizontal())
             {
@@ -144,17 +146,35 @@ public:
         }
     }
     
+//    void drawPointer (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction) noexcept
+//    {
+//        /** Simple triangle ? */
+//        juce::Path p;
+//        p.startNewSubPath (x + diameter * 0.5f, y);
+//        p.lineTo (x + diameter, y + diameter * 0.79f);
+//        p.lineTo (x, y + diameter * 0.79f);
+//        p.closeSubPath();
+//        p.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, x + diameter * 0.5f, y + diameter * 0.5f));
+//        g.setColour (colour);
+//        g.fillPath (p);
+//
+//        juce::Path line;
+//        line.startNewSubPath (x + diameter * 0.5f, y + diameter * 0.4f);
+//        line.lineTo (x + diameter * 0.5f, y + diameter);
+//        line.closeSubPath();
+//        line.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, x + diameter * 0.5f, y + diameter * 0.5f));
+//        g.strokePath (line, { juce::jmin (2.0f, diameter * 0.25f), juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
+//    }
+    
     void drawPointer (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction) noexcept
     {
-        /** Simple triangle ? */
-        juce::Path p;
-        p.startNewSubPath (x + diameter * 0.5f, y);
-        p.lineTo (x + diameter, y + diameter * 0.79f);
-        p.lineTo (x, y + diameter * 0.79f);
-        p.closeSubPath();
-        p.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, x + diameter * 0.5f, y + diameter * 0.5f));
-        g.setColour (colour);
-        g.fillPath (p);
+        /** Centre. */
+        g.setColour (juce::Colours::red);
+        g.fillEllipse (juce::Rectangle<float> {2.0f, 2.0f}.withCentre ({x + diameter * 0.5f, y + diameter * 0.5f}));
+       
+        g.setColour (juce::Colours::yellow.withAlpha (0.2f));
+        g.fillEllipse (juce::Rectangle<float> {diameter, diameter}.withCentre ({x + diameter * 0.5f, y + diameter * 0.5f}));
+      
     }
     
     /** ROTARY SLIDER. */
@@ -173,6 +193,7 @@ private:
     For Bar, TwoValue, ThreeValue, use another l+f
  */
 
+/** Linear and rotary symmetrical slider. */
 class AlphaOneSymmetricalSlider : public AlphaOneLookAndFeel
 {
 public:
@@ -187,7 +208,93 @@ public:
         return juce::jmin (15.0f, slider.isHorizontal() ? static_cast<float> (slider.getHeight()) * 0.5f : static_cast<float> (slider.getWidth()) * 0.5f);
     }
     
+    /** Only horizontal or vertical one value slider. */
+    void drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
+                           float sliderPos,
+                           float minSliderPos,
+                           float maxSliderPos,
+                           const juce::Slider::SliderStyle style,
+                           juce::Slider& slider) override
+    {
+        jassert (slider.isHorizontal() || slider.isVertical());
+        /** Cast dimentions. */
+        float sliderX = static_cast<float> (x);
+        float sliderY = static_cast<float> (y);
+        float sliderWidth = static_cast<float> (width);
+        float sliderHeight = static_cast<float> (height);
+        float trackWidth = juce::jmin (9.0f, slider.isHorizontal() ? sliderHeight * 0.25f : sliderWidth * 0.25f);
+        
+        /** Draw background. */
+        juce::Colour backgroundColour = slider.findColour (juce::Slider::backgroundColourId);
+        juce::Point<float> startPos { slider.isHorizontal() ? sliderX : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY };
+        juce::Point<float> endPos { slider.isHorizontal() ? sliderX + sliderWidth : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY };
+        juce::Path background;
+        g.setColour (backgroundColour);
+        background.startNewSubPath (startPos);
+        background.lineTo (endPos);
+        background.closeSubPath();
+        g.strokePath (background, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
+        
+        /** Draw track.
+            This is filled from StartPos till SliderPos for simple linear slider.
+         */
+        juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
+        juce::Point<float> minPoint = startPos;
+        juce::Point<float> maxPoint { slider.isHorizontal() ? sliderPos : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderPos };
+        juce::Path trackPath;
+        trackPath.startNewSubPath (minPoint);
+        trackPath.lineTo (maxPoint);
+        trackPath.closeSubPath();
+        g.setColour (trackColour);
+        g.strokePath (trackPath, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
+        
+        /** Draw thumb. */
+        auto thumbWidth = juce::jmax (static_cast<float> (getSliderThumbRadius (slider)), trackWidth);
+        auto sr = juce::jmin (trackWidth, slider.isHorizontal() ? sliderHeight : sliderWidth);
+        juce::Colour thumbColour = slider.findColour (juce::Slider::thumbColourId);
+        /** Directions:
+            0 - points up, 1 - points to the right, 2, points up, 3 points left
+         */
+        
+        /** Draw circlular thumb
+         */
+        juce::Rectangle<float> thumbArea {thumbWidth * 0.1f, thumbWidth * 0.1f};
+        g.setColour (thumbColour);
+        g.fillEllipse (thumbArea.withCentre (maxPoint));
+        if (slider.isHorizontal() )
+        {
+            drawThumbLinearTri (g, maxPoint.getX() - sr, maxPoint.getY(), thumbWidth * 2, thumbColour, 2);
+
+        }
+        else
+        {
+
+        }
+        
+    }
+    
 private:
+    
+    void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept
+    {
+        g.setColour (juce::Colours::yellow);
+        g.fillEllipse (juce::Rectangle<float> {2.0f, 2.0f}.withCentre (juce::Point<float>{x + diameter * 0.5f, y + diameter * 0.5f}));
+        /** Simple triangle ? */
+//        juce::Path p;
+//        p.startNewSubPath (x + diameter * 0.5f, y);
+//        p.lineTo (x + diameter, y + diameter * 0.5f);
+//        p.lineTo (x, y + diameter * 0.5f);
+//        p.closeSubPath();
+//        p.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, x + diameter * 0.5f, y + diameter * 0.5f));
+//        g.setColour (colour);
+//        g.fillPath (p);
+
+    }
+    
+    void drawThumbRotary () noexcept
+    {
+        
+    }
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AlphaOneSymmetricalSlider)
     

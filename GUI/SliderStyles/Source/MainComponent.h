@@ -28,7 +28,9 @@ private:
     
     /** Linear. */
     juce::Slider linearV {juce::Slider::SliderStyle::LinearVertical, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
+    juce::Slider linearVTwo {juce::Slider::SliderStyle::LinearVertical, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     juce::Slider linearH {juce::Slider::SliderStyle::LinearHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
+    juce::Slider linearHTwo {juce::Slider::SliderStyle::LinearHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     juce::Slider linearBar {juce::Slider::SliderStyle::LinearBar, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     juce::Slider linearBarV {juce::Slider::SliderStyle::LinearBarVertical, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     
@@ -40,6 +42,7 @@ private:
 
     RosenSliderLookAndFeel rosenLookAndFeel;
     AlphaOneLookAndFeel alphaLookAndFeel;
+    AlphaOneSymmetricalSlider alphaOneSymmetricalSlider;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
