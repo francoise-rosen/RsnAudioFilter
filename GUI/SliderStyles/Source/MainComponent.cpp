@@ -32,7 +32,7 @@ MainComponent::MainComponent()
     linearBar.setLookAndFeel (&rosenLookAndFeel);
     linearBarV.setLookAndFeel (&rosenLookAndFeel);
     linearH.setLookAndFeel (&alphaLookAndFeel);
-    linearV.setLookAndFeel (&alphaLookAndFeel);
+    linearV.setLookAndFeel (&alphaOneSymmetricalSlider);
     linearVTwo.setLookAndFeel (&alphaOneSymmetricalSlider);
     twoValHorizontal.setLookAndFeel (&alphaLookAndFeel);
     rosenLookAndFeel.setThumbShape (RosenSliderLookAndFeel::ThumbShape::rhombus);

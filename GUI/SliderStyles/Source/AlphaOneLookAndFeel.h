@@ -238,7 +238,7 @@ public:
         
         /** Draw background. */
         juce::Colour backgroundColour = slider.findColour (juce::Slider::backgroundColourId);
-        juce::Point<float> startPos { slider.isHorizontal() ? sliderX : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY };
+        juce::Point<float> startPos { slider.isHorizontal() ? sliderX : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY + sliderHeight};
         juce::Point<float> endPos { slider.isHorizontal() ? sliderX + sliderWidth : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY };
         juce::Path background;
         g.setColour (backgroundColour);
@@ -276,12 +276,12 @@ public:
         if (slider.isHorizontal() )
         {
             /** lower thumb. */
-            drawThumbLinearTri (g,
-                                maxPoint.getX() - sr,
-                                maxPoint.getY(),
-                                trackWidth * 2.0f,
-                                thumbColour,
-                                0);
+//            drawThumbLinearTri (g,
+//                                maxPoint.getX() - sr,
+//                                maxPoint.getY(),
+//                                trackWidth * 2.0f,
+//                                thumbColour,
+//                                0);
             /** Upper thumb. */
             drawThumbLinearTri (g,
                                 maxPoint.getX() - sr,
@@ -293,6 +293,12 @@ public:
         }
         else
         {
+            /** Thumb poinint to the left. */
+            drawThumbLinearTri (g, maxPoint.getX(),
+                                maxPoint.getY() - sr,
+                                trackWidth * 2.0f,
+                                thumbColour,
+                                3);
 
         }
         
