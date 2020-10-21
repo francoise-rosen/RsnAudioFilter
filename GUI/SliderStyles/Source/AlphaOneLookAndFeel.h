@@ -10,6 +10,23 @@
 
 #pragma once
 
+/** TODO:
+ AlphaOneLookAndFeel:
+    - clean up
+    - linear slider round thumb - implement gradient (user defined inner and outer colour)
+    - add draw rotary
+    - text field label
+ 
+ AlphaOneSymmetricalSlider:
+    - clean up
+    - colours (track, thumb fill, thumb outer rim)
+    - text field label
+ 
+ AlphaOneSymmetricalSlider_V2
+    - triangle backround shapes? (three items)
+    - triangle rim and fill colours
+    - track gradient (hard left - dark orange, hard right - bright silver)
+ */
 
 class AlphaOneLookAndFeel : public juce::LookAndFeel_V4
 {
@@ -45,11 +62,12 @@ public:
         {
             g.setColour (slider.findColour (juce::Slider::trackColourId));
             /** fill the tracked area */
-            g.fillRect (slider.isHorizontal() ? juce::Rectangle<float> (
-                                                                        sliderX,
-                                                                        sliderY + 0.5f,
-                                                                        sliderPos - sliderX,
-                                                                        sliderHeight - 1.0f) :
+            g.fillRect (slider.isHorizontal() ?
+                        juce::Rectangle<float> (
+                                                sliderX,
+                                                sliderY + 0.5f,
+                                                sliderPos - sliderX,
+                                                sliderHeight - 1.0f) :
                         juce::Rectangle<float> (
                                                 sliderX + 0.5f,
                                                 sliderPos,
@@ -99,7 +117,7 @@ public:
         valueTrack.lineTo (isThreeVal ? thumbPoint : maxPoint);
         g.setColour (slider.findColour (juce::Slider::trackColourId));
         g.strokePath (valueTrack, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
-        /** Thumb. Which to draw? But get a thumb radius anyway. */
+        /** Thumb. */
         if (! isTwoVal)
         {
             juce::Rectangle<float> thumbRect { thumbWidth, thumbWidth };
@@ -107,7 +125,7 @@ public:
                 slider.findColour (juce::Slider::thumbColourId),
                 isThreeVal ? thumbPoint.getX() : maxPoint.getX(),
                 isThreeVal ? thumbPoint.getY() : maxPoint.getY(),
-                juce::Colours::yellow.withBrightness (0.5f),
+                thumbOuterGColour,
                 isThreeVal ? thumbPoint.getX() + thumbWidth * 0.5f : maxPoint.getX() + thumbWidth * 0.5f,
                 isThreeVal ? thumbPoint.getY() + thumbWidth * 0.5f : maxPoint.getY() + thumbWidth * 0.5f,
                 true
@@ -121,7 +139,6 @@ public:
         {
             auto sr = juce::jmin (trackWidth, (slider.isHorizontal() ? sliderHeight : sliderWidth) * 0.4f);
             auto pointerColour = slider.findColour (juce::Slider::thumbColourId).withAlpha (0.85f).withHue (0.89f);
-            auto pointerOuterColour = juce::Colours::black;
             if (slider.isHorizontal())
             {
 //                drawPointer (g, minSliderPos - sr,
@@ -188,11 +205,16 @@ public:
 //        g.fillEllipse (juce::Rectangle<float> {diameter, diameter}.withCentre ({x + diameter * 0.5f, y + diameter * 0.5f}));
 //
 //    }
+    void setThumbOuterGradientColour (juce::Colour colour)
+    {
+        thumbOuterGColour = colour;
+    }
     
     /** ROTARY SLIDER. */
     
 private:
-    
+    juce::Colour thumbOuterGColour { juce::Colours::yellow.withBrightness (0.5f) };
+    juce::Colour pointerOuterGColour { juce::Colours::black };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AlphaOneLookAndFeel)
     
 };
@@ -240,6 +262,7 @@ public:
         juce::Colour backgroundColour = slider.findColour (juce::Slider::backgroundColourId);
         juce::Point<float> startPos { slider.isHorizontal() ? sliderX : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY + sliderHeight};
         juce::Point<float> endPos { slider.isHorizontal() ? sliderX + sliderWidth : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY };
+        juce::Point<float> midPos { sliderX + sliderWidth * 0.5f, sliderY + sliderHeight * 0.5f };
         juce::Path background;
         g.setColour (backgroundColour);
         background.startNewSubPath (startPos);
@@ -253,12 +276,20 @@ public:
         juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
         juce::Point<float> minPoint = startPos;
         juce::Point<float> maxPoint { slider.isHorizontal() ? sliderPos : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderPos };
-        juce::Path trackPath;
-        trackPath.startNewSubPath (minPoint);
-        trackPath.lineTo (maxPoint);
-        trackPath.closeSubPath();
+//        juce::Path trackPath;
+//        trackPath.startNewSubPath (minPoint);
+//        trackPath.lineTo (maxPoint);
+//        trackPath.closeSubPath();
+//        g.setColour (trackColour);
+//        g.strokePath (trackPath, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
+        
+        /** Draw track from mid point. */
+        juce::Path track;
+        track.startNewSubPath (midPos);
+        track.lineTo (maxPoint);
+        track.closeSubPath();
         g.setColour (trackColour);
-        g.strokePath (trackPath, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
+        g.strokePath (track, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
         
         /** Draw thumb. */
         auto thumbWidth = juce::jmax (static_cast<float> (getSliderThumbRadius (slider)), trackWidth);
@@ -270,9 +301,10 @@ public:
         
         /** Draw circlular thumb
          */
-        juce::Rectangle<float> thumbArea {thumbWidth * 0.1f, thumbWidth * 0.1f};
+        juce::Rectangle<float> thumbArea {thumbWidth * 0.2f, thumbWidth * 0.2f};
         g.setColour (thumbColour);
         g.fillEllipse (thumbArea.withCentre (maxPoint));
+        g.fillEllipse (thumbArea.withCentre (midPos));
         if (slider.isHorizontal() )
         {
             /** lower thumb. */
@@ -348,4 +380,13 @@ private:
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AlphaOneSymmetricalSlider)
     
+};
+
+class AlphaOneSymmetricalSlider_V2 : public AlphaOneSymmetricalSlider
+{
+public:
+    AlphaOneSymmetricalSlider_V2()
+    {}
+    virtual ~AlphaOneSymmetricalSlider_V2()
+    {}
 };

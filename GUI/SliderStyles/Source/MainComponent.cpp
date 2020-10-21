@@ -17,6 +17,11 @@ MainComponent::MainComponent()
     addAndMakeVisible (&linearHTwo);
     addAndMakeVisible (&linearVTwo);
     
+    linearHTwo.setRange (0.0f, 1.0f);
+    linearHTwo.setValue (0.5f);
+    linearVTwo.setRange (0.0f, 1.0f);
+    linearVTwo.setRange (0.0f, 1.0f);
+    
     /** Custom look and feel. */
     rosenLookAndFeel.setColour (juce::Slider::trackColourId, juce::Colours::blue.withAlpha(0.83f));
     alphaLookAndFeel.setColour (juce::Slider::trackColourId, juce::Colours::darkblue);
@@ -24,7 +29,7 @@ MainComponent::MainComponent()
     alphaLookAndFeel.setColour (juce::Slider::backgroundColourId, juce::Colours::silver.darker());
     rosenLookAndFeel.setColour (juce::Slider::thumbColourId, juce::Colours::rebeccapurple);
     alphaOneSymmetricalSlider.setColour (juce::Slider::thumbColourId, juce::Colours::red);
-    alphaOneSymmetricalSlider.setColour (juce::Slider::trackColourId, juce::Colours::blue);
+    alphaOneSymmetricalSlider.setColour (juce::Slider::trackColourId, juce::Colours::blue.withAlpha(0.24f));
     alphaOneSymmetricalSlider.setColour (juce::Slider::backgroundColourId, juce::Colours::darkcyan);
     
     
