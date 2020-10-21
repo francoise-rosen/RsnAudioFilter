@@ -14,6 +14,7 @@
  AlphaOneLookAndFeel:
     - clean up
     - linear slider round thumb - implement gradient (user defined inner and outer colour)
+    - linear slider triangle thumb - here, or other class?
     - add draw rotary
     - text field label
  
@@ -173,6 +174,10 @@ public:
                              3);
             }
         }
+        else
+        {
+            
+        }
     }
     
     void drawPointer (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction) noexcept
@@ -276,12 +281,6 @@ public:
         juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
         juce::Point<float> minPoint = startPos;
         juce::Point<float> maxPoint { slider.isHorizontal() ? sliderPos : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderPos };
-//        juce::Path trackPath;
-//        trackPath.startNewSubPath (minPoint);
-//        trackPath.lineTo (maxPoint);
-//        trackPath.closeSubPath();
-//        g.setColour (trackColour);
-//        g.strokePath (trackPath, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
         
         /** Draw track from mid point. */
         juce::Path track;

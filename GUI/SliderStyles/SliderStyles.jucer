@@ -4,14 +4,29 @@
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="ccsvJI" name="SliderStyles">
     <GROUP id="{48954A55-A5D7-FFC9-578E-B7F1BF1EBFD8}" name="Source">
-      <FILE id="QZY5IQ" name="AlphaOneLookAndFeel.h" compile="0" resource="0"
-            file="Source/AlphaOneLookAndFeel.h"/>
-      <FILE id="uqIyOG" name="RosenSliderLookAndFeel.h" compile="0" resource="0"
-            file="Source/RosenSliderLookAndFeel.h"/>
       <FILE id="zoGXIx" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="BsuJXR" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
       <FILE id="YcBMgF" name="MainComponent.cpp" compile="1" resource="0"
             file="Source/MainComponent.cpp"/>
+      <FILE id="vnhj5M" name="TwoThreeValue.h" compile="0" resource="0" file="Source/TwoThreeValue.h"/>
+      <FILE id="W3irKE" name="TwoThreeValue.cpp" compile="1" resource="0"
+            file="Source/TwoThreeValue.cpp"/>
+      <FILE id="rnobf7" name="Bar.h" compile="0" resource="0" file="Source/Bar.h"/>
+      <FILE id="VF6BO1" name="Bar.cpp" compile="1" resource="0" file="Source/Bar.cpp"/>
+      <FILE id="AP8jOZ" name="Rotary.h" compile="0" resource="0" file="Source/Rotary.h"/>
+      <FILE id="u65fJw" name="Rotary.cpp" compile="1" resource="0" file="Source/Rotary.cpp"/>
+      <FILE id="vvhjJy" name="LinearHorizontal.h" compile="0" resource="0"
+            file="Source/LinearHorizontal.h"/>
+      <FILE id="w0ggdw" name="LinearHorizontal.cpp" compile="1" resource="0"
+            file="Source/LinearHorizontal.cpp"/>
+      <FILE id="Ynrp5S" name="LinearVertical.h" compile="0" resource="0"
+            file="Source/LinearVertical.h"/>
+      <FILE id="HPjDPD" name="LinearVertical.cpp" compile="1" resource="0"
+            file="Source/LinearVertical.cpp"/>
+      <FILE id="uqIyOG" name="RosenSliderLookAndFeel.h" compile="0" resource="0"
+            file="Source/RosenSliderLookAndFeel.h"/>
+      <FILE id="QZY5IQ" name="AlphaOneLookAndFeel.h" compile="0" resource="0"
+            file="Source/AlphaOneLookAndFeel.h"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>

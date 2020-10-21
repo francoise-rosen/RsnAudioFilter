@@ -37,6 +37,26 @@
 			isa = PBXBuildFile;
 			fileRef = 1503B6B1403C91F747AEC379;
 		};
+		4CB18C72D0A9A21FBBE620CE = {
+			isa = PBXBuildFile;
+			fileRef = AD5A0180D1A0303B11A8ABCB;
+		};
+		F5FF16B234CEF65703327869 = {
+			isa = PBXBuildFile;
+			fileRef = E481E80294A8182CE83B1162;
+		};
+		BCBCB9CD95CEBE36A4B33044 = {
+			isa = PBXBuildFile;
+			fileRef = F6952DD76FAA49996EBEA16D;
+		};
+		9EF77C04665BDD7887BAB08F = {
+			isa = PBXBuildFile;
+			fileRef = 31AB06853E363FC214566E1D;
+		};
+		C40671708E8D31A04AC36A16 = {
+			isa = PBXBuildFile;
+			fileRef = 99DF0B996EEAFA66686A9147;
+		};
 		6BE0D547BD6A5C690582725C = {
 			isa = PBXBuildFile;
 			fileRef = 7A80D185930204C942180AE5;
@@ -56,6 +76,13 @@
 		340146135E4C3680327BA434 = {
 			isa = PBXBuildFile;
 			fileRef = 8D021FD82AC468F71E69E691;
+		};
+		067C431381D626EA9E571F0E = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = LinearVertical.h;
+			path = ../../Source/LinearVertical.h;
+			sourceTree = "SOURCE_ROOT";
 		};
 		1503B6B1403C91F747AEC379 = {
 			isa = PBXFileReference;
@@ -92,6 +119,13 @@
 			path = "/Applications/JUCE/modules/juce_core";
 			sourceTree = "<absolute>";
 		};
+		31AB06853E363FC214566E1D = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = LinearHorizontal.cpp;
+			path = ../../Source/LinearHorizontal.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		38745CCD08DB22D9AB846CCF = {
 			isa = PBXFileReference;
 			lastKnownFileType = file;
@@ -112,6 +146,20 @@
 			name = "juce_gui_basics";
 			path = "/Applications/JUCE/modules/juce_gui_basics";
 			sourceTree = "<absolute>";
+		};
+		5DB1A547332657810B4A07B4 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = LinearHorizontal.h;
+			path = ../../Source/LinearHorizontal.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		655F321BAA002F8D0C14F08B = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = TwoThreeValue.h;
+			path = ../../Source/TwoThreeValue.h;
+			sourceTree = "SOURCE_ROOT";
 		};
 		6A8C6FF00C245D14BF453EC4 = {
 			isa = PBXFileReference;
@@ -169,11 +217,25 @@
 			path = "../../JuceLibraryCode/include_juce_gui_basics.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		8F8BA5B860C313A289F343FD = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = Bar.h;
+			path = ../../Source/Bar.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		90BEB932BB51718937FAD8BB = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
 			name = "include_juce_events.mm";
 			path = "../../JuceLibraryCode/include_juce_events.mm";
+			sourceTree = "SOURCE_ROOT";
+		};
+		99DF0B996EEAFA66686A9147 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = LinearVertical.cpp;
+			path = ../../Source/LinearVertical.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		AB1CFDFC6E89D08D421D3175 = {
@@ -182,6 +244,13 @@
 			name = Cocoa.framework;
 			path = System/Library/Frameworks/Cocoa.framework;
 			sourceTree = SDKROOT;
+		};
+		AD5A0180D1A0303B11A8ABCB = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = TwoThreeValue.cpp;
+			path = ../../Source/TwoThreeValue.cpp;
+			sourceTree = "SOURCE_ROOT";
 		};
 		BCE7DE13B865360E026E9E4E = {
 			isa = PBXFileReference;
@@ -204,11 +273,32 @@
 			path = ../../Source/AlphaOneLookAndFeel.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		E481E80294A8182CE83B1162 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Bar.cpp;
+			path = ../../Source/Bar.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		E7CC9AD31C47DE43F193877A = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = Rotary.h;
+			path = ../../Source/Rotary.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		F6690FC277E64BAD7020BCBD = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
 			name = JuceHeader.h;
 			path = ../../JuceLibraryCode/JuceHeader.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		F6952DD76FAA49996EBEA16D = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Rotary.cpp;
+			path = ../../Source/Rotary.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		F977BBC946F4A737C64556DE = {
@@ -221,11 +311,21 @@
 		D56B3FE0DB380B21E63512A1 = {
 			isa = PBXGroup;
 			children = (
-				D08B644D8A4C4923D7AE3D1D,
-				1F4FA0C276739E2FC6DA312A,
 				F977BBC946F4A737C64556DE,
 				BCE7DE13B865360E026E9E4E,
 				1503B6B1403C91F747AEC379,
+				655F321BAA002F8D0C14F08B,
+				AD5A0180D1A0303B11A8ABCB,
+				8F8BA5B860C313A289F343FD,
+				E481E80294A8182CE83B1162,
+				E7CC9AD31C47DE43F193877A,
+				F6952DD76FAA49996EBEA16D,
+				5DB1A547332657810B4A07B4,
+				31AB06853E363FC214566E1D,
+				067C431381D626EA9E571F0E,
+				99DF0B996EEAFA66686A9147,
+				1F4FA0C276739E2FC6DA312A,
+				D08B644D8A4C4923D7AE3D1D,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -552,6 +652,11 @@
 			files = (
 				45917DA1E9D9035CAB1379F5,
 				66DC7DDE1477394CBF159773,
+				4CB18C72D0A9A21FBBE620CE,
+				F5FF16B234CEF65703327869,
+				BCBCB9CD95CEBE36A4B33044,
+				9EF77C04665BDD7887BAB08F,
+				C40671708E8D31A04AC36A16,
 				6BE0D547BD6A5C690582725C,
 				7D721729A1AE3447C0B8C0D8,
 				13E351BB616FB86A50BF0F35,
