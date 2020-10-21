@@ -339,10 +339,20 @@ private:
     
     void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept
     {
+        /** Colours:
+            1. colour - the colour of triangle rim
+            2. pivotColour - same as the color of the dot in the centre of the track
+            3. paleCircleColour - the colour of the circular shadow (colour of area background?)
+            4. triangleFillColour - default - non (fully transparent
+            5. V_2 - triangleFillGradientSecondColour
+            6. V_2 - reflected triangles colour (different ?)
+         */
         g.setColour (juce::Colours::red);
         juce::Point<float> pivot {x + diameter * 0.5f, y + diameter * 0.5f};
         g.fillEllipse (juce::Rectangle<float> {2.0f, 2.0f}.withCentre (pivot));
-        /** Simple triangle ? */
+        /** Pale circle. This is to make a circular shadow on
+            the sides of the triangle.
+         */
         g.setColour (juce::Colours::yellow.withAlpha (0.25f));
         g.fillEllipse (juce::Rectangle<float> {diameter, diameter}.withCentre (pivot));
         
@@ -381,11 +391,168 @@ private:
     
 };
 
+/**
+    This version is using gradient for track drowing.
+    Only symmetrical sliders: linear h or v, rotary, bar
+ */
 class AlphaOneSymmetricalSlider_V2 : public AlphaOneSymmetricalSlider
 {
 public:
     AlphaOneSymmetricalSlider_V2()
     {}
-    virtual ~AlphaOneSymmetricalSlider_V2()
+    ~AlphaOneSymmetricalSlider_V2() override
     {}
+    
+    int getSliderThumbRadius (juce::Slider& slider) override
+    {
+        return juce::jmin (thumbRadius, slider.isHorizontal() ? static_cast<float> (slider.getHeight()) * 0.5f : static_cast<float> (slider.getWidth()) * 0.5f);
+    }
+    
+    void setSliderThumbRadius (const float& newRadius)
+    {
+        thumbRadius = newRadius;
+    }
+    
+    /** LINEAR SLIDER. */
+    /** Horizontal, Vertical, Horizontal Bar, Vertical Bar. */
+    void drawLinearSlider (juce::Graphics& g, int x, int y, int width, int height,
+                           float sliderPos,
+                           float minSliderPos,
+                           float maxSliderPos,
+                           const juce::Slider::SliderStyle style,
+                           juce::Slider& slider) override
+    {
+        jassert ( (! slider.isTwoValue()) && (! slider.isThreeValue()) );
+        /** Cast dimentions. */
+        float sliderX = static_cast<float> (x);
+        float sliderY = static_cast<float> (y);
+        float sliderWidth = static_cast<float> (width);
+        float sliderHeight = static_cast<float> (height);
+        float trackWidth = juce::jmin (9.0f, slider.isHorizontal() ? sliderHeight * 0.25f : sliderWidth * 0.25f);
+        
+        juce::Point<float> startPos { slider.isHorizontal() ? sliderX : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY + sliderHeight };
+        juce::Point<float> endPos { slider.isHorizontal() ? sliderX + sliderWidth : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY };
+        juce::Point<float> midPos { sliderX + sliderWidth * 0.5f, sliderY + sliderHeight * 0.5f };
+        juce::Point<float> maxPos { slider.isHorizontal() ? sliderPos : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderPos };
+        
+        /** delegate this to one level up parent. */
+        if (slider.isBar())
+        {
+            g.setColour (slider.findColour (juce::Slider::trackColourId));
+            if (slider.isHorizontal())
+            {
+                g.fillRect ( (midPos.getX() >= maxPos.getX() ) ?
+                            juce::Rectangle<float> {
+                                maxPos.getX(),
+                                sliderY + 0.5f,
+                                midPos.getX() - maxPos.getX(),
+                                sliderHeight - 1.0f
+                            }                                  :
+                            juce::Rectangle<float> {
+                                midPos.getX(),
+                                sliderY + 0.5f,
+                                maxPos.getX() - midPos.getX(),
+                                sliderHeight - 1.0f
+                            }
+                            );
+            }
+            else
+            {
+                g.fillRect ( (midPos.getY() >= maxPos.getY() ) ?
+                            juce::Rectangle<float> {
+                                sliderX + 0.5f,
+                                midPos.getY(),
+                                sliderWidth - 1.0f,
+                                midPos.getY() - maxPos.getY()
+                            }                                  :
+                            juce::Rectangle<float> {
+                                sliderX + 0.5f,
+                                maxPos.getY(),
+                                sliderWidth - 1.0f,
+                                maxPos.getY() - midPos.getY()
+                            }
+                            );
+                            
+            }
+            return;
+        };
+    
+        /** Draw background. */
+        juce::Colour backgroundColour = slider.findColour (juce::Slider::backgroundColourId);
+        
+        juce::Path background;
+        g.setColour (backgroundColour);
+        background.startNewSubPath (startPos);
+        background.lineTo (endPos);
+        background.closeSubPath();
+        g.strokePath (background, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
+        
+        /** Draw track.
+         This is filled from StartPos till SliderPos for simple linear slider.
+         */
+        juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
+        /** Draw track from mid point. */
+        juce::Path track;
+        track.startNewSubPath (midPos);
+        track.lineTo (maxPos);
+        track.closeSubPath();
+        g.setColour (trackColour);
+        g.strokePath (track, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
+        
+        /** Draw thumb. */
+        auto thumbWidth = juce::jmax (static_cast<float> (getSliderThumbRadius (slider)), trackWidth);
+        auto sr = juce::jmin (trackWidth, slider.isHorizontal() ? sliderHeight : sliderWidth * 0.4f);
+        juce::Colour thumbColour = slider.findColour (juce::Slider::thumbColourId);
+        /** Directions:
+         0 - points up, 1 - points to the right, 2, points up, 3 points left
+         */
+        
+        /** Draw circlular thumb
+         */
+        juce::Rectangle<float> thumbArea {thumbWidth * 0.2f, thumbWidth * 0.2f};
+        g.setColour (thumbColour);
+        g.fillEllipse (thumbArea.withCentre (maxPos));
+        g.fillEllipse (thumbArea.withCentre (midPos));
+        if (slider.isHorizontal() )
+        {
+            /** lower thumb. */
+            //            drawThumbLinearTri (g,
+            //                                maxPoint.getX() - sr,
+            //                                maxPoint.getY(),
+            //                                trackWidth * 2.0f,
+            //                                thumbColour,
+            //                                0);
+            /** Upper thumb. */
+            drawThumbLinearTri (g,
+                                maxPos.getX() - sr,
+                                maxPos.getY() - sr * 2,
+                                trackWidth * 2.0f,
+                                thumbColour,
+                                2);
+            
+        }
+        else
+        {
+            /** Thumb poinint to the left. */
+            drawThumbLinearTri (g, maxPos.getX(),
+                                maxPos.getY() - sr,
+                                trackWidth * 2.0f,
+                                thumbColour,
+                                3);
+            
+        }
+        
+    }
+    
+    
+    /** ROTARY SLIDER. */
+    
+private:
+    float thumbRadius {15.0f};
+    
+    void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, const juce::Colour& colour, int direction)
+    {
+        
+    }
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AlphaOneSymmetricalSlider_V2)
 };

@@ -34,6 +34,7 @@ private:
     juce::Slider linearH {juce::Slider::SliderStyle::LinearHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     juce::Slider linearHTwo {juce::Slider::SliderStyle::LinearHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     juce::Slider linearBar {juce::Slider::SliderStyle::LinearBar, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
+    juce::Slider linearBar2 {juce::Slider::SliderStyle::LinearBar, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     juce::Slider linearBarV {juce::Slider::SliderStyle::LinearBarVertical, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     
     /** Two / Thee value sliders. */
@@ -45,6 +46,7 @@ private:
     RosenSliderLookAndFeel rosenLookAndFeel;
     AlphaOneLookAndFeel alphaLookAndFeel;
     AlphaOneSymmetricalSlider alphaOneSymmetricalSlider;
+    AlphaOneSymmetricalSlider_V2 alphaTwo;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

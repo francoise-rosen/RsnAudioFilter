@@ -16,11 +16,14 @@ MainComponent::MainComponent()
     addAndMakeVisible (&threeValHorizontal);
     addAndMakeVisible (&linearHTwo);
     addAndMakeVisible (&linearVTwo);
+    addAndMakeVisible (&linearBar2);
     
     linearHTwo.setRange (0.0f, 1.0f);
     linearHTwo.setValue (0.5f);
     linearVTwo.setRange (0.0f, 1.0f);
     linearVTwo.setRange (0.0f, 1.0f);
+    linearBar2.setRange (-1.0f, 1.0f);
+    linearBar2.setValue (0.0f);
     
     /** Custom look and feel. */
     rosenLookAndFeel.setColour (juce::Slider::trackColourId, juce::Colours::blue.withAlpha(0.83f));
@@ -31,6 +34,7 @@ MainComponent::MainComponent()
     alphaOneSymmetricalSlider.setColour (juce::Slider::thumbColourId, juce::Colours::red);
     alphaOneSymmetricalSlider.setColour (juce::Slider::trackColourId, juce::Colours::blue.withAlpha(0.24f));
     alphaOneSymmetricalSlider.setColour (juce::Slider::backgroundColourId, juce::Colours::darkcyan);
+    alphaTwo.setColour (juce::Slider::trackColourId, juce::Colours::purple);
     
     
     linearHTwo.setLookAndFeel (&alphaOneSymmetricalSlider);
@@ -44,6 +48,7 @@ MainComponent::MainComponent()
     twoValVertical.setLookAndFeel (&rosenLookAndFeel);
     threeValVertical.setLookAndFeel (&alphaLookAndFeel);
     threeValHorizontal.setLookAndFeel (&alphaLookAndFeel);
+    linearBar2.setLookAndFeel (&alphaTwo);
     setSize (600, 400);
 }
 
@@ -59,6 +64,7 @@ MainComponent::~MainComponent()
     threeValVertical.setLookAndFeel (nullptr);
     threeValHorizontal.setLookAndFeel (nullptr);
     linearVTwo.setLookAndFeel (nullptr);
+    linearBar2.setLookAndFeel (nullptr);
 }
 
 //==============================================================================
@@ -81,7 +87,8 @@ void MainComponent::resized()
     auto linearHArea = linearArea.removeFromLeft (linearArea.getWidth() * 0.5f);
     linearH.setBounds (linearHArea.removeFromTop (linearHArea.getHeight() / 3.0f));
     linearHTwo.setBounds (linearHArea.removeFromTop (linearHArea.getHeight() * 0.5f));
-    linearBar.setBounds (linearHArea);
+    linearBar.setBounds (linearHArea.removeFromTop (linearHArea.getHeight() * 0.5f));
+    linearBar2.setBounds (linearHArea);
     
     linearV.setBounds (linearArea.removeFromLeft (linearHArea.getWidth() * 0.5f));
     linearBarV.setBounds (linearArea);
