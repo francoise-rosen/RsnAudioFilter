@@ -473,11 +473,12 @@ public:
         juce::Point<float> midPos { sliderX + sliderWidth * 0.5f, sliderY + sliderHeight * 0.5f };
         juce::Point<float> maxPoint { slider.isHorizontal() ? sliderPos : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderPos };
         
-        /** Crashes! Alpha is out of range!. */
+        /** Works, but must be tested!. */
         if (slider.isBar())
         {
             juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
-            float alpha = juce::jmap (slider.isHorizontal() ? maxPoint.getX() - sliderX : maxPoint.getY() - sliderY, 0.0f, slider.isHorizontal() ? sliderWidth * 0.5f : sliderHeight * 0.5f, 0.0f, 1.0f );
+            float alpha = juce::jmap (slider.isHorizontal() ?
+                                      std::abs (maxPoint.getX() - midPos.getX()) : std::abs (maxPoint.getY() - midPos.getY()), 0.0f, slider.isHorizontal() ? sliderWidth * 0.5f: sliderHeight * 0.5f, 0.0f, 1.0f );
             g.setColour (trackColour.withAlpha (alpha));
             if (slider.isHorizontal())
             {
