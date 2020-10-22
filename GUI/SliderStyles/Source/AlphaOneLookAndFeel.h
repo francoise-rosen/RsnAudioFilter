@@ -476,45 +476,7 @@ public:
         /** Works, but must be tested!. */
         if (slider.isBar())
         {
-            juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
-            float alpha = juce::jmap (slider.isHorizontal() ?
-                                      std::abs (maxPoint.getX() - midPos.getX()) : std::abs (maxPoint.getY() - midPos.getY()), 0.0f, slider.isHorizontal() ? sliderWidth * 0.5f: sliderHeight * 0.5f, 0.0f, 1.0f );
-            g.setColour (trackColour.withAlpha (alpha));
-            if (slider.isHorizontal())
-            {
-                g.fillRect ( (midPos.getX() >= maxPoint.getX() ) ?
-                            juce::Rectangle<float> {
-                                maxPoint.getX(),
-                                sliderY + 0.5f,
-                                midPos.getX() - maxPoint.getX(),
-                                sliderHeight - 1.0f
-                            }                                  :
-                            juce::Rectangle<float> {
-                                midPos.getX(),
-                                sliderY + 0.5f,
-                                maxPoint.getX() - midPos.getX(),
-                                sliderHeight - 1.0f
-                            }
-                            );
-            }
-            else
-            {
-                g.fillRect ( (midPos.getY() >= maxPoint.getY() ) ?
-                            juce::Rectangle<float> {
-                                sliderX + 0.5f,
-                                midPos.getY(),
-                                sliderWidth - 1.0f,
-                                midPos.getY() - maxPoint.getY()
-                            }                                  :
-                            juce::Rectangle<float> {
-                                sliderX + 0.5f,
-                                maxPoint.getY(),
-                                sliderWidth - 1.0f,
-                                maxPoint.getY() - midPos.getY()
-                            }
-                            );
-                            
-            }
+            drawBarWithGradient(g, slider, midPos, maxPoint, sliderX, sliderY, sliderWidth, sliderHeight);
             return;
         };
     
@@ -594,6 +556,52 @@ private:
     void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, const juce::Colour& colour, int direction)
     {
         
+    }
+    
+    void drawBarWithGradient (juce::Graphics& g, juce::Slider& slider, const juce::Point<float>& midPos, const juce::Point<float>& maxPoint, const float& sliderX, const float& sliderY, const float& sliderWidth, const float& sliderHeight)
+    {
+        juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
+        float alpha = juce::jmap (slider.isHorizontal() ?
+                                  std::abs (maxPoint.getX() - midPos.getX()) : std::abs (maxPoint.getY() - midPos.getY()), 0.0f, slider.isHorizontal() ? sliderWidth * 0.5f: sliderHeight * 0.5f, 0.0f, 1.0f );
+        if (alpha > 1.0f)
+            alpha = 1.0f;
+        if (alpha < 0.0f)
+            alpha = 0.0f;
+        g.setColour (trackColour.withAlpha (alpha));
+        if (slider.isHorizontal())
+        {
+            g.fillRect ( (midPos.getX() >= maxPoint.getX() ) ?
+                        juce::Rectangle<float> {
+                            maxPoint.getX(),
+                            sliderY + 0.5f,
+                            midPos.getX() - maxPoint.getX(),
+                            sliderHeight - 1.0f
+                        }                                  :
+                        juce::Rectangle<float> {
+                            midPos.getX(),
+                            sliderY + 0.5f,
+                            maxPoint.getX() - midPos.getX(),
+                            sliderHeight - 1.0f
+                        }
+                        );
+        }
+        else
+        {
+            g.fillRect ( (midPos.getY() >= maxPoint.getY() ) ?
+                        juce::Rectangle<float> {
+                            sliderX + 0.5f,
+                            midPos.getY(),
+                            sliderWidth - 1.0f,
+                            midPos.getY() - maxPoint.getY()
+                        }                                  :
+                        juce::Rectangle<float> {
+                            sliderX + 0.5f,
+                            maxPoint.getY(),
+                            sliderWidth - 1.0f,
+                            maxPoint.getY() - midPos.getY()
+                        }
+                        );
+        }
     }
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AlphaOneSymmetricalSlider_V2)
 };
