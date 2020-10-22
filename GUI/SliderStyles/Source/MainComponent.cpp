@@ -24,6 +24,8 @@ MainComponent::MainComponent()
     linearVTwo.setRange (0.0f, 1.0f);
     linearBar2.setRange (-1.0f, 1.0f);
     linearBar2.setValue (0.0f);
+    linearBar.setRange (-1.0f, 1.0f);
+    linearBar.setValue (0.0f);
     
     /** Custom look and feel. */
     rosenLookAndFeel.setColour (juce::Slider::trackColourId, juce::Colours::blue.withAlpha(0.83f));
@@ -38,7 +40,7 @@ MainComponent::MainComponent()
     
     
     linearHTwo.setLookAndFeel (&alphaOneSymmetricalSlider);
-    linearBar.setLookAndFeel (&rosenLookAndFeel);
+    linearBar.setLookAndFeel (&alphaOneSymmetricalSlider);
     linearBarV.setLookAndFeel (&rosenLookAndFeel);
     linearH.setLookAndFeel (&alphaLookAndFeel);
     linearV.setLookAndFeel (&alphaOneSymmetricalSlider);

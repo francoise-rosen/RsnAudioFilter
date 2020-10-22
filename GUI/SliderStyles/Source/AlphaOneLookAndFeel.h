@@ -263,11 +263,56 @@ public:
         float sliderHeight = static_cast<float> (height);
         float trackWidth = juce::jmin (9.0f, slider.isHorizontal() ? sliderHeight * 0.25f : sliderWidth * 0.25f);
         
-        /** Draw background. */
         juce::Colour backgroundColour = slider.findColour (juce::Slider::backgroundColourId);
         juce::Point<float> startPos { slider.isHorizontal() ? sliderX : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY + sliderHeight};
         juce::Point<float> endPos { slider.isHorizontal() ? sliderX + sliderWidth : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY };
         juce::Point<float> midPos { sliderX + sliderWidth * 0.5f, sliderY + sliderHeight * 0.5f };
+        juce::Point<float> minPoint = startPos;
+        juce::Point<float> maxPoint { slider.isHorizontal() ? sliderPos : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderPos };
+        
+        /** Symmetrical bar. */
+        if (slider.isBar())
+        {
+            g.setColour (slider.findColour (juce::Slider::trackColourId));
+            if (slider.isHorizontal())
+            {
+                g.fillRect ( (midPos.getX() >= maxPoint.getX() ) ?
+                            juce::Rectangle<float> {
+                                maxPoint.getX(),
+                                sliderY + 0.5f,
+                                midPos.getX() - maxPoint.getX(),
+                                sliderHeight - 1.0f
+                            }                                  :
+                            juce::Rectangle<float> {
+                                midPos.getX(),
+                                sliderY + 0.5f,
+                                maxPoint.getX() - midPos.getX(),
+                                sliderHeight - 1.0f
+                            }
+                            );
+            }
+            else
+            {
+                g.fillRect ( (midPos.getY() >= maxPoint.getY() ) ?
+                            juce::Rectangle<float> {
+                                sliderX + 0.5f,
+                                midPos.getY(),
+                                sliderWidth - 1.0f,
+                                midPos.getY() - maxPoint.getY()
+                            }                                  :
+                            juce::Rectangle<float> {
+                                sliderX + 0.5f,
+                                maxPoint.getY(),
+                                sliderWidth - 1.0f,
+                                maxPoint.getY() - midPos.getY()
+                            }
+                            );
+            }
+            return;
+        };
+        
+        /** Draw background. */
+        
         juce::Path background;
         g.setColour (backgroundColour);
         background.startNewSubPath (startPos);
@@ -279,10 +324,6 @@ public:
             This is filled from StartPos till SliderPos for simple linear slider.
          */
         juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
-        juce::Point<float> minPoint = startPos;
-        juce::Point<float> maxPoint { slider.isHorizontal() ? sliderPos : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderPos };
-        
-        /** Draw track from mid point. */
         juce::Path track;
         track.startNewSubPath (midPos);
         track.lineTo (maxPoint);
@@ -320,7 +361,6 @@ public:
                                 trackWidth * 2.0f,
                                 thumbColour,
                                 2);
-
         }
         else
         {
@@ -330,9 +370,7 @@ public:
                                 trackWidth * 2.0f,
                                 thumbColour,
                                 3);
-
         }
-        
     }
     
 private:
@@ -433,43 +471,45 @@ public:
         juce::Point<float> startPos { slider.isHorizontal() ? sliderX : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY + sliderHeight };
         juce::Point<float> endPos { slider.isHorizontal() ? sliderX + sliderWidth : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY };
         juce::Point<float> midPos { sliderX + sliderWidth * 0.5f, sliderY + sliderHeight * 0.5f };
-        juce::Point<float> maxPos { slider.isHorizontal() ? sliderPos : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderPos };
+        juce::Point<float> maxPoint { slider.isHorizontal() ? sliderPos : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderPos };
         
-        /** delegate this to one level up parent. */
+        /** Crashes! Alpha is out of range!. */
         if (slider.isBar())
         {
-            g.setColour (slider.findColour (juce::Slider::trackColourId));
+            juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
+            float alpha = juce::jmap (slider.isHorizontal() ? maxPoint.getX() - sliderX : maxPoint.getY() - sliderY, 0.0f, slider.isHorizontal() ? sliderWidth * 0.5f : sliderHeight * 0.5f, 0.0f, 1.0f );
+            g.setColour (trackColour.withAlpha (alpha));
             if (slider.isHorizontal())
             {
-                g.fillRect ( (midPos.getX() >= maxPos.getX() ) ?
+                g.fillRect ( (midPos.getX() >= maxPoint.getX() ) ?
                             juce::Rectangle<float> {
-                                maxPos.getX(),
+                                maxPoint.getX(),
                                 sliderY + 0.5f,
-                                midPos.getX() - maxPos.getX(),
+                                midPos.getX() - maxPoint.getX(),
                                 sliderHeight - 1.0f
                             }                                  :
                             juce::Rectangle<float> {
                                 midPos.getX(),
                                 sliderY + 0.5f,
-                                maxPos.getX() - midPos.getX(),
+                                maxPoint.getX() - midPos.getX(),
                                 sliderHeight - 1.0f
                             }
                             );
             }
             else
             {
-                g.fillRect ( (midPos.getY() >= maxPos.getY() ) ?
+                g.fillRect ( (midPos.getY() >= maxPoint.getY() ) ?
                             juce::Rectangle<float> {
                                 sliderX + 0.5f,
                                 midPos.getY(),
                                 sliderWidth - 1.0f,
-                                midPos.getY() - maxPos.getY()
+                                midPos.getY() - maxPoint.getY()
                             }                                  :
                             juce::Rectangle<float> {
                                 sliderX + 0.5f,
-                                maxPos.getY(),
+                                maxPoint.getY(),
                                 sliderWidth - 1.0f,
-                                maxPos.getY() - midPos.getY()
+                                maxPoint.getY() - midPos.getY()
                             }
                             );
                             
@@ -494,7 +534,7 @@ public:
         /** Draw track from mid point. */
         juce::Path track;
         track.startNewSubPath (midPos);
-        track.lineTo (maxPos);
+        track.lineTo (maxPoint);
         track.closeSubPath();
         g.setColour (trackColour);
         g.strokePath (track, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
@@ -511,7 +551,7 @@ public:
          */
         juce::Rectangle<float> thumbArea {thumbWidth * 0.2f, thumbWidth * 0.2f};
         g.setColour (thumbColour);
-        g.fillEllipse (thumbArea.withCentre (maxPos));
+        g.fillEllipse (thumbArea.withCentre (maxPoint));
         g.fillEllipse (thumbArea.withCentre (midPos));
         if (slider.isHorizontal() )
         {
@@ -524,8 +564,8 @@ public:
             //                                0);
             /** Upper thumb. */
             drawThumbLinearTri (g,
-                                maxPos.getX() - sr,
-                                maxPos.getY() - sr * 2,
+                                maxPoint.getX() - sr,
+                                maxPoint.getY() - sr * 2,
                                 trackWidth * 2.0f,
                                 thumbColour,
                                 2);
@@ -534,8 +574,8 @@ public:
         else
         {
             /** Thumb poinint to the left. */
-            drawThumbLinearTri (g, maxPos.getX(),
-                                maxPos.getY() - sr,
+            drawThumbLinearTri (g, maxPoint.getX(),
+                                maxPoint.getY() - sr,
                                 trackWidth * 2.0f,
                                 thumbColour,
                                 3);
