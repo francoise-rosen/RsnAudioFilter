@@ -323,13 +323,7 @@ public:
         /** Draw track.
             This is filled from StartPos till SliderPos for simple linear slider.
          */
-        juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
-        juce::Path track;
-        track.startNewSubPath (midPos);
-        track.lineTo (maxPoint);
-        track.closeSubPath();
-        g.setColour (trackColour);
-        g.strokePath (track, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
+        drawTrackGradient(g, slider, trackWidth, startPos, midPos, maxPoint, endPos);
         
         /** Draw thumb. */
         auto thumbWidth = juce::jmax (static_cast<float> (getSliderThumbRadius (slider)), trackWidth);
@@ -374,6 +368,18 @@ public:
     }
     
 private:
+    
+    void drawTrackGradient (juce::Graphics& g, juce::Slider& slider, const float& trackWidth, const juce::Point<float> startPos, const juce::Point<float>& midPos, const juce::Point<float>& maxPoint, const juce::Point<float>& endPos)
+    {
+        juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
+        /** Draw track from mid point. */
+        juce::Path track;
+        track.startNewSubPath (midPos);
+        track.lineTo (maxPoint);
+        track.closeSubPath();
+        g.setColour (trackColour);
+        g.strokePath (track, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
+    }
     
     void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept
     {
@@ -490,17 +496,10 @@ public:
         background.closeSubPath();
         g.strokePath (background, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
         
-        /** Draw track.
-         This is filled from StartPos till SliderPos for simple linear slider.
+        /** Draw a track.
+            This is filled from midPos up until maxPoint.
          */
-        juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
-        /** Draw track from mid point. */
-        juce::Path track;
-        track.startNewSubPath (midPos);
-        track.lineTo (maxPoint);
-        track.closeSubPath();
-        g.setColour (trackColour);
-        g.strokePath (track, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
+        drawTrackGradient (g, slider, trackWidth, sliderWidth, sliderHeight, startPos, midPos, maxPoint, endPos);
         
         /** Draw thumb. */
         auto thumbWidth = juce::jmax (static_cast<float> (getSliderThumbRadius (slider)), trackWidth);
@@ -532,7 +531,6 @@ public:
                                 trackWidth * 2.0f,
                                 thumbColour,
                                 2);
-            
         }
         else
         {
@@ -542,16 +540,43 @@ public:
                                 trackWidth * 2.0f,
                                 thumbColour,
                                 3);
-            
         }
-        
     }
-    
     
     /** ROTARY SLIDER. */
     
 private:
     float thumbRadius {15.0f};
+    
+    void drawTrackGradient (juce::Graphics& g, juce::Slider& slider, const float& trackWidth, const float& sliderWidth, const float& sliderHeight, const juce::Point<float> startPos, const juce::Point<float>& midPos, const juce::Point<float>& maxPoint, const juce::Point<float>& endPos)
+    {
+        /** Or use 2 colours?. */
+        juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
+        float alpha;
+        const juce::Point<float>* sidePoint;
+        if (slider.isHorizontal())
+        {
+            sidePoint = (maxPoint.getX() < midPos.getX()) ? &endPos : &startPos;
+            alpha = juce::jmap (std::abs (maxPoint.getX() - midPos.getX()), 0.0f, sliderWidth * 0.5f, 0.0f, 1.0f);
+        }
+        else
+        {
+            sidePoint = (maxPoint.getY() < midPos.getY()) ? &startPos : &endPos;
+            alpha = juce::jmap (std::abs (maxPoint.getY() - midPos.getY()), 0.0f, sliderHeight * 0.5f, 0.0f, 1.0f);
+        }
+        if (alpha > 1.0f)
+            alpha = 1.0f;
+        if (alpha < 0.0f)
+            alpha = 0.0f;
+        /** Draw track from mid point. */
+        jassert (sidePoint != nullptr);
+        juce::Path track;
+        track.startNewSubPath (maxPoint);
+        track.lineTo (*sidePoint);
+        track.closeSubPath();
+        g.setColour (trackColour.withAlpha (alpha));
+        g.strokePath (track, {trackWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
+    }
     
     void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, const juce::Colour& colour, int direction)
     {
