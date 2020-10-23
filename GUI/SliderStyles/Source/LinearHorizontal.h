@@ -9,6 +9,8 @@
 */
 
 #pragma once
+#include <vector>
+#include <JuceHeader.h>
 
 class LinearHorizontal : public juce::Component
 {
@@ -19,10 +21,11 @@ public:
     void paint (juce::Graphics& g) override;
     void resized () override;
     
+    
 private:
-    juce::Slider alphaHorizontal;
-    juce::Slider alphaHorizontalSym;
-    juce::Slider alphaHorizontalSymGradient;
+    enum SliderLF { basic=0, sym, symGradient, numSliders };
+    std::vector<std::unique_ptr<juce::Slider>> sliders;
+    void initialiseSliders ();
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LinearHorizontal)
     
