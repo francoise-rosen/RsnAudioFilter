@@ -19,6 +19,10 @@ LinearVertical::LinearVertical()
     addAndMakeVisible (&alphaVerticalSymGradient);
     setLookAndFeel (&alphaOneLookAndFeel);
     alphaVerticalSym.setLookAndFeel (&alphaOneSymLF);
+    alphaVerticalSym.setRange(-1.0, 1.0);
+    alphaVerticalSym.setValue(0.0);
+    alphaVerticalSym.setNumDecimalPlacesToDisplay(2);
+    alphaOneSymLF.setColour(juce::Slider::trackColourId, juce::Colours::darkcyan.darker());
     alphaVerticalSymGradient.setLookAndFeel (&alphaOneSymGradientLF);
 }
 
@@ -31,7 +35,7 @@ LinearVertical::~LinearVertical()
 
 void LinearVertical::paint (juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::purple.brighter());
+    g.fillAll(juce::Colours::silver);
     auto area = getLocalBounds().reduced (5.0f);
     g.setColour (juce::Colours::blue.darker());
     g.drawRect(area, 5.0f);

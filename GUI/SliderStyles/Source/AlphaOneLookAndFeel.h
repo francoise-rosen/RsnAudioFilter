@@ -328,6 +328,13 @@ public:
         /** Draw thumb. */
         auto thumbWidth = juce::jmax (static_cast<float> (getSliderThumbRadius (slider)), trackWidth);
         auto sr = juce::jmin (trackWidth, slider.isHorizontal() ? sliderHeight : sliderWidth * 0.4f);
+        
+        /** Colours:
+         1. colour - the colour of triangle rim (thumbColourId)
+         2. pivotColour - same as the color of the dot in the centre of the track
+         3. paleCircleColourGradient - the colour of the circular shadow (colour of area background?). The origin is the same colour as midPoint and maxPoint, the outer colour can be background area colour with alpha 0.25f, so that it'll merge in the background around the triangle, but still will be visible both on the track and on the slider's background
+         
+         */
         juce::Colour thumbColour = slider.findColour (juce::Slider::thumbColourId);
         /** Directions:
             0 - points up, 1 - points to the right, 2, points up, 3 points left
@@ -383,21 +390,14 @@ private:
     
     void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept
     {
-        /** Colours:
-            1. colour - the colour of triangle rim
-            2. pivotColour - same as the color of the dot in the centre of the track
-            3. paleCircleColour - the colour of the circular shadow (colour of area background?)
-            4. triangleFillColour - default - non (fully transparent
-            5. V_2 - triangleFillGradientSecondColour
-            6. V_2 - reflected triangles colour (different ?)
-         */
+        
         g.setColour (juce::Colours::red);
         juce::Point<float> pivot {x + diameter * 0.5f, y + diameter * 0.5f};
         g.fillEllipse (juce::Rectangle<float> {2.0f, 2.0f}.withCentre (pivot));
         /** Pale circle. This is to make a circular shadow on
             the sides of the triangle.
          */
-        g.setColour (juce::Colours::yellow.withAlpha (0.25f));
+        g.setColour (juce::Colours::purple.withAlpha (0.25f));
         g.fillEllipse (juce::Rectangle<float> {diameter, diameter}.withCentre (pivot));
         
         g.setColour (juce::Colours::blue);

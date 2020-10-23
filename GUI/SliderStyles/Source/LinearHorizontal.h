@@ -11,6 +11,7 @@
 #pragma once
 #include <vector>
 #include <JuceHeader.h>
+#include "AlphaOneLookAndFeel.h"
 
 class LinearHorizontal : public juce::Component
 {
@@ -26,6 +27,10 @@ private:
     enum SliderLF { basic=0, sym, symGradient, numSliders };
     std::vector<std::unique_ptr<juce::Slider>> sliders;
     void initialiseSliders ();
+    
+    AlphaOneLookAndFeel alphaOneLF;
+    AlphaOneSymmetricalSlider alphaOneSymLF;
+    AlphaOneSymmetricalSlider_V2 alphaOneSymGradLF;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LinearHorizontal)
     
