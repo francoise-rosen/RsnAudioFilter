@@ -45,8 +45,8 @@ void LinearVertical::paint (juce::Graphics& g)
 void LinearVertical::resized()
 {
     auto box = getLocalBounds().reduced (10.0f);
-    alphaVertical.setBounds (box.removeFromLeft(box.getWidth() / 3.0f));
-    alphaVerticalSym.setBounds (box.removeFromLeft(box.getWidth() * 0.5f));
-    alphaVerticalSymGradient.setBounds (box);
+    alphaVertical.setBounds (box.removeFromLeft(box.getWidth() / 3.0f).reduced (0.0f, 10.0f));
+    alphaVerticalSym.setBounds (box.removeFromLeft(box.getWidth() * 0.5f).reduced (0.0f, 10.0f));
+    alphaVerticalSymGradient.setBounds (box.reduced (0.0f, 10.0f));
 
 }

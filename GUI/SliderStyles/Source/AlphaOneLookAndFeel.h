@@ -270,7 +270,7 @@ public:
         float sliderY = static_cast<float> (y);
         float sliderWidth = static_cast<float> (width);
         float sliderHeight = static_cast<float> (height);
-        float trackWidth = juce::jmin (19.0f, slider.isHorizontal() ? sliderHeight * 0.25f : sliderWidth * 0.25f);
+        float trackWidth = juce::jmin (17.0f, slider.isHorizontal() ? sliderHeight * 0.25f : sliderWidth * 0.25f);
         
         juce::Colour backgroundColour = slider.findColour (juce::Slider::backgroundColourId);
         juce::Point<float> startPos { slider.isHorizontal() ? sliderX : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY + sliderHeight};
