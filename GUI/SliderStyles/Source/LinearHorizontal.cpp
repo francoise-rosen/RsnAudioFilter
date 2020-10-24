@@ -15,6 +15,7 @@ LinearHorizontal::LinearHorizontal()
 {
     initialiseSliders();
     setLookAndFeel (&alphaOneLF);
+    alphaOneSymLF.setSliderThumbRadius (20.0f);
     sliders[sym]->setLookAndFeel (&alphaOneSymLF);
     sliders[symGradient]->setLookAndFeel(&alphaOneSymGradLF);
 }

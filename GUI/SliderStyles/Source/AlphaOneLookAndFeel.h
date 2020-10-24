@@ -80,7 +80,7 @@ public:
         /** If the slider is not a bar. */
         auto isTwoVal = (style == juce::Slider::SliderStyle::TwoValueHorizontal || (style == juce::Slider::SliderStyle::TwoValueVertical));
         auto isThreeVal = (style == juce::Slider::SliderStyle::ThreeValueHorizontal || (style == juce::Slider::SliderStyle::ThreeValueVertical));
-        auto trackWidth = juce::jmin (9.0f, slider.isHorizontal() ? sliderWidth * 0.25f : sliderHeight * 0.25f);
+        auto trackWidth = juce::jmin (19.0f, slider.isHorizontal() ? sliderWidth * 0.25f : sliderHeight * 0.25f);
         
         /** Draw background. */
         juce::Point<float> startPoint {slider.isHorizontal() ? sliderX : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY + sliderHeight};
@@ -197,7 +197,7 @@ public:
         line.lineTo (x + diameter * 0.5f, y + diameter);
         line.closeSubPath();
         line.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, x + diameter * 0.5f, y + diameter * 0.5f));
-        g.strokePath (line, { juce::jmin (2.0f, diameter * 0.25f), juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
+        g.strokePath (line, { juce::jmin (5.0f, diameter * 0.25f), juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
     }
     
 //    void drawPointer (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction) noexcept
@@ -242,9 +242,18 @@ public:
     {}
     
     /** LINEAR SLIDER. */
+    
+    /** Check if the input is legit? */
+    void setSliderThumbRadius (const float& newRadius)
+    {
+        if (newRadius < 0.0f)
+            sliderThumbRadius = 0.0f;
+        sliderThumbRadius = newRadius;
+    }
+    
     int getSliderThumbRadius (juce::Slider& slider) override
     {
-        return juce::jmin (15.0f, slider.isHorizontal() ? static_cast<float> (slider.getHeight()) * 0.5f : static_cast<float> (slider.getWidth()) * 0.5f);
+        return juce::jmin (sliderThumbRadius, slider.isHorizontal() ? static_cast<float> (slider.getHeight()) * 0.5f : static_cast<float> (slider.getWidth()) * 0.5f);
     }
     
     /** Only horizontal or vertical one value slider. */
@@ -261,7 +270,7 @@ public:
         float sliderY = static_cast<float> (y);
         float sliderWidth = static_cast<float> (width);
         float sliderHeight = static_cast<float> (height);
-        float trackWidth = juce::jmin (9.0f, slider.isHorizontal() ? sliderHeight * 0.25f : sliderWidth * 0.25f);
+        float trackWidth = juce::jmin (19.0f, slider.isHorizontal() ? sliderHeight * 0.25f : sliderWidth * 0.25f);
         
         juce::Colour backgroundColour = slider.findColour (juce::Slider::backgroundColourId);
         juce::Point<float> startPos { slider.isHorizontal() ? sliderX : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY + sliderHeight};
@@ -344,7 +353,7 @@ public:
          */
         juce::Rectangle<float> thumbArea {thumbWidth * 0.2f, thumbWidth * 0.2f};
         g.setColour (thumbColour);
-        g.fillEllipse (thumbArea.withCentre (maxPoint));
+        //g.fillEllipse (thumbArea.withCentre (maxPoint));
         g.fillEllipse (thumbArea.withCentre (midPos));
         if (slider.isHorizontal() )
         {
@@ -372,10 +381,12 @@ public:
                                 thumbColour,
                                 3);
         }
+        g.setColour (thumbColour);
+        g.fillEllipse (thumbArea.withCentre (maxPoint));
     }
     
 private:
-    
+    float sliderThumbRadius {15.0f};
     void drawTrackGradient (juce::Graphics& g, juce::Slider& slider, const float& trackWidth, const juce::Point<float> startPos, const juce::Point<float>& midPos, const juce::Point<float>& maxPoint, const juce::Point<float>& endPos)
     {
         juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
@@ -397,17 +408,17 @@ private:
         /** Pale circle. This is to make a circular shadow on
             the sides of the triangle.
          */
-        g.setColour (juce::Colours::purple.withAlpha (0.25f));
+        g.setColour (juce::Colours::silver.withAlpha (0.25f));
         g.fillEllipse (juce::Rectangle<float> {diameter, diameter}.withCentre (pivot));
         
-        g.setColour (juce::Colours::blue);
+        g.setColour (juce::Colours::black);
         juce::Path tri;
         tri.startNewSubPath (x + diameter * 0.5f, y);
-        tri.lineTo (x + diameter, y + diameter * 0.75f);
-        tri.lineTo (x, y + diameter * 0.75f);
+        tri.lineTo (x + diameter * 0.85f, y + diameter * 0.75f);
+        tri.lineTo (x + diameter * 0.15f, y + diameter * 0.75f);
         tri.closeSubPath();
         tri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
-        g.strokePath (tri, juce::PathStrokeType (3.0f));
+        g.strokePath (tri, juce::PathStrokeType (4.0f));
  
 
     }
