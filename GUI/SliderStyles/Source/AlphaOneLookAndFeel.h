@@ -22,11 +22,19 @@
     - clean up
     - colours (track, thumb fill, thumb outer rim)
     - text field label
+    - rotary (w/ or w/o track drawing)
  
  AlphaOneSymmetricalSlider_V2
     - triangle backround shapes? (three items)
     - triangle rim and fill colours
-    - track gradient (hard left - dark orange, hard right - bright silver)
+    - track gradient (hard left - dark orange, hard right - bright silver). Linear slider, gradient from
+    - rotary gradient
+ 
+ AlphaOneLookAndFeel_V2
+    - improved linear slider thumb triangle with changing sides (three triangles on background, different colour / shade
+    - triangle with dark shadow on one side
+    - background grid
+    - slider track gradients for all types
  */
 
 class AlphaOneLookAndFeel : public juce::LookAndFeel_V4
@@ -385,8 +393,20 @@ public:
         g.fillEllipse (thumbArea.withCentre (maxPoint));
     }
     
+    void setThumbTriColour (const juce::Colour newColour)
+    {
+        linearSliderThumbTriColour = newColour;
+    }
+    
+    void setLinearSliderThumbOuterRimColour (const juce::Colour newColour)
+    {
+        linearSliderThumbOuterRimColour = newColour;
+    }
+    
 private:
     float sliderThumbRadius {15.0f};
+    juce::Colour linearSliderThumbTriColour {juce::Colours::black};
+    juce::Colour linearSliderThumbOuterRimColour {juce::Colours::silver.withAlpha (0.2f)};
     void drawTrackGradient (juce::Graphics& g, juce::Slider& slider, const float& trackWidth, const juce::Point<float> startPos, const juce::Point<float>& midPos, const juce::Point<float>& maxPoint, const juce::Point<float>& endPos)
     {
         juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
@@ -402,25 +422,30 @@ private:
     void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept
     {
         
-        g.setColour (juce::Colours::red);
         juce::Point<float> pivot {x + diameter * 0.5f, y + diameter * 0.5f};
-        g.fillEllipse (juce::Rectangle<float> {2.0f, 2.0f}.withCentre (pivot));
+        
         /** Pale circle. This is to make a circular shadow on
             the sides of the triangle.
          */
-        g.setColour (juce::Colours::silver.withAlpha (0.25f));
+        g.setColour (linearSliderThumbOuterRimColour);
         g.fillEllipse (juce::Rectangle<float> {diameter, diameter}.withCentre (pivot));
         
-        g.setColour (juce::Colours::black);
+        /** Set colour for the triangle. */
+        
         juce::Path tri;
         tri.startNewSubPath (x + diameter * 0.5f, y);
-        tri.lineTo (x + diameter * 0.85f, y + diameter * 0.75f);
-        tri.lineTo (x + diameter * 0.15f, y + diameter * 0.75f);
+        tri.lineTo (x + diameter * 0.89f, y + diameter * 0.75f);
+        tri.lineTo (x + diameter * 0.11f, y + diameter * 0.75f);
         tri.closeSubPath();
         tri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
+        g.setColour (juce::Colours::darkblue);
+        g.fillPath (tri);
+        g.setColour (linearSliderThumbTriColour);
         g.strokePath (tri, juce::PathStrokeType (4.0f));
+        
+        g.setColour (linearSliderThumbTriColour);
+        g.fillEllipse (juce::Rectangle<float> {2.0f, 2.0f}.withCentre (pivot));
  
-
     }
     
 //    void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept

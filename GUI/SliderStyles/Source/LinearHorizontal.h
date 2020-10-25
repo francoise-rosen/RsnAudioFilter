@@ -27,6 +27,7 @@ private:
     enum SliderLF { basic=0, sym, symGradient, numSliders };
     std::vector<std::unique_ptr<juce::Slider>> sliders;
     void initialiseSliders ();
+    juce::Colour backgroundColour;
     
     AlphaOneLookAndFeel alphaOneLF;
     AlphaOneSymmetricalSlider alphaOneSymLF;

@@ -12,10 +12,12 @@
 
 
 LinearHorizontal::LinearHorizontal()
+:backgroundColour (juce::Colours::mediumpurple)
 {
     initialiseSliders();
     setLookAndFeel (&alphaOneLF);
     alphaOneSymLF.setSliderThumbRadius (20.0f);
+    alphaOneSymLF.setLinearSliderThumbOuterRimColour (backgroundColour.withAlpha (0.2f));
     sliders[sym]->setLookAndFeel (&alphaOneSymLF);
     sliders[symGradient]->setLookAndFeel(&alphaOneSymGradLF);
 }
@@ -29,7 +31,7 @@ LinearHorizontal::~LinearHorizontal()
 
 void LinearHorizontal::paint (juce::Graphics& g)
 {
-    g.fillAll (juce::Colours::mediumpurple);
+    g.fillAll (backgroundColour);
 }
 
 void LinearHorizontal::resized()
