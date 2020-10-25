@@ -249,6 +249,8 @@ public:
     virtual ~AlphaOneSymmetricalSlider()
     {}
     
+    enum class PointerFill { NoFill, Fill, FillGradient };
+    
     /** LINEAR SLIDER. */
     
     /** Check if the input is legit? */
@@ -403,10 +405,18 @@ public:
         linearSliderThumbOuterRimColour = newColour;
     }
     
+    void setPointerFill (PointerFill newFillFlag)
+    {
+        pointerFill = newFillFlag;
+    }
+    
 private:
     float sliderThumbRadius {15.0f};
     juce::Colour linearSliderThumbTriColour {juce::Colours::black};
+    juce::Colour linearSliderThumbTriFill {juce::Colours::black};
     juce::Colour linearSliderThumbOuterRimColour {juce::Colours::silver.withAlpha (0.2f)};
+    PointerFill pointerFill { PointerFill::NoFill };
+    
     void drawTrackGradient (juce::Graphics& g, juce::Slider& slider, const float& trackWidth, const juce::Point<float> startPos, const juce::Point<float>& midPos, const juce::Point<float>& maxPoint, const juce::Point<float>& endPos)
     {
         juce::Colour trackColour = slider.findColour (juce::Slider::trackColourId);
@@ -427,8 +437,23 @@ private:
         /** Pale circle. This is to make a circular shadow on
             the sides of the triangle.
          */
-        g.setColour (linearSliderThumbOuterRimColour);
-        g.fillEllipse (juce::Rectangle<float> {diameter, diameter}.withCentre (pivot));
+        
+        if (pointerFill != PointerFill::FillGradient)
+        {
+            g.setColour (linearSliderThumbOuterRimColour);
+            g.fillEllipse (juce::Rectangle<float> {diameter, diameter}.withCentre (pivot));
+        }
+        
+        /** Draw inner triangle. */
+        juce::Path innerTri;
+        innerTri.startNewSubPath (pivot);
+        innerTri.lineTo (x + diameter * 0.89f, y + diameter * 0.75f);
+        innerTri.lineTo (x + diameter * 0.11f, y + diameter * 0.75f);
+        innerTri.closeSubPath();
+        innerTri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
+        g.setColour (linearSliderThumbTriFill);
+        g.fillPath (innerTri);
+        
         
         /** Set colour for the triangle. */
         
@@ -438,8 +463,31 @@ private:
         tri.lineTo (x + diameter * 0.11f, y + diameter * 0.75f);
         tri.closeSubPath();
         tri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
-        g.setColour (juce::Colours::darkblue);
-        g.fillPath (tri);
+        
+        /** 1. Filled with colour 2. Filled with gradient 3. No fill */
+        if (pointerFill == PointerFill::Fill)
+        {
+            g.setColour (linearSliderThumbTriFill);
+            g.fillPath (tri);
+        }
+        
+        else if (pointerFill == PointerFill::FillGradient)
+        {
+            juce::ColourGradient gradient
+            {
+                linearSliderThumbTriFill,
+                pivot.getX(),
+                pivot.getY(),
+                linearSliderThumbOuterRimColour,
+                pivot.getX() + diameter * 0.5f,
+                pivot.getY() + diameter * 0.5f,
+                true
+            };
+            g.setGradientFill (gradient);
+            g.fillEllipse (juce::Rectangle<float> {diameter, diameter}.withCentre (pivot));
+        }
+        
+        
         g.setColour (linearSliderThumbTriColour);
         g.strokePath (tri, juce::PathStrokeType (4.0f));
         
