@@ -235,6 +235,19 @@ class RotaryBigLookAndFeel : public WaveshaperLookAndFeel
     
 };
 
+//================================================================================
+/** Custom L+F for the symmetrical linear slider. */
+class SymmetricalLinearLookAndFeel : public WaveshaperLookAndFeel
+{
+public:
+    SymmetricalLinearLookAndFeel()
+    {}
+    ~SymmetricalLinearLookAndFeel()
+    {}
+    
+    
+};
+
 
 
 
