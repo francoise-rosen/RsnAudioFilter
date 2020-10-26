@@ -17,6 +17,7 @@ LinearHorizontal::LinearHorizontal()
     initialiseSliders();
     setLookAndFeel (&alphaOneLF);
     alphaOneSymLF.setSliderThumbRadius (20.0f);
+    alphaOneSymLF.setColour (juce::Slider::trackColourId, juce::Colours::silver.withAlpha (0.5f));
     alphaOneSymLF.setLinearSliderThumbOuterRimColour (backgroundColour.withAlpha (0.2f));
     sliders[sym]->setLookAndFeel (&alphaOneSymLF);
     sliders[symGradient]->setLookAndFeel(&alphaOneSymGradLF);

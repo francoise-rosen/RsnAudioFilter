@@ -43,6 +43,11 @@ public:
         symmetricalRotaryLookAndFeel.setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::silver.brighter());
         symmetricalRotaryLookAndFeel.setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::white);
         symmetricalRotaryLookAndFeel.setColour (juce::Slider::thumbColourId, juce::Colours::silver.brighter());
+        crossfadeSlider.setLookAndFeel (&symmetricalLinearLookAndFeel);
+        symmetricalLinearLookAndFeel.setColour (juce::Slider::trackColourId, juce::Colours::silver.darker());
+        symmetricalLinearLookAndFeel.setThumbTriColour (juce::Colours::white);
+        symmetricalLinearLookAndFeel.setColour (juce::Slider::backgroundColourId, juce::Colours::blue.withBrightness(0.25f));
+        symmetricalLinearLookAndFeel.setLinearSliderThumbOuterRimColour (juce::Colours::black);
         
         addAndMakeVisible (&symmetrySlider);
         addAndMakeVisible (&crossfadeSlider);
@@ -58,24 +63,23 @@ public:
     virtual ~CrossfadeSection() override
     {
         symmetrySlider.setLookAndFeel (nullptr);
+        crossfadeSlider.setLookAndFeel (nullptr);
         setLookAndFeel (nullptr);
     }
 
     void paint (juce::Graphics& g) override
     {
-
         g.fillAll (localBackground);
-        
         g.setColour (juce::Colours::black);
         auto area = getLocalBounds().reduced (edge);
-        g.fillRoundedRectangle(area.toFloat(), edge * 2.0f);
+        g.fillRoundedRectangle (area.toFloat(), edge * 2.0f);
     }
 
     void resized() override
     {
         auto area = getLocalBounds().reduced (edge);
         symmetrySlider.setBounds (area.removeFromTop (area.getHeight() * 0.5f).reduced (edge));
-        crossfadeSlider.setBounds (area.removeFromBottom (area.getHeight() / 3.0f));
+        crossfadeSlider.setBounds (area.removeFromBottom (area.getHeight() * 0.5f));
         auto buttonArea = area.removeFromBottom (area.getHeight() * 0.5f);
         functionA_toggle.setBounds (buttonArea.removeFromLeft (area.getWidth() * 0.25f).reduced(edge));
         functionB_toggle.setBounds (buttonArea.removeFromRight (area.getWidth() * 0.25f).reduced(edge));
@@ -101,6 +105,7 @@ private:
     
     WaveshaperLookAndFeel crossfadeLookAndFeel;
     SymmetricalRotaryLookAndFeel symmetricalRotaryLookAndFeel;
+    SymmetricalLinearLookAndFeel symmetricalLinearLookAndFeel;
     
     juce::Label negative {"negative", "-"};
     juce::Label positive {"positive", "+"};

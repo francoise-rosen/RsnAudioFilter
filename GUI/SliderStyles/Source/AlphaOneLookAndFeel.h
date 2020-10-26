@@ -281,7 +281,7 @@ public:
         float sliderY = static_cast<float> (y);
         float sliderWidth = static_cast<float> (width);
         float sliderHeight = static_cast<float> (height);
-        float trackWidth = juce::jmin (12.0f, slider.isHorizontal() ? sliderHeight * 0.25f : sliderWidth * 0.25f);
+        float trackWidth = juce::jmin (22.0f, slider.isHorizontal() ? sliderHeight * 0.25f : sliderWidth * 0.25f);
         
         juce::Colour backgroundColour = slider.findColour (juce::Slider::backgroundColourId);
         juce::Point<float> startPos { slider.isHorizontal() ? sliderX : sliderX + sliderWidth * 0.5f, slider.isHorizontal() ? sliderY + sliderHeight * 0.5f : sliderY + sliderHeight};
@@ -544,17 +544,17 @@ private:
         tri.lineTo (x + diameter * 0.19f, y + diameter * 0.75f);
         tri.closeSubPath();
         tri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
-        g.setColour (juce::Colours::darkorange);
+        g.setColour (juce::Colours::darkorange.darker());
         g.fillPath (tri);
         g.setColour (linearSliderThumbTriFill.withAlpha (1.0f));
         g.strokePath (tri, {3.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
-        g.setColour (juce::Colours::orange.withAlpha (0.75f));
-        g.strokePath (tri, {1.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
+        g.setColour (juce::Colours::darkblue.withAlpha (0.75f));
+        g.strokePath (tri, {2.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
         
         /** Draw an arrow outer path. */
         juce::Path arrowLine;
-        arrowLine.startNewSubPath (x + diameter * 0.5f, y + diameter * 0.75f);
-        arrowLine.lineTo (x + diameter * 0.5f, y + diameter * 0.96f);
+        arrowLine.startNewSubPath (x + diameter * 0.5f, y + diameter * 0.85f);
+        arrowLine.lineTo (x + diameter * 0.5f, y + diameter);
         arrowLine.closeSubPath();
         arrowLine.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
         g.setColour (linearSliderThumbTriFill.withAlpha (1.0f));
