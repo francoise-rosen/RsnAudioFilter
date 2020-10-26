@@ -376,12 +376,17 @@ public:
 //                                thumbColour,
 //                                0);
             /** Upper thumb. */
-            drawThumbLinearTri (g,
-                                maxPoint.getX() - sr,
-                                maxPoint.getY() - sr * 2.0f,
-                                trackWidth * 2.0f,
-                                thumbColour,
-                                2);
+//            drawThumbLinearTri (g,
+//                                maxPoint.getX() - sr,
+//                                maxPoint.getY() - sr * 2.0f,
+//                                trackWidth * 2.0f,
+//                                thumbColour,
+//                                2);
+            drawThumbLinearArrow(g, maxPoint.getX() - sr,
+                                 maxPoint.getY() - sr * 2.0f,
+                                 trackWidth * 2.0f,
+                                 thumbColour,
+                                 2);
         }
         else
         {
@@ -414,7 +419,7 @@ public:
 private:
     float sliderThumbRadius {15.0f};
     juce::Colour linearSliderThumbTriColour {juce::Colours::white.withAlpha (0.75f)};
-    juce::Colour linearSliderThumbTriFill {juce::Colours::black};
+    juce::Colour linearSliderThumbTriFill {juce::Colours::darkblue};
     juce::Colour linearSliderThumbOuterRimColour {juce::Colours::silver.withAlpha (0.2f)};
     PointerFill pointerFill { PointerFill::Fill };
     PointerFillType pointerFillType { PointerFillType::Triangles };
@@ -521,7 +526,7 @@ private:
         g.setColour (linearSliderThumbTriFill.withAlpha (0.25f));
         g.strokePath (tri, {diameter * 0.15f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
         g.setColour (linearSliderThumbTriColour);
-        g.strokePath (tri, {diameter * 0.07f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
+        g.strokePath (tri, {diameter * 0.05f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
         
 //        g.setColour (linearSliderThumbTriColour);
 //        g.fillEllipse (juce::Rectangle<float> {2.0f, 2.0f}.withCentre (pivot));
@@ -531,10 +536,26 @@ private:
     void drawThumbLinearArrow (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept
     {
         juce::Point<float> pivot {x + diameter * 0.5f, y + diameter * 0.5f};
-        
         /** Draw a pointer. */
+        juce::Path tri;
+        tri.startNewSubPath (x + diameter * 0.5f, y);
+        tri.lineTo (x + diameter * 0.67f, y + diameter * 0.5f);
+        tri.lineTo (x + diameter * 0.33f, y + diameter * 0.5f);
+        tri.closeSubPath();
+        tri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
+        g.setColour (juce::Colours::white);
+        g.fillPath (tri);
+        g.setColour (linearSliderThumbTriFill.withAlpha (0.75f));
+        g.strokePath (tri, {3.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
         
         /** Draw an arrow outer path. */
+        juce::Path arrowLine;
+        arrowLine.startNewSubPath (x + diameter * 0.5f, y + diameter * 0.5f);
+        arrowLine.lineTo (x + diameter * 0.5f, y + diameter * 0.6f);
+        arrowLine.closeSubPath();
+        arrowLine.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
+
+        g.strokePath (arrowLine, {3.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
     }
     
 //    void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept
