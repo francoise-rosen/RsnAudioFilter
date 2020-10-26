@@ -502,10 +502,11 @@ private:
             if (linearSliderThumbTriFill != juce::Colours::black)
                 g.setColour (linearSliderThumbTriFill.darker().darker());
             else
-                g.setColour (juce::Colours::white.withAlpha (0.15f));
+                g.setColour (juce::Colours::orange.withAlpha (0.15f));
             g.fillPath (innerTri);
         }
         
+        /** Undeveloped. */
         else if (pointerFillType == PointerFillType::Pencil)
         {
             g.setColour (juce::Colours::white);
@@ -523,7 +524,7 @@ private:
         
         /** Set colour for the triangle. */
         
-        g.setColour (linearSliderThumbTriFill.withAlpha (0.25f));
+        g.setColour (linearSliderThumbTriFill.withAlpha (0.5f));
         g.strokePath (tri, {diameter * 0.15f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
         g.setColour (linearSliderThumbTriColour);
         g.strokePath (tri, {diameter * 0.05f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
@@ -539,8 +540,8 @@ private:
         /** Draw a pointer. */
         juce::Path tri;
         tri.startNewSubPath (x + diameter * 0.5f, y);
-        tri.lineTo (x + diameter * 0.67f, y + diameter * 0.5f);
-        tri.lineTo (x + diameter * 0.33f, y + diameter * 0.5f);
+        tri.lineTo (x + diameter * 0.75f, y + diameter * 0.75f);
+        tri.lineTo (x + diameter * 0.25f, y + diameter * 0.75f);
         tri.closeSubPath();
         tri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
         g.setColour (juce::Colours::white);
@@ -550,8 +551,8 @@ private:
         
         /** Draw an arrow outer path. */
         juce::Path arrowLine;
-        arrowLine.startNewSubPath (x + diameter * 0.5f, y + diameter * 0.5f);
-        arrowLine.lineTo (x + diameter * 0.5f, y + diameter * 0.6f);
+        arrowLine.startNewSubPath (x + diameter * 0.5f, y + diameter * 0.75f);
+        arrowLine.lineTo (x + diameter * 0.5f, y + diameter * 0.96f);
         arrowLine.closeSubPath();
         arrowLine.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
 
