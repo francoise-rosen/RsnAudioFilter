@@ -378,7 +378,7 @@ public:
             /** Upper thumb. */
             drawThumbLinearTri (g,
                                 maxPoint.getX() - sr,
-                                maxPoint.getY() - sr * 2,
+                                maxPoint.getY() - sr * 2.0f,
                                 trackWidth * 2.0f,
                                 thumbColour,
                                 2);
@@ -392,8 +392,8 @@ public:
                                 thumbColour,
                                 3);
         }
-        g.setColour (thumbColour);
-        g.fillEllipse (thumbArea.withCentre (maxPoint));
+//        g.setColour (thumbColour);
+//        g.fillEllipse (thumbArea.withCentre (maxPoint));
     }
     
     void setThumbTriColour (const juce::Colour newColour)
@@ -414,10 +414,10 @@ public:
 private:
     float sliderThumbRadius {15.0f};
     juce::Colour linearSliderThumbTriColour {juce::Colours::black};
-    juce::Colour linearSliderThumbTriFill {juce::Colours::darkcyan};
+    juce::Colour linearSliderThumbTriFill {juce::Colours::orange};
     juce::Colour linearSliderThumbOuterRimColour {juce::Colours::silver.withAlpha (0.2f)};
     PointerFill pointerFill { PointerFill::Fill };
-    PointerFillType pointerFillType { PointerFillType::Pencil };
+    PointerFillType pointerFillType { PointerFillType::Triangles };
     
     void drawTrackGradient (juce::Graphics& g, juce::Slider& slider, const float& trackWidth, const juce::Point<float> startPos, const juce::Point<float>& midPos, const juce::Point<float>& maxPoint, const juce::Point<float>& endPos)
     {
@@ -448,8 +448,8 @@ private:
         
         juce::Path tri;
         tri.startNewSubPath (x + diameter * 0.5f, y);
-        tri.lineTo (x + diameter * 0.89f, y + diameter * 0.75f);
-        tri.lineTo (x + diameter * 0.11f, y + diameter * 0.75f);
+        tri.lineTo (x + diameter * 0.87f, y + diameter * 0.75f);
+        tri.lineTo (x + diameter * 0.13f, y + diameter * 0.75f);
         tri.closeSubPath();
         tri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
         
@@ -481,8 +481,8 @@ private:
         {
             juce::Path innerBottomTri;
             innerBottomTri.startNewSubPath(pivot.getX(), pivot.getY() + diameter * 0.25f);
-            innerBottomTri.lineTo (x + diameter * 0.89f, y + diameter * 0.75f);
-            innerBottomTri.lineTo (x + diameter * 0.11f, y + diameter * 0.75f);
+            innerBottomTri.lineTo (x + diameter * 0.87f, y + diameter * 0.75f);
+            innerBottomTri.lineTo (x + diameter * 0.13f, y + diameter * 0.75f);
             innerBottomTri.closeSubPath();
             innerBottomTri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
             g.setColour (linearSliderThumbTriFill.darker());
@@ -490,8 +490,8 @@ private:
         
             juce::Path innerTri;
             innerTri.startNewSubPath (pivot);
-            innerTri.lineTo (x + diameter * 0.89f, y + diameter * 0.75f);
-            innerTri.lineTo (x + diameter * 0.11f, y + diameter * 0.75f);
+            innerTri.lineTo (x + diameter * 0.87f, y + diameter * 0.75f);
+            innerTri.lineTo (x + diameter * 0.13f, y + diameter * 0.75f);
             innerTri.closeSubPath();
             innerTri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
             g.setColour (linearSliderThumbTriFill.darker().darker());
@@ -500,7 +500,7 @@ private:
         
         else if (pointerFillType == PointerFillType::Pencil)
         {
-            g.setColour (linearSliderThumbTriFill);
+            g.setColour (juce::Colours::white);
             g.fillPath (tri);
             
             juce::Path innerTri;
@@ -511,18 +511,23 @@ private:
             innerTri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
             g.setColour (juce::Colours::white);
             g.fillPath (innerTri);
-            
-                                      
         }
         
         /** Set colour for the triangle. */
         
+        g.setColour (linearSliderThumbTriFill.withAlpha (0.25f));
+        g.strokePath (tri, {diameter * 0.15f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
         g.setColour (linearSliderThumbTriColour);
-        g.strokePath (tri, juce::PathStrokeType (2.0f));
+        g.strokePath (tri, {diameter * 0.07f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
         
-        g.setColour (linearSliderThumbTriColour);
-        g.fillEllipse (juce::Rectangle<float> {2.0f, 2.0f}.withCentre (pivot));
+//        g.setColour (linearSliderThumbTriColour);
+//        g.fillEllipse (juce::Rectangle<float> {2.0f, 2.0f}.withCentre (pivot));
  
+    }
+    
+    void drawThumbLinearArrow (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept
+    {
+        juce::Point<float> pivot {x + diameter * 0.5f, y + diameter * 0.5f};
     }
     
 //    void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept
