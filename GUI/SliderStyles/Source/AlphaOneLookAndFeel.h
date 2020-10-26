@@ -413,8 +413,8 @@ public:
     
 private:
     float sliderThumbRadius {15.0f};
-    juce::Colour linearSliderThumbTriColour {juce::Colours::black};
-    juce::Colour linearSliderThumbTriFill {juce::Colours::orange};
+    juce::Colour linearSliderThumbTriColour {juce::Colours::white.withAlpha (0.75f)};
+    juce::Colour linearSliderThumbTriFill {juce::Colours::black};
     juce::Colour linearSliderThumbOuterRimColour {juce::Colours::silver.withAlpha (0.2f)};
     PointerFill pointerFill { PointerFill::Fill };
     PointerFillType pointerFillType { PointerFillType::Triangles };
@@ -494,7 +494,10 @@ private:
             innerTri.lineTo (x + diameter * 0.13f, y + diameter * 0.75f);
             innerTri.closeSubPath();
             innerTri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
-            g.setColour (linearSliderThumbTriFill.darker().darker());
+            if (linearSliderThumbTriFill != juce::Colours::black)
+                g.setColour (linearSliderThumbTriFill.darker().darker());
+            else
+                g.setColour (juce::Colours::white.withAlpha (0.15f));
             g.fillPath (innerTri);
         }
         
@@ -528,6 +531,10 @@ private:
     void drawThumbLinearArrow (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept
     {
         juce::Point<float> pivot {x + diameter * 0.5f, y + diameter * 0.5f};
+        
+        /** Draw a pointer. */
+        
+        /** Draw an arrow outer path. */
     }
     
 //    void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept
