@@ -540,14 +540,16 @@ private:
         /** Draw a pointer. */
         juce::Path tri;
         tri.startNewSubPath (x + diameter * 0.5f, y);
-        tri.lineTo (x + diameter * 0.75f, y + diameter * 0.75f);
-        tri.lineTo (x + diameter * 0.25f, y + diameter * 0.75f);
+        tri.lineTo (x + diameter * 0.81f, y + diameter * 0.75f);
+        tri.lineTo (x + diameter * 0.19f, y + diameter * 0.75f);
         tri.closeSubPath();
         tri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
-        g.setColour (juce::Colours::white);
+        g.setColour (juce::Colours::darkorange);
         g.fillPath (tri);
-        g.setColour (linearSliderThumbTriFill.withAlpha (0.75f));
+        g.setColour (linearSliderThumbTriFill.withAlpha (1.0f));
         g.strokePath (tri, {3.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
+        g.setColour (juce::Colours::orange.withAlpha (0.75f));
+        g.strokePath (tri, {1.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
         
         /** Draw an arrow outer path. */
         juce::Path arrowLine;
@@ -555,7 +557,7 @@ private:
         arrowLine.lineTo (x + diameter * 0.5f, y + diameter * 0.96f);
         arrowLine.closeSubPath();
         arrowLine.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
-
+        g.setColour (linearSliderThumbTriFill.withAlpha (1.0f));
         g.strokePath (arrowLine, {3.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
     }
     
