@@ -40,10 +40,12 @@ public:
         symmetrySlider.setColour (juce::Slider::thumbColourId, parentBackground);
         symmetrySlider.setColour (juce::Slider::textBoxOutlineColourId, parentBackground.withAlpha (0.01f));
         symmetrySlider.setLookAndFeel(&symmetricalRotaryLookAndFeel);
+        crossfadeSlider.setLookAndFeel (&symmetricalLinearLookAndFeel);
+        
         symmetricalRotaryLookAndFeel.setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::silver.brighter());
         symmetricalRotaryLookAndFeel.setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::white);
         symmetricalRotaryLookAndFeel.setColour (juce::Slider::thumbColourId, juce::Colours::silver.brighter());
-        crossfadeSlider.setLookAndFeel (&symmetricalLinearLookAndFeel);
+        
         symmetricalLinearLookAndFeel.setColour (juce::Slider::trackColourId, juce::Colours::silver.darker());
         symmetricalLinearLookAndFeel.setThumbTriColour (juce::Colours::white);
         symmetricalLinearLookAndFeel.setColour (juce::Slider::backgroundColourId, juce::Colours::blue.withBrightness(0.25f));

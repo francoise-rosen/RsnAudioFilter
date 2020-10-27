@@ -437,7 +437,7 @@ private:
     juce::Colour linearSliderThumbTriColour {juce::Colours::white.withAlpha (0.75f)};
     juce::Colour linearSliderThumbTriFill {juce::Colours::black};
     juce::Colour linearSliderThumbOuterRimColour {juce::Colours::silver.withAlpha (0.2f)};
-    PointerFill pointerFill { PointerFill::Fill };
+    PointerFill pointerFill { PointerFill::FillGradient };
     PointerFillType pointerFillType { PointerFillType::Triangles };
     PointerType pointerType { PointerType::Triangle };
     
@@ -587,8 +587,31 @@ private:
         g.setColour (linearSliderThumbOuterRimColour);
         g.fillEllipse (juce::Rectangle<float> {diameter * 1.2f, diameter * 1.2f}.withCentre (pivot));
         /** Fill a central round. Gradient or not? */
-        g.setColour (colour);
-        g.fillEllipse (juce::Rectangle<float> {diameter * 0.5f, diameter * 0.5f}.withCentre (pivot));
+        if (pointerFill == PointerFill::Fill)
+        {
+            g.setColour (colour);
+            g.fillEllipse (juce::Rectangle<float> {diameter * 0.5f, diameter * 0.5f}.withCentre (pivot));
+        }
+        
+        else if (pointerFill == PointerFill::FillGradient)
+        {
+            juce::ColourGradient gradient {
+                juce::Colours::orange,
+                pivot.getX(),
+                pivot.getY(),
+                juce::Colours::black,
+                pivot.getX() + diameter * 0.5f,
+                pivot.getY() + diameter * 0.5f,
+                true
+            };
+            g.setGradientFill (gradient);
+            g.fillEllipse (juce::Rectangle<float> {diameter * 0.5f, diameter * 0.5f}.withCentre (pivot));
+        }
+        
+        else
+        {
+            
+        }
         
         /** Draw an outer rim. */
         g.setColour (juce::Colours::orange);
