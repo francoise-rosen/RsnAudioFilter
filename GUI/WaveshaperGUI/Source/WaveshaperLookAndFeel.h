@@ -237,6 +237,9 @@ class RotaryBigLookAndFeel : public WaveshaperLookAndFeel
 
 //================================================================================
 /** Custom L+F for the symmetrical linear slider. */
+/** Define the default colours and shapes.
+    Provide functions for user to customize those.
+ */
 class SymmetricalLinearLookAndFeel : public WaveshaperLookAndFeel
 {
 public:
@@ -246,7 +249,8 @@ public:
     {}
     
     enum class PointerFill { NoFill, Fill, FillGradient };
-    enum class PointerFillType { OneColour, Triangles, Pencil };
+    enum class PointerFillType { OneColour, Triangles, Pencil, Gradient };
+    enum class PointerType { Triangle, Circle, Rectangle, Arrow };
     
     /** LINEAR SLIDER. */
     
@@ -364,25 +368,36 @@ public:
         g.fillEllipse (thumbArea.withCentre (midPos));
         if (slider.isHorizontal() )
         {
-            /** lower thumb. */
-            //            drawThumbLinearTri (g,
-            //                                maxPoint.getX() - sr,
-            //                                maxPoint.getY(),
-            //                                trackWidth * 2.0f,
-            //                                thumbColour,
-            //                                0);
-            /** Upper thumb. */
-                        drawThumbLinearTri (g,
-                                            maxPoint.getX() - sr * 1.25f,
-                                            maxPoint.getY() - sr * 2.5f,
-                                            trackWidth * 2.5f,
-                                            thumbColour,
-                                            2);
-//            drawThumbLinearArrow(g, maxPoint.getX() - sr,
-//                                 maxPoint.getY() - sr * 2.0f,
-//                                 trackWidth * 2.0f,
-//                                 thumbColour,
-//                                 2);
+     
+            if (pointerType == PointerType::Triangle)
+            {
+                drawThumbLinearTri (g,
+                                    maxPoint.getX() - sr * 1.25f,
+                                    maxPoint.getY() - sr * 2.5f,
+                                    trackWidth * 2.5f,
+                                    thumbColour,
+                                    2);
+            }
+            else if (pointerType == PointerType::Arrow)
+            {
+                drawThumbLinearArrow(g, maxPoint.getX() - sr,
+                                     maxPoint.getY() - sr * 2.0f,
+                                     trackWidth * 2.0f,
+                                     thumbColour,
+                                     2);
+            }
+            else if (pointerType == PointerType::Circle)
+            {
+                drawThumbLinearCircle(g,
+                                      maxPoint.getX(),
+                                      maxPoint.getY(),
+                                      trackWidth * 2.0f,
+                                      thumbColour);
+            }
+            else
+            {
+                /** Rectangle. */
+            }
         }
         else
         {
@@ -412,6 +427,11 @@ public:
         pointerFill = newFillFlag;
     }
     
+    void setPointerType (PointerType newPointerType)
+    {
+        pointerType = newPointerType;
+    }
+    
 private:
     float sliderThumbRadius {15.0f};
     juce::Colour linearSliderThumbTriColour {juce::Colours::white.withAlpha (0.75f)};
@@ -419,6 +439,7 @@ private:
     juce::Colour linearSliderThumbOuterRimColour {juce::Colours::silver.withAlpha (0.2f)};
     PointerFill pointerFill { PointerFill::Fill };
     PointerFillType pointerFillType { PointerFillType::Triangles };
+    PointerType pointerType { PointerType::Triangle };
     
     void drawTrackGradient (juce::Graphics& g, juce::Slider& slider, const float& trackWidth, const juce::Point<float> startPos, const juce::Point<float>& midPos, const juce::Point<float>& maxPoint, const juce::Point<float>& endPos)
     {
@@ -486,7 +507,8 @@ private:
             innerBottomTri.lineTo (x + diameter * 0.13f, y + diameter * 0.75f);
             innerBottomTri.closeSubPath();
             innerBottomTri.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, pivot.getX(), pivot.getY()));
-            g.setColour (juce::Colours::red.withAlpha (0.5f));
+            //g.setColour (juce::Colours::red.withAlpha (0.5f));
+            g.setColour (juce::Colours::blue.withBrightness (0.3f));
             g.fillPath (innerBottomTri);
             
             juce::Path innerTri;
@@ -498,7 +520,8 @@ private:
             if (linearSliderThumbTriFill != juce::Colours::black)
                 g.setColour (linearSliderThumbTriFill.darker().darker());
             else
-                g.setColour (juce::Colours::orange.withAlpha (0.15f));
+                //g.setColour (juce::Colours::orange.withAlpha (0.15f));
+                g.setColour (juce::Colours::blue.withBrightness (0.2f));
             g.fillPath (innerTri);
         }
         
@@ -557,19 +580,21 @@ private:
         g.strokePath (arrowLine, {3.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
     }
     
-    //    void drawThumbLinearTri (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour, int direction ) noexcept
-    //    {
-    //        /** Simple triangle ? */
-    //        juce::Path p;
-    //        p.startNewSubPath (x + diameter * 0.5f, y);
-    //        p.lineTo (x + diameter, y + diameter * 0.5f);
-    //        p.lineTo (x, y + diameter * 0.5f);
-    //        p.closeSubPath();
-    //        p.applyTransform (juce::AffineTransform::rotation (static_cast<float> (direction) * juce::MathConstants<float>::halfPi, x + diameter * 0.5f, y + diameter * 0.5f));
-    //        g.setColour (colour);
-    //        g.fillPath (p);
-    //
-    //    }
+    void drawThumbLinearCircle (juce::Graphics& g, float x, float y, float diameter, juce::Colour& colour) noexcept
+    {
+        /** Draw a shadow round.*/
+        juce::Point<float> pivot { x, y };
+        g.setColour (linearSliderThumbOuterRimColour);
+        g.fillEllipse (juce::Rectangle<float> {diameter * 1.2f, diameter * 1.2f}.withCentre (pivot));
+        /** Fill a central round. Gradient or not? */
+        g.setColour (colour);
+        g.fillEllipse (juce::Rectangle<float> {diameter * 0.5f, diameter * 0.5f}.withCentre (pivot));
+        
+        /** Draw an outer rim. */
+        g.setColour (juce::Colours::orange);
+        g.drawEllipse(juce::Rectangle<float> {diameter * 0.85f, diameter * 0.85f}.withCentre (pivot), 2.0f);
+    }
+ 
     
     void drawThumbRotary () noexcept
     {
