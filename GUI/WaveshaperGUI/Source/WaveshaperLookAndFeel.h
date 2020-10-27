@@ -239,6 +239,10 @@ class RotaryBigLookAndFeel : public WaveshaperLookAndFeel
 /** Custom L+F for the symmetrical linear slider. */
 /** Define the default colours and shapes.
     Provide functions for user to customize those.
+ Colours:
+    - thumb colour (fills the round, triangle, arrow or rect) - default orange ?
+    - background colour (fills the background) - default darkcyan ? blue.withBrightness (0.2f)
+    - track colour - default cyan ? darkcyan?
  */
 class SymmetricalLinearLookAndFeel : public WaveshaperLookAndFeel
 {
@@ -249,7 +253,7 @@ public:
     {}
     
     enum class PointerFill { NoFill, Fill, FillGradient };
-    enum class PointerFillType { OneColour, Triangles, Pencil, Gradient };
+    enum class TriangleFillType { OneColour, Triangles, Pencil, Gradient };
     enum class PointerType { Triangle, Circle, Rectangle, Arrow };
     
     /** LINEAR SLIDER. */
@@ -438,7 +442,7 @@ private:
     juce::Colour linearSliderThumbTriFill {juce::Colours::black};
     juce::Colour linearSliderThumbOuterRimColour {juce::Colours::silver.withAlpha (0.2f)};
     PointerFill pointerFill { PointerFill::FillGradient };
-    PointerFillType pointerFillType { PointerFillType::Triangles };
+    TriangleFillType triangleFillType { TriangleFillType::Triangles };
     PointerType pointerType { PointerType::Triangle };
     
     void drawTrackGradient (juce::Graphics& g, juce::Slider& slider, const float& trackWidth, const juce::Point<float> startPos, const juce::Point<float>& midPos, const juce::Point<float>& maxPoint, const juce::Point<float>& endPos)
@@ -499,7 +503,7 @@ private:
         }
         
         /** Draw inner triangle. */
-        if (pointerFillType == PointerFillType::Triangles)
+        if (triangleFillType == TriangleFillType::Triangles)
         {
             juce::Path innerBottomTri;
             innerBottomTri.startNewSubPath(pivot.getX(), pivot.getY() - diameter * 0.25f);
@@ -526,7 +530,7 @@ private:
         }
         
         /** Undeveloped. */
-        else if (pointerFillType == PointerFillType::Pencil)
+        else if (triangleFillType == TriangleFillType::Pencil)
         {
             g.setColour (juce::Colours::white);
             g.fillPath (tri);
@@ -587,10 +591,12 @@ private:
         g.setColour (linearSliderThumbOuterRimColour);
         g.fillEllipse (juce::Rectangle<float> {diameter * 1.2f, diameter * 1.2f}.withCentre (pivot));
         /** Fill a central round. Gradient or not? */
+ 
         if (pointerFill == PointerFill::Fill)
         {
             g.setColour (colour);
             g.fillEllipse (juce::Rectangle<float> {diameter * 0.5f, diameter * 0.5f}.withCentre (pivot));
+
         }
         
         else if (pointerFill == PointerFill::FillGradient)
@@ -610,7 +616,8 @@ private:
         
         else
         {
-            
+            g.setColour (colour);
+            g.drawEllipse (juce::Rectangle<float> {diameter * 0.5f, diameter * 0.5f}.withCentre (pivot), juce::jmin (3.0f, diameter * 0.1f));
         }
         
         /** Draw an outer rim. */
