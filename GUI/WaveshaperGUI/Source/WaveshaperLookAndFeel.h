@@ -17,6 +17,18 @@
     1. Big slider (default slider + inner and outer rim, perhaps different thumb)
     2. Default slider implemented in WaveshaperLookAndFeel - 3 coulours
     3. Small slider - 2 colours
+ 
+ 
+ TO DO:
+ - draw ComboBox
+ - draw TextButton with A/B labels
+ - draw TextButton On/OFF
+ - draw + / - labels
+ - draw labels for gui (names)
+ - draw custom labels for gui (text boxes for linear sliders and gain sliders
+ - draw arrows
+ - add all the params
+ - make a plugin
  */
 
 //================================================================================
@@ -39,6 +51,9 @@ public:
     void drawLinearSlider (juce::Graphics &, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider &) override;
     
 //    void drawLinearSliderBackground
+    void setThumbGradientTargetColour (const juce::Colour& colour);
+    void setTrackGradientTargetColour (const juce::Colour& colour);
+    void setThumbShadowColour (const juce::Colour& colour);
     
     
     /** Test this (unit test).
@@ -70,6 +85,9 @@ public:
     
     //================================================================================
     /** ComboBox, Text etc. */
+    
+    //================================================================================
+    /** Labels */
     
 protected:
     /**  Draw Rotary Slider thumb.
@@ -157,6 +175,10 @@ inline int WaveshaperLookAndFeel::getSliderThumbRadius (juce::Slider& slider)
                  : static_cast<int> ((float) slider.getWidth()  * 0.75f));
 }
 
+/** Thumb : Triangle, Arrow, Circle
+    ThumbFill : OneColour, Gradient
+    Track : OneColour, Gradient
+ */
 inline void WaveshaperLookAndFeel::drawLinearSlider (juce::Graphics &, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, const juce::Slider::SliderStyle, juce::Slider &)
 {
     /** At first only Horizonal and Vertical Linear sliders. */
@@ -416,6 +438,7 @@ public:
         //        g.fillEllipse (thumbArea.withCentre (maxPoint));
     }
     
+    /** Set colours and flags. */
     void setThumbTriColour (const juce::Colour newColour)
     {
         linearSliderThumbTriColour = newColour;
@@ -632,6 +655,63 @@ private:
     }
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SymmetricalLinearLookAndFeel)
+    
+};
+
+template <typename T>
+class Arrow
+{
+public:
+    Arrow() {}
+    Arrow (const juce::Array<juce::Point<T>>& pt)
+    :linePoints {pt}
+    {}
+    
+    ~Arrow() {}
+    enum class ArrowView { ClosedEmpty, OpenedEmpty, Filled };
+    void setLinePoints (const juce::Array<juce::Point<T>>& pt)
+    {
+        linePoints.clear();
+        linePoints.resize (pt.size());
+        std::copy (pt.begin(), pt.end(), linePoints.begin());
+    }
+    
+    void setLinePoints (const T& x1, const T& y1, const T& x2, const T& y2)
+    {
+        linePoints.clear();
+        linePoints.add (juce::Point<T> {x1, y1});
+        linePoints.add (juce::Point<T> {x2, y2});
+    }
+    
+    void setLinePoints (const juce::Point<T>& p1, const juce::Point<T>& p2)
+    {
+        linePoints.clear();
+        linePoints.add (p1);
+        linePoints.add (p2);
+    }
+    
+    juce::Path getPath()
+    {
+        juce::Path local;
+        local.startNewSubPath (linePoints.getUnchecked(0));
+        for (int i = 1; i < linePoints.size(); ++i)
+        {
+            local.lineTo (linePoints[i]);
+        }
+        local.closeSubPath();
+        return local;
+    }
+    
+    void draw (juce::Graphics& g, const juce::Colour colour)
+    {
+        g.setColour (colour);
+        juce::Path p = getPath();
+        g.strokePath (p, juce::PathStrokeType {3.0f});
+    }
+    
+private:
+    juce::Array<juce::Point<T>> linePoints;
+    
     
 };
 

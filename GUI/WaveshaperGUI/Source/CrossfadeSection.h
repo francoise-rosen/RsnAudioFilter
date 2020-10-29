@@ -83,11 +83,11 @@ public:
         auto area = getLocalBounds().reduced (edge);
         symmetrySlider.setBounds (area.removeFromTop (area.getHeight() * 0.5f).reduced (edge));
         crossfadeSlider.setBounds (area.removeFromBottom (area.getHeight() * 0.5f));
-        auto buttonArea = area.removeFromBottom (area.getHeight() * 0.5f);
-        functionA_toggle.setBounds (buttonArea.removeFromLeft (area.getWidth() * 0.25f).reduced(edge));
-        functionB_toggle.setBounds (buttonArea.removeFromRight (area.getWidth() * 0.25f).reduced(edge));
-        functionA_box.setBounds (area.removeFromLeft (area.getWidth() * 0.5).reduced (edge, edge + edge));
-        functionB_box.setBounds (area.reduced (edge, edge + edge));
+        auto buttonArea = area.removeFromTop (area.getHeight() * 0.5f);
+//        functionA_toggle.setBounds (buttonArea.removeFromLeft (area.getWidth() * 0.25f).reduced(edge));
+//        functionB_toggle.setBounds (buttonArea.removeFromRight (area.getWidth() * 0.25f).reduced(edge));
+        functionA_box.setBounds (buttonArea.removeFromLeft (area.getWidth() * 0.5).reduced (edge, edge));
+        functionB_box.setBounds (buttonArea.reduced (edge, edge));
         
     }
 

@@ -14,8 +14,6 @@
 //==============================================================================
 LFOSection::LFOSection()
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
 
 }
 
@@ -25,12 +23,7 @@ LFOSection::~LFOSection()
 
 void LFOSection::paint (juce::Graphics& g)
 {
-    /* This demo code just fills the component's background and
-       draws some placeholder text to get you started.
 
-       You should replace everything in this method with your own
-       drawing code..
-    */
 
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
 
@@ -41,6 +34,17 @@ void LFOSection::paint (juce::Graphics& g)
     g.setFont (14.0f);
     g.drawText ("LFOSection", getLocalBounds(),
                 juce::Justification::centred, true);   // draw some placeholder text
+    
+    Arrow<float> arrow;
+    arrow.setLinePoints ({getWidth() * 0.5f, getHeight() * 0.5f}, {getWidth() * 0.75f, getHeight() * 0.75f});
+    arrow.draw (g, juce::Colours::red);
+    
+    juce::Path p;
+    p.startNewSubPath(getWidth() * 0.5f, getHeight() * 0.5f);
+    p.lineTo(getWidth() * 0.75f, getHeight() * 0.75f);
+    p.closeSubPath();
+    g.setColour(juce::Colours::red);
+    g.strokePath(p, juce::PathStrokeType {3.0f});
 }
 
 void LFOSection::resized()
