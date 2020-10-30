@@ -10,6 +10,7 @@
 */
 
 #pragma once
+#include "Arrow.h"
 
 /** Error when h + cpp, juce not found or expected class name error. */
 
@@ -658,83 +659,7 @@ private:
     
 };
 
-/** Arrow class prototype. */
-template <typename T>
-class Arrow
-{
-public:
-    Arrow() {}
-    Arrow (const juce::Array<juce::Point<T>>& pt)
-    :linePoints {pt}
-    {}
-    
-    ~Arrow() {}
-    enum class ArrowView { ClosedEmpty, OpenedEmpty, Filled };
-    void setLinePoints (const juce::Array<juce::Point<T>>& pt)
-    {
-        linePoints.clear();
-        linePoints.resize (pt.size());
-        std::copy (pt.begin(), pt.end(), linePoints.begin());
-    }
-    
-    void setLinePoints (const T& x1, const T& y1, const T& x2, const T& y2)
-    {
-        linePoints.clear();
-        linePoints.add (juce::Point<T> {x1, y1});
-        linePoints.add (juce::Point<T> {x2, y2});
-    }
-    
-    void setLinePoints (const juce::Point<T>& p1, const juce::Point<T>& p2)
-    {
-        linePoints.clear();
-        linePoints.add (p1);
-        linePoints.add (p2);
-    }
-    
-    juce::Path getPath()
-    {
-        juce::Path local;
-        local.startNewSubPath (linePoints.getUnchecked(0));
-        for (int i = 1; i < linePoints.size(); ++i)
-        {
-            local.lineTo (linePoints[i]);
-        }
-        local.closeSubPath();
-        return local;
-    }
-    
-    void draw (juce::Graphics& g, const juce::Colour& colour, const float& thickness)
-    {
-        g.setColour (colour);
-        juce::Path p = std::move (getPath());
-        g.strokePath (p, juce::PathStrokeType {thickness});
-        drawPointer(g, colour, 10.0f, 20.0f, linePoints[linePoints.size()-1].getX(), linePoints[linePoints.size()-1].getY());
-    }
-    
-private:
-    juce::Array<juce::Point<T>> linePoints;
-    ArrowView arrowPointerView { ArrowView::Filled };
-    /** TODO:
-     - determine the angle of the arrow
-     - use affine transform (see draw pointer as triangle for slider)
-     - other types of arrows  (later)
-     */
-    void drawPointer (juce::Graphics& g, const juce::Colour& colour, const float& width, const float& length, const float& tipX, const float& tipY) noexcept
-    {
-        if (arrowPointerView == ArrowView::Filled)
-        {
-            juce::Path p;
-            p.startNewSubPath (tipX, tipY);
-            p.lineTo (tipX - width * 0.5f, tipY + length);
-            p.lineTo (tipX + width * 0.5f, tipY + length);
-            p.closeSubPath();
-            g.setColour (colour);
-            g.fillPath (p);
-        }
-    }
-    
-    
-};
+
 
 
 

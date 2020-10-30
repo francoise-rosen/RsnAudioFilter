@@ -4,6 +4,7 @@
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="P7AsAc" name="WaveshaperGUI">
     <GROUP id="{A1D56B31-0608-B36F-172C-342AB4336C32}" name="Source">
+      <FILE id="Ohzcrf" name="Arrow.h" compile="0" resource="0" file="Source/Arrow.h"/>
       <FILE id="gVxKZd" name="WaveshaperLookAndFeel.h" compile="0" resource="0"
             file="Source/WaveshaperLookAndFeel.h"/>
       <FILE id="jbFMOv" name="GainSection.h" compile="0" resource="0" file="Source/GainSection.h"/>
