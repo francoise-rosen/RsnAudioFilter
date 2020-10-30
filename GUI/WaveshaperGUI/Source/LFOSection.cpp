@@ -14,7 +14,7 @@
 //==============================================================================
 LFOSection::LFOSection()
 {
-
+    addAndMakeVisible(&lfoRateSlider);
 }
 
 LFOSection::~LFOSection()
@@ -37,19 +37,19 @@ void LFOSection::paint (juce::Graphics& g)
     
     Arrow<float> arrow;
     arrow.setLinePoints ({getWidth() * 0.5f, getHeight() * 0.5f}, {getWidth() * 0.75f, getHeight() * 0.75f});
-    arrow.draw (g, juce::Colours::red);
+    arrow.draw (g, juce::Colours::red, 7.0f);
     
-    juce::Path p;
-    p.startNewSubPath(getWidth() * 0.5f, getHeight() * 0.5f);
-    p.lineTo(getWidth() * 0.75f, getHeight() * 0.75f);
-    p.closeSubPath();
-    g.setColour(juce::Colours::red);
-    g.strokePath(p, juce::PathStrokeType {3.0f});
+//    juce::Path p;
+//    p.startNewSubPath(getWidth() * 0.5f, getHeight() * 0.5f);
+//    p.lineTo(getWidth() * 0.75f, getHeight() * 0.75f);
+//    p.closeSubPath();
+//    g.setColour(juce::Colours::red);
+//    g.strokePath(p, juce::PathStrokeType {3.0f});
 }
 
 void LFOSection::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
+    auto box = getLocalBounds();
+    lfoRateSlider.setBounds(box.removeFromLeft (box.getWidth() * 0.25f).removeFromBottom (getWidth() * 0.5f).reduced (5.0f));
 
 }

@@ -11,6 +11,7 @@ MainComponent::MainComponent()
     addAndMakeVisible(*saturationSection);
     gainSection = std::make_unique<GainSection>(backgroundTheme);
     addAndMakeVisible(*gainSection);
+    addAndMakeVisible(&lfoSection);
     setSize (750, 400);
 }
 

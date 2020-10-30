@@ -658,6 +658,7 @@ private:
     
 };
 
+/** Arrow class prototype. */
 template <typename T>
 class Arrow
 {
@@ -702,15 +703,35 @@ public:
         return local;
     }
     
-    void draw (juce::Graphics& g, const juce::Colour colour)
+    void draw (juce::Graphics& g, const juce::Colour& colour, const float& thickness)
     {
         g.setColour (colour);
-        juce::Path p = getPath();
-        g.strokePath (p, juce::PathStrokeType {3.0f});
+        juce::Path p = std::move (getPath());
+        g.strokePath (p, juce::PathStrokeType {thickness});
+        drawPointer(g, colour, 10.0f, 20.0f, linePoints[linePoints.size()-1].getX(), linePoints[linePoints.size()-1].getY());
     }
     
 private:
     juce::Array<juce::Point<T>> linePoints;
+    ArrowView arrowPointerView { ArrowView::Filled };
+    /** TODO:
+     - determine the angle of the arrow
+     - use affine transform (see draw pointer as triangle for slider)
+     - other types of arrows  (later)
+     */
+    void drawPointer (juce::Graphics& g, const juce::Colour& colour, const float& width, const float& length, const float& tipX, const float& tipY) noexcept
+    {
+        if (arrowPointerView == ArrowView::Filled)
+        {
+            juce::Path p;
+            p.startNewSubPath (tipX, tipY);
+            p.lineTo (tipX - width * 0.5f, tipY + length);
+            p.lineTo (tipX + width * 0.5f, tipY + length);
+            p.closeSubPath();
+            g.setColour (colour);
+            g.fillPath (p);
+        }
+    }
     
     
 };
