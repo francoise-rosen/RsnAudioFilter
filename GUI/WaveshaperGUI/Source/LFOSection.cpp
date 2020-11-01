@@ -37,7 +37,7 @@ void LFOSection::paint (juce::Graphics& g)
     
     Arrow<float> arrow;
     arrow.setLinePoints ({getWidth() * 0.5f, getHeight() * 0.5f}, {getWidth() * 0.75f, getHeight() * 0.75f});
-    arrow.draw (g, juce::Colours::red, 7.0f);
+    arrow.draw (g, juce::Colours::red, 7.0f, 10.0f, 10.0f);
     
 //    juce::Path p;
 //    p.startNewSubPath(getWidth() * 0.5f, getHeight() * 0.5f);

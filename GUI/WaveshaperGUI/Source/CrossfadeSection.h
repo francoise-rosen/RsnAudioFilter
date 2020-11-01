@@ -11,6 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Arrow.h"
 
 //==============================================================================
 /*
@@ -76,6 +77,40 @@ public:
         g.setColour (juce::Colours::black);
         auto area = getLocalBounds().reduced (edge);
         g.fillRoundedRectangle (area.toFloat(), edge * 2.0f);
+        
+        /** add double arrow above the slider. */
+        float arrowY = ((sliderArea != nullptr) && (comboArea != nullptr)) ? sliderArea->getY() - (sliderArea->getY() - comboArea->getBottom()) * 0.25f : getHeight() * 0.75f;
+        juce::Array<juce::Point<float>> arrowPoints
+        {
+            /** Centre */
+            juce::Point<float> {
+                getWidth() * 0.5f, arrowY
+            },
+            /** left edge */
+            juce::Point<float> {
+                getWidth() * 0.2f, arrowY
+            },
+            /** right endge */
+            juce::Point<float> {
+                getWidth() * 0.8f, arrowY
+            }
+        };
+        Arrow<float> arrow {arrowPoints};
+        arrow.draw (g, juce::Colours::white, 1.0f, 10.0f, 20.0f);
+//        if (sliderArea != nullptr && comboArea != nullptr)
+//        {
+//            float lineThickness = 3.0f;
+//            float height = sliderArea->getY() - comboArea->getBottom();
+//            float y = comboArea->getBottom() + height * 0.75f;
+//            juce::Path pLeft;
+//            pLeft.startNewSubPath (getWidth() * 0.5f, y);
+//            pLeft.lineTo (getWidth() * 0.1f, y);
+//            pLeft.closeSubPath();
+//            juce::Line<float> arrowLine { getWidth() * 0.25f, y, getWidth() * 0.05f, y };
+//            pLeft.addArrow (arrowLine, lineThickness * 0.5f, 10.0f, 10.0f);
+//            g.setColour (juce::Colours::white);
+//            g.strokePath (pLeft, juce::PathStrokeType {lineThickness});
+//        }
     }
 
     void resized() override
@@ -83,7 +118,10 @@ public:
         auto area = getLocalBounds().reduced (edge);
         symmetrySlider.setBounds (area.removeFromTop (area.getHeight() * 0.5f).reduced (edge));
         crossfadeSlider.setBounds (area.removeFromBottom (area.getHeight() * 0.5f));
+        sliderArea = std::make_unique<juce::Rectangle<float>> (crossfadeSlider.getBounds().toFloat());
         auto buttonArea = area.removeFromTop (area.getHeight() * 0.5f);
+        auto comboBoxArea = buttonArea;
+        comboArea = std::make_unique<juce::Rectangle<float>> (comboBoxArea.toFloat());
 //        functionA_toggle.setBounds (buttonArea.removeFromLeft (area.getWidth() * 0.25f).reduced(edge));
 //        functionB_toggle.setBounds (buttonArea.removeFromRight (area.getWidth() * 0.25f).reduced(edge));
         functionA_box.setBounds (buttonArea.removeFromLeft (area.getWidth() * 0.5).reduced (edge, edge));
@@ -112,5 +150,9 @@ private:
     
     juce::Label negative {"negative", "-"};
     juce::Label positive {"positive", "+"};
+    
+    /** coordinates. */
+    std::unique_ptr<juce::Rectangle<float>> sliderArea {nullptr};
+    std::unique_ptr<juce::Rectangle<float>> comboArea {nullptr};
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CrossfadeSection)
 };
