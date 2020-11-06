@@ -79,38 +79,41 @@ public:
         g.fillRoundedRectangle (area.toFloat(), edge * 2.0f);
         
         /** add double arrow above the slider. */
+        float arrowLength = 10.0f;
         float arrowY = ((sliderArea != nullptr) && (comboArea != nullptr)) ? sliderArea->getY() - (sliderArea->getY() - comboArea->getBottom()) * 0.25f : getHeight() * 0.75f;
-        juce::Array<juce::Point<float>> arrowPoints
+        juce::Array<juce::Point<float>> arrowPointsRight
         {
-            /** Centre */
             juce::Point<float> {
-                getWidth() * 0.5f, arrowY
-            },
-            /** left edge */
-            juce::Point<float> {
-                getWidth() * 0.2f, arrowY
+                getWidth() * 0.7f - arrowLength, arrowY
             },
             /** right endge */
             juce::Point<float> {
-                getWidth() * 0.8f, arrowY
+                getWidth() * 0.7f, arrowY
             }
         };
-        Arrow<float> arrow {arrowPoints};
-        arrow.draw (g, juce::Colours::white, 1.0f, 10.0f, 20.0f);
-//        if (sliderArea != nullptr && comboArea != nullptr)
-//        {
-//            float lineThickness = 3.0f;
-//            float height = sliderArea->getY() - comboArea->getBottom();
-//            float y = comboArea->getBottom() + height * 0.75f;
-//            juce::Path pLeft;
-//            pLeft.startNewSubPath (getWidth() * 0.5f, y);
-//            pLeft.lineTo (getWidth() * 0.1f, y);
-//            pLeft.closeSubPath();
-//            juce::Line<float> arrowLine { getWidth() * 0.25f, y, getWidth() * 0.05f, y };
-//            pLeft.addArrow (arrowLine, lineThickness * 0.5f, 10.0f, 10.0f);
-//            g.setColour (juce::Colours::white);
-//            g.strokePath (pLeft, juce::PathStrokeType {lineThickness});
-//        }
+        juce::Array<juce::Point<float>> arrowPointsLeft
+        {
+            /** left edge */
+            juce::Point<float> {
+                getWidth() * 0.3f + arrowLength, arrowY
+            },
+            juce::Point<float> {
+                getWidth() * 0.3f, arrowY
+            }
+        };
+        Arrow<float> arrow {arrowPointsRight};
+        arrow.setFill (true);
+        arrow.draw (g, juce::Colours::orange, 2.0f, 8.0f, 10.0f);
+        Arrow<float> arrowL {arrowPointsLeft};
+        arrowL.setFill (true);
+        arrowL.draw (g, juce::Colours::orange, 2.0f, 8.0f, 10.0f);
+        
+        juce::Path curve;
+        curve.startNewSubPath (getWidth() * 0.3f + arrowLength, arrowY);
+        curve.cubicTo ({getWidth() * 0.35f, arrowY}, {getWidth() * 0.4f, arrowY + 10.0f }, { getWidth() * 0.5f, arrowY + 2.0f});
+        curve.cubicTo({ getWidth() * 0.55f, arrowY - 2.0f}, {getWidth() * 0.6f, arrowY - 10.0f }, { getWidth() * 0.7f - arrowLength, arrowY});
+        g.strokePath (curve, juce::PathStrokeType {2.0f});
+
     }
 
     void resized() override

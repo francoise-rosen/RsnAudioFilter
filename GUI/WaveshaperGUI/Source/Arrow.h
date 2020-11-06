@@ -8,6 +8,21 @@
   ==============================================================================
 */
 
+/** WHAT DO I WANT
+    - object that takes a set of points and draws an arrow around the last point
+    - object that takes a set of points and draws an arrow around the first and around the last point (twoSided)
+ - 4 types of arrow: closed triangle, opened triangle, filled triangle, filled with sharp back edges
+ - arrow length can't be longer than a line length
+ - arrow can't be longer than a distance between the penultimate and the last point
+ - linear, quadratic, and cubic lines must be supported
+ 
+ Alternatively make a path outside, pass it to this class's object and add an arrow.
+ 
+ SEQUENCE:
+ - make lines + different types of arrowheads work
+ - add possibility of curved lines
+ */
+
 #pragma once
 
 /** Arrow class prototype. */
@@ -21,7 +36,8 @@ public:
     {}
     
     ~Arrow() {}
-    enum class ArrowView { ClosedEmpty, OpenedEmpty, Filled };
+    
+    enum class ArrowView { Tri, TriOpen, TriWithArc, FourPointer };
     enum class SegmentType { Line, Quadratic, Cubic };
     
     void setLinePoints (const juce::Array<juce::Point<T>>& pt)
@@ -45,72 +61,114 @@ public:
         linePoints.add (p2);
     }
     
-    juce::Path getPath()
-    {
-        juce::Path local;
-        local.startNewSubPath (linePoints.getUnchecked(0));
-        for (int i = 1; i < linePoints.size(); ++i)
-        {
-            local.lineTo (linePoints[i]);
-        }
-        local.closeSubPath();
-        return local;
-    }
-    
     void draw (juce::Graphics& g, const juce::Colour& colour, const float& thickness, const float& arrowheadWidth, const float& arrowheadLength)
     {
-        g.setColour (colour);
-        juce::Path p = std::move (getPath());
-        g.strokePath (p, juce::PathStrokeType {thickness});
-        drawPointer(g, colour, thickness, arrowheadWidth, arrowheadLength, linePoints[linePoints.size()-1].getX(), linePoints[linePoints.size()-1].getY(), 1.0f);
+        const auto numPoints = linePoints.size();
+        if (numPoints < 2)
+            return;
+        if (numPoints > 2)
+        {
+            juce::Path p;
+            p.startNewSubPath (linePoints.getUnchecked (0));
+            for (int i = 1; i < numPoints - 1; ++i)
+            {
+                p.lineTo (linePoints.getUnchecked (i));
+            }
+            g.setColour (colour);
+            g.strokePath (p, juce::PathStrokeType {thickness});
+        }
+        
+        auto lastLine = juce::Line<T> { linePoints.getUnchecked (numPoints - 2), linePoints.getUnchecked (numPoints - 1) };
+        auto arrowLength = juce::jmin ( lastLine.getLength() * 0.8f, arrowheadLength);
+        drawArrowhead(g, lastLine, colour, thickness, arrowheadWidth, arrowLength);
+
     }
     
-    // this will modify the ppathh that is passed!
-    void addToPath (juce::Path& p)
+    void draw (juce::Graphics& g, juce::Path& p, const juce::Colour& colour, const float& thickness, const float& arrowheadWidth, const float& arrowheadLength)
     {
-       if (p.isEmpty())
-           return;
-       if (linePoints.size() == 0)
-       {
-           
-       }
+        
+    }
+    
+    
+    void drawTwoSidedArrow (juce::Graphics& g, const juce::Colour& colour, const float& thickness, const float& arrowheadWidth, const float& arrowheadLength)
+    {
+
+    }
+    
+    void setFill (const bool fill)
+    {
+        isFilled = fill;
     }
     
 private:
     juce::Array<juce::Point<T>> linePoints;
-    ArrowView arrowPointerView { ArrowView::ClosedEmpty};
+    ArrowView arrowPointerView { ArrowView::Tri};
+    bool isFilled { false };
     /** TODO:
      - determine the angle of the arrow (direction). What if the line is curved? Differential?
      - use affine transform (see draw pointer as triangle for slider)
      - other types of arrows  (later)
      */
-    void drawPointer (juce::Graphics& g, const juce::Colour& colour, const float& lineThickness, const float& width, const float& length, const float& tipX, const float& tipY, const float& direction) noexcept
+    void drawArrowhead (juce::Graphics& g, const juce::Line<float>& line, const juce::Colour& colour, float lineThickness, float arrowheadWidth, float arrowheadLength) noexcept
     {
-        if (arrowPointerView == ArrowView::Filled
-            || arrowPointerView == ArrowView::ClosedEmpty)
+        /* FILLED */
+        
+        /* EMPTY CLOSED */
+        if (arrowPointerView == ArrowView::Tri)
         {
-            juce::Path p;
-            p.startNewSubPath (tipX, tipY);
-            p.lineTo (tipX - width * 0.5f, tipY);
-            p.lineTo (tipX, tipY - length);
-            p.lineTo (tipX + width * 0.5f, tipY);
-            p.closeSubPath();
-            p.applyTransform (juce::AffineTransform::rotation (juce::MathConstants<float>::halfPi * direction, tipX, tipY));
+            auto reversed = line.reversed();
+            arrowheadWidth *= 0.5f;
+            //lineThickness *= 0.5f;
+            juce::Path arrow;
+            arrow.startNewSubPath (line.getPointAlongLine(0.0f, 0.0f));
+            arrow.lineTo (reversed.getPointAlongLine(arrowheadLength, 0.0f));
+            arrow.closeSubPath();
             g.setColour (colour);
-            if (arrowPointerView == ArrowView::Filled)
-                g.fillPath (p);
+            g.strokePath (arrow, juce::PathStrokeType {lineThickness});
+            //arrow.lineTo (line.getPointAlongLine (0, -lineThickness));
+            juce::Path arrowhead;
+            arrowhead.startNewSubPath (reversed.getPointAlongLine (arrowheadLength, 0.0f));
+            arrowhead.lineTo (reversed.getPointAlongLine (arrowheadLength, arrowheadWidth));
+            arrowhead.lineTo (line.getEnd());
+            arrowhead.lineTo (reversed.getPointAlongLine (arrowheadLength, -arrowheadWidth));
+            arrowhead.lineTo (reversed.getPointAlongLine (arrowheadLength, 0.0f));
+            arrowhead.closeSubPath();
+            if (isFilled)
+            {
+                g.fillPath (arrowhead);
+            }
             else
-                g.strokePath (p, juce::PathStrokeType {lineThickness});
+            {
+                /** Empty. */
+                g.strokePath (arrowhead, juce::PathStrokeType {lineThickness});
+            }
         }
+        
+        /* EMPTY OPENED */
+        
+    };
+    
+    void drawArrowhead (juce::Graphics& g, const juce::Colour& colour, const float& lineThickness, const float& width, const float& length, const float& tipX, const float& tipY, const float& direction) noexcept
+    {
+        /* FILLED */
+        
+        /* EMPTY CLOSED */
+        if (arrowPointerView == ArrowView::Tri)
+        {
+            if (isFilled)
+            {
+                
+            }
+            else
+            {
+                /** Empty. */
+            }
+        }
+        
+        /* EMPTY OPENED */ 
+  
     }
     
-    void drawPointer2 (juce::Graphics& g, const juce::Line<float> line, const float& lineThickness, const float& arrowheadWidth, const float& arrowheadHeight)
-    {
-        if (arrowPointerView == ArrowView::ClosedEmpty)
-        {
-            
-        }
-    }
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Arrow)
 
