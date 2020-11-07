@@ -3,9 +3,12 @@
 //==============================================================================
 MainComponent::MainComponent()
 {
+    fontHeight = juce::jmax (15.0f, height * 0.04f);
+    labelFont = std::make_unique<juce::Font>("Monaco", "Bold", fontHeight);
     filterSection = std::make_unique<FilterSection>(backgroundTheme);
     addAndMakeVisible(*filterSection);
     crossfadeSection = std::make_unique<CrossfadeSection>(backgroundTheme);
+    //crossfadeSection->setFont (*labelFont);
     addAndMakeVisible(*crossfadeSection);
     saturationSection = std::make_unique<SaturationSection>(backgroundTheme);
     addAndMakeVisible(*saturationSection);
@@ -42,4 +45,6 @@ void MainComponent::resized()
     saturationSection->setBounds (midSection);
     gainSection->setBounds (windowArea.removeFromBottom (windowArea.getHeight() / 3.0f));
     crossfadeSection->setBounds (windowArea);
+    labelFont->setHeight(juce::jmax (15.0f, getHeight() * 0.04f));
+    crossfadeSection->setFont (*labelFont);
 }

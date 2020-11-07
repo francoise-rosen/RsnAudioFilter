@@ -52,10 +52,14 @@ private:
     std::unique_ptr<CrossfadeSection> crossfadeSection;
     std::unique_ptr<GainSection> gainSection;
     
+    int width { 750 };
+    int height { 400 };
     const float edge {5.0f};
     
     /** Colours */
     juce::Colour backgroundTheme {juce::Colours::silver.brighter()};
+    float fontHeight;
+    std::unique_ptr<juce::Font> labelFont;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

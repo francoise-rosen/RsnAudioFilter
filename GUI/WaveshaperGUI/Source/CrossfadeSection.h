@@ -78,41 +78,51 @@ public:
         auto area = getLocalBounds().reduced (edge);
         g.fillRoundedRectangle (area.toFloat(), edge * 2.0f);
         
-        /** add double arrow above the slider. */
-        float arrowLength = 10.0f;
+        /** Arrow and A B labels. */
+        float arrowheadLength = 10.0f;
+        /** Arrow y position. */
         float arrowY = ((sliderArea != nullptr) && (comboArea != nullptr)) ? sliderArea->getY() - (sliderArea->getY() - comboArea->getBottom()) * 0.25f : getHeight() * 0.75f;
+        /** Arrow's x right and left. */
+        float arrowXRight = getWidth() * 0.7f;
         juce::Array<juce::Point<float>> arrowPointsRight
         {
             juce::Point<float> {
-                getWidth() * 0.7f - arrowLength, arrowY
+                arrowXRight - arrowheadLength, arrowY
             },
             /** right endge */
             juce::Point<float> {
-                getWidth() * 0.7f, arrowY
+                arrowXRight, arrowY
             }
         };
+        float arrowXLeft = getWidth() * 0.3f;
         juce::Array<juce::Point<float>> arrowPointsLeft
         {
             /** left edge */
             juce::Point<float> {
-                getWidth() * 0.3f + arrowLength, arrowY
+                arrowXLeft + arrowheadLength, arrowY
             },
             juce::Point<float> {
-                getWidth() * 0.3f, arrowY
+                arrowXLeft, arrowY
             }
         };
         Arrow<float> arrow {arrowPointsRight};
         arrow.setFill (true);
-        arrow.draw (g, juce::Colours::orange, 2.0f, 8.0f, 10.0f);
+        arrow.draw (g, juce::Colours::orange, 2.0f, 8.0f, arrowheadLength);
         Arrow<float> arrowL {arrowPointsLeft};
         arrowL.setFill (true);
-        arrowL.draw (g, juce::Colours::orange, 2.0f, 8.0f, 10.0f);
+        arrowL.draw (g, juce::Colours::orange, 2.0f, 8.0f, arrowheadLength);
         
         juce::Path curve;
-        curve.startNewSubPath (getWidth() * 0.3f + arrowLength, arrowY);
-        curve.cubicTo ({getWidth() * 0.35f, arrowY}, {getWidth() * 0.4f, arrowY + 10.0f }, { getWidth() * 0.5f, arrowY + 2.0f});
-        curve.cubicTo({ getWidth() * 0.55f, arrowY - 2.0f}, {getWidth() * 0.6f, arrowY - 10.0f }, { getWidth() * 0.7f - arrowLength, arrowY});
+        curve.startNewSubPath (arrowXLeft + arrowheadLength, arrowY);
+        curve.cubicTo ({ getWidth() * 0.35f, arrowY}, {getWidth() * 0.4f, arrowY + 10.0f }, { getWidth() * 0.5f, arrowY + 2.0f });
+        curve.cubicTo({ getWidth() * 0.55f, arrowY - 2.0f}, { getWidth() * 0.6f, arrowY - 10.0f }, { arrowXRight - arrowheadLength, arrowY });
         g.strokePath (curve, juce::PathStrokeType {2.0f});
+        
+        /** Draw A and B labels. */
+        g.setFont (defaultFont);
+        g.drawFittedText ("A", juce::Rectangle<float> {arrowXLeft, arrowXLeft}.withCentre (juce::Point<float>{ arrowXLeft * 0.5f, arrowY }).toNearestInt(), juce::Justification::centred, 1);
+        g.drawFittedText ("B", juce::Rectangle<float> {arrowXLeft, arrowXLeft}.withCentre (juce::Point<float>{ getWidth() - arrowXLeft * 0.5f, arrowY }).toNearestInt(), juce::Justification::centred, 1);
+    
 
     }
 
@@ -130,6 +140,11 @@ public:
         functionA_box.setBounds (buttonArea.removeFromLeft (area.getWidth() * 0.5).reduced (edge, edge));
         functionB_box.setBounds (buttonArea.reduced (edge, edge));
         
+    }
+    
+    void setFont (juce::Font f)
+    {
+        defaultFont = f;
     }
 
 private:
@@ -153,6 +168,7 @@ private:
     
     juce::Label negative {"negative", "-"};
     juce::Label positive {"positive", "+"};
+    juce::Font defaultFont;
     
     /** coordinates. */
     std::unique_ptr<juce::Rectangle<float>> sliderArea {nullptr};
