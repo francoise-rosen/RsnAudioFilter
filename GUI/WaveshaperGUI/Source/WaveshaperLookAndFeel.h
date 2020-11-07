@@ -680,8 +680,7 @@ public:
     
     void drawLabel (juce::Graphics& g, juce::Label& label) override
     {
-        
-        //fillColour = label.findColour (juce::Label::backgroundColourId);
+        auto innerColour = label.findColour (juce::Label::backgroundColourId);
         auto labelArea = label.getLocalBounds();
         
         g.fillAll (fillColour);
@@ -691,6 +690,7 @@ public:
         }
         else
         {
+            g.setColour (innerColour);
             if (shape == IndicatorShape::RoundedRectangle)
             {
                 g.fillRoundedRectangle(labelArea.toFloat(), 5.0f);
@@ -721,7 +721,7 @@ private:
     bool isGradientOn { false };
     
     /** How do I set these? */
-    juce::Colour fillColour { juce::Colours::orange };
+    juce::Colour fillColour { juce::Colours::orange.withAlpha(0.25f) };
     juce::Colour outlineColour { juce::Colours::black };
     juce::Colour gradientOuterColour { juce::Colours::black };
     juce::Colour textColour { juce::Colours::white };

@@ -61,7 +61,8 @@ public:
         // this is the fill colour, or the inner colour in gradient
         // both labels will have their fill colours set according
         // to the position of the symmerySlider
-        negative.setColour (juce::Label::backgroundColourId, juce::Colours::orange);
+        // if gradient set the default outerColour == thisBackgroud and inner == labelBackground
+        negative.setColour (juce::Label::backgroundColourId, juce::Colours::black);
         positive.setColour (juce::Label::backgroundColourId, juce::Colours::orange);
         
         addAndMakeVisible (&symmetrySlider);
