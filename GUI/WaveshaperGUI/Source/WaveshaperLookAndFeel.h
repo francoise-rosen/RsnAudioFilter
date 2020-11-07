@@ -272,7 +272,7 @@ class SymmetricalLinearLookAndFeel : public WaveshaperLookAndFeel
 public:
     SymmetricalLinearLookAndFeel()
     {}
-    ~SymmetricalLinearLookAndFeel()
+    virtual ~SymmetricalLinearLookAndFeel() override
     {}
     
     enum class PointerFill { NoFill, Fill, FillGradient };
@@ -656,6 +656,76 @@ private:
     }
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SymmetricalLinearLookAndFeel)
+    
+};
+
+/** Specific non-editable labels for indicators like +, -, letters etc. */
+class IndicatorLookAndFeel : public juce::LookAndFeel_V4
+{
+public:
+    IndicatorLookAndFeel()
+    {}
+    virtual ~IndicatorLookAndFeel() override
+    {}
+    
+    enum class IndicatorShape { Ellipse, RoundedRectangle, Rectangle, Triangle };
+    void setGradientOuterColour (juce::Colour colour)
+    {
+        gradientOuterColour = colour;
+    }
+    void setGradientOn (bool isOn)
+    {
+        isGradientOn = isOn;
+    }
+    
+    void drawLabel (juce::Graphics& g, juce::Label& label) override
+    {
+        
+        //fillColour = label.findColour (juce::Label::backgroundColourId);
+        auto labelArea = label.getLocalBounds();
+        
+        g.fillAll (fillColour);
+        if (isGradientOn)
+        {
+            
+        }
+        else
+        {
+            if (shape == IndicatorShape::RoundedRectangle)
+            {
+                g.fillRoundedRectangle(labelArea.toFloat(), 5.0f);
+            }
+            else if (shape == IndicatorShape::Rectangle)
+            {
+                
+            }
+            else if (shape == IndicatorShape::Ellipse)
+            {
+                
+            
+            }
+            else if (shape == IndicatorShape::Triangle)
+            {
+                /** I need to know the direction and the pivot point. */
+            }
+            
+        }
+        
+        g.setColour (textColour);
+        auto textArea = getLabelBorderSize (label).subtractedFrom (labelArea);
+        g.drawFittedText (label.getText(), textArea, label.getJustificationType(), 1, label.getMinimumHorizontalScale());
+    }
+    
+private:
+    IndicatorShape shape { IndicatorShape::RoundedRectangle };
+    bool isGradientOn { false };
+    
+    /** How do I set these? */
+    juce::Colour fillColour { juce::Colours::orange };
+    juce::Colour outlineColour { juce::Colours::black };
+    juce::Colour gradientOuterColour { juce::Colours::black };
+    juce::Colour textColour { juce::Colours::white };
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (IndicatorLookAndFeel);
     
 };
 

@@ -31,9 +31,6 @@ public:
         crossfadeSlider.setColour (juce::Slider::thumbColourId, parentBackground);
         crossfadeSlider.setColour (juce::Slider::textBoxOutlineColourId, parentBackground.withAlpha (0.01f));
         
-        functionA_toggle.setButtonText ("A");
-        functionB_toggle.setButtonText ("B");
-        
         /** Symmetrical Rotary Slider. */
         symmetrySlider.setRange (0.0, 1.0);
         symmetrySlider.setValue (0.5);
@@ -53,12 +50,24 @@ public:
         symmetricalLinearLookAndFeel.setLinearSliderThumbOuterRimColour (juce::Colours::black);
         symmetricalLinearLookAndFeel.setPointerType (SymmetricalLinearLookAndFeel::PointerType::Circle);
         
+        negative.setLookAndFeel (&indicatorLabelLookAndFeel);
+        positive.setLookAndFeel (&indicatorLabelLookAndFeel);
+        negative.setText ("-", juce::NotificationType::dontSendNotification);
+        positive.setText ("+", juce::NotificationType::dontSendNotification);
+        negative.setJustificationType (juce::Justification::centred);
+        positive.setJustificationType (juce::Justification::centred);
+        negative.setColour (juce::Label::outlineColourId, juce::Colours::black);
+        
+        // this is the fill colour, or the inner colour in gradient
+        // both labels will have their fill colours set according
+        // to the position of the symmerySlider
+        negative.setColour (juce::Label::backgroundColourId, juce::Colours::orange);
+        positive.setColour (juce::Label::backgroundColourId, juce::Colours::orange);
+        
         addAndMakeVisible (&symmetrySlider);
         addAndMakeVisible (&crossfadeSlider);
         addAndMakeVisible (&functionA_box);
         addAndMakeVisible (&functionB_box);
-        addAndMakeVisible (&functionA_toggle);
-        addAndMakeVisible (&functionB_toggle);
         addAndMakeVisible (&negative);
         addAndMakeVisible (&positive);
 
@@ -68,7 +77,10 @@ public:
     {
         symmetrySlider.setLookAndFeel (nullptr);
         crossfadeSlider.setLookAndFeel (nullptr);
+        negative.setLookAndFeel (nullptr);
+        positive.setLookAndFeel (nullptr);
         setLookAndFeel (nullptr);
+        
     }
 
     void paint (juce::Graphics& g) override
@@ -129,14 +141,19 @@ public:
     void resized() override
     {
         auto area = getLocalBounds().reduced (edge);
-        symmetrySlider.setBounds (area.removeFromTop (area.getHeight() * 0.5f).reduced (edge));
+        
+        /** Upper half. */
+        auto dialArea = area.removeFromTop (area.getHeight() * 0.5f);
+        symmetrySlider.setBounds (dialArea.reduced (edge));
+        auto labelDiameter = juce::jmin (dialArea.getHeight() * 0.15f, dialArea.getWidth() * 0.15f);
+        negative.setBounds (juce::Rectangle<float> {labelDiameter, labelDiameter}.withCentre (juce::Point<float> { getWidth() * 0.25f, dialArea.getHeight() * 0.8f }).toNearestInt());
+        positive.setBounds (juce::Rectangle<float> {labelDiameter, labelDiameter}.withCentre (juce::Point<float> { getWidth() * 0.75f, dialArea.getHeight() * 0.8f}).toNearestInt());
+        
         crossfadeSlider.setBounds (area.removeFromBottom (area.getHeight() * 0.5f));
         sliderArea = std::make_unique<juce::Rectangle<float>> (crossfadeSlider.getBounds().toFloat());
         auto buttonArea = area.removeFromTop (area.getHeight() * 0.5f);
         auto comboBoxArea = buttonArea;
         comboArea = std::make_unique<juce::Rectangle<float>> (comboBoxArea.toFloat());
-//        functionA_toggle.setBounds (buttonArea.removeFromLeft (area.getWidth() * 0.25f).reduced(edge));
-//        functionB_toggle.setBounds (buttonArea.removeFromRight (area.getWidth() * 0.25f).reduced(edge));
         functionA_box.setBounds (buttonArea.removeFromLeft (area.getWidth() * 0.5).reduced (edge, edge));
         functionB_box.setBounds (buttonArea.reduced (edge, edge));
         
@@ -156,15 +173,10 @@ private:
     juce::ComboBox functionA_box;
     juce::ComboBox functionB_box;
     
-    /** Both being off results in bypass saturation stage,
-        which makes it to 2 stage filter + lfo unit.
-     */
-    juce::TextButton functionA_toggle;
-    juce::TextButton functionB_toggle;
-    
     WaveshaperLookAndFeel crossfadeLookAndFeel;
     SymmetricalRotaryLookAndFeel symmetricalRotaryLookAndFeel;
     SymmetricalLinearLookAndFeel symmetricalLinearLookAndFeel;
+    IndicatorLookAndFeel indicatorLabelLookAndFeel;
     
     juce::Label negative {"negative", "-"};
     juce::Label positive {"positive", "+"};

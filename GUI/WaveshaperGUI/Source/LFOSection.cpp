@@ -15,6 +15,10 @@
 LFOSection::LFOSection()
 {
     addAndMakeVisible(&lfoRateSlider);
+    addAndMakeVisible(&label_A);
+    label_A.setText ("A", juce::NotificationType::dontSendNotification);
+    label_A.setJustificationType (juce::Justification::centred);
+    label_A.setColour (juce::Label::outlineColourId, juce::Colours::darkblue);
 }
 
 LFOSection::~LFOSection()
@@ -51,5 +55,6 @@ void LFOSection::resized()
 {
     auto box = getLocalBounds();
     lfoRateSlider.setBounds(box.removeFromLeft (box.getWidth() * 0.25f).removeFromBottom (getWidth() * 0.5f).reduced (5.0f));
+    label_A.setBounds(getLocalBounds().withLeft(getWidth() * 0.75f).withBottom(getHeight() * 0.25f));
 
 }

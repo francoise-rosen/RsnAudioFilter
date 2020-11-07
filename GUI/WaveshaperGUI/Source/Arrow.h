@@ -21,11 +21,19 @@
  SEQUENCE:
  - make lines + different types of arrowheads work
  - add possibility of curved lines
+ 
+ Replace this later with Arrowhead class. Path will be drawn directly in component.
+ Pass the path to the arrowhead class with args: g, path, angle, width, length.
+ Initialise the arrowhead with view and bool fill
+ Class curve?
+ 
+ Explore how the curves can be drawn fast. 
  */
 
 #pragma once
 
 /** Arrow class prototype. */
+/** Rebuild it to Curve. */
 template <typename T>
 class Arrow
 {
@@ -173,3 +181,4 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Arrow)
 
 };
+
