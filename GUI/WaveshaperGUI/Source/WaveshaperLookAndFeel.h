@@ -680,7 +680,7 @@ public:
     virtual ~IndicatorLookAndFeel() override
     {}
     
-    enum class IndicatorShape { Ellipse, RoundedRectangle, Rectangle, Triangle };
+    enum class IndicatorShape { Ellipse, Circle, RoundedRectangle, Rectangle, Triangle };
     void setGradientOuterColour (juce::Colour colour)
     {
         gradientOuterColour = colour;
@@ -696,6 +696,7 @@ public:
     void drawLabel (juce::Graphics& g, juce::Label& label) override
     {
         auto innerColour = label.findColour (juce::Label::backgroundColourId);
+        outlineColour = label.findColour (juce::Label::outlineColourId);
         auto labelArea = label.getLocalBounds();
         juce::Point<float> pivot { labelArea.getWidth() * 0.5f, labelArea.getHeight() * 0.5f };
         
@@ -705,17 +706,28 @@ public:
         if (isGradientOn)
         {
             juce::Point<float> outerPoint;
-            if (shape == IndicatorShape::Ellipse)
+            if ( (shape == IndicatorShape::Ellipse) ||
+                 (shape == IndicatorShape::RoundedRectangle) ||
+                 (shape == IndicatorShape::Rectangle ) )
             {
-                outerPoint = juce::Point<float>{(labelArea.getWidth() > labelArea.getHeight()) ? 0.0f : labelArea.getWidth() * 0.5f, (labelArea.getWidth() > labelArea.getHeight()) ? labelArea.getHeight() * 0.5f : 0.0f};
+                outerPoint = juce::Point<float> {
+                    (labelArea.getWidth() > labelArea.getHeight()) ? 0.0f : labelArea.getWidth() * 0.5f, (labelArea.getWidth() > labelArea.getHeight()) ? labelArea.getHeight() * 0.5f : 0.0f
+                };
+            }
+            else if (shape == IndicatorShape::Circle)
+            {
+                auto diameter = juce::jmin (labelArea.getWidth(), labelArea.getHeight());
+                outerPoint = juce::Point<float> {
+                    pivot.getX() - diameter * 0.5f, pivot.getY() - diameter * 0.5f
+                };
             }
             gradient = std::make_unique<juce::ColourGradient>
-            ( innerColour,
-             pivot,
-             gradientOuterColour,
-             outerPoint,
-             (shape == IndicatorShape::Ellipse) ? true : false
-             );
+                    (innerColour,
+                     pivot,
+                     gradientOuterColour,
+                     outerPoint,
+                     (shape == IndicatorShape::Ellipse) ? true : false
+                     );
         }
         
         g.setColour (innerColour);
@@ -734,6 +746,9 @@ public:
                 g.setGradientFill (*gradient);
             }
             g.fillEllipse (labelArea.toFloat());
+            auto margin = juce::jmin (2.0f, juce::jmin (labelArea.getWidth(), labelArea.getHeight()) * 0.1f);
+            g.setColour (outlineColour);
+            g.drawEllipse (labelArea.reduced (margin).toFloat(), margin);
         }
         else if (shape == IndicatorShape::Triangle)
         {
@@ -753,7 +768,7 @@ private:
     
     /** How do I set these? */
     juce::Colour fillColour { juce::Colours::orange.withAlpha(0.25f) };
-    juce::Colour outlineColour { juce::Colours::black };
+    juce::Colour outlineColour { juce::Colours::black.withAlpha (0.0f) };
     juce::Colour gradientOuterColour { juce::Colours::black };
     juce::Colour textColour { juce::Colours::white };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (IndicatorLookAndFeel);
