@@ -57,6 +57,7 @@ public:
         negative.setJustificationType (juce::Justification::centred);
         positive.setJustificationType (juce::Justification::centred);
         negative.setColour (juce::Label::outlineColourId, juce::Colours::black);
+        indicatorLabelLookAndFeel.setGradientOn (true);
         
         // this is the fill colour, or the inner colour in gradient
         // both labels will have their fill colours set according

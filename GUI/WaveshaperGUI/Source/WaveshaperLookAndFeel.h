@@ -660,11 +660,23 @@ private:
 };
 
 /** Specific non-editable labels for indicators like +, -, letters etc. */
+/** Colours:
+    1. Label background - fillColour. Default - fully transparent.
+    2. outlineColour - juce::Label::outlineColourId
+    3. gradientColourId - default (Compoonent background)
+    4. Text colour - juce::Slider::textColourId
+ 
+ */
 class IndicatorLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
     IndicatorLookAndFeel()
     {}
+    
+    IndicatorLookAndFeel (juce::Colour componentBackground)
+    :fillColour {componentBackground.withAlpha(0.0f)}, gradientOuterColour {componentBackground}
+    {}
+    
     virtual ~IndicatorLookAndFeel() override
     {}
     
@@ -677,7 +689,10 @@ public:
     {
         isGradientOn = isOn;
     }
-    
+    void setFillColour (juce::Colour componentBackground)
+    {
+        fillColour = componentBackground;
+    }
     void drawLabel (juce::Graphics& g, juce::Label& label) override
     {
         auto innerColour = label.findColour (juce::Label::backgroundColourId);
@@ -685,34 +700,48 @@ public:
         juce::Point<float> pivot { labelArea.getWidth() * 0.5f, labelArea.getHeight() * 0.5f };
         
         g.fillAll (fillColour);
+        
+        std::unique_ptr<juce::ColourGradient> gradient;
         if (isGradientOn)
         {
-            
-        }
-        else
-        {
-            g.setColour (innerColour);
-            if (shape == IndicatorShape::RoundedRectangle)
+            juce::Point<float> outerPoint;
+            if (shape == IndicatorShape::Ellipse)
             {
-                g.fillRoundedRectangle (labelArea.toFloat(), 5.0f);
+                outerPoint = juce::Point<float>{(labelArea.getWidth() > labelArea.getHeight()) ? 0.0f : labelArea.getWidth() * 0.5f, (labelArea.getWidth() > labelArea.getHeight()) ? labelArea.getHeight() * 0.5f : 0.0f};
             }
-            else if (shape == IndicatorShape::Rectangle)
-            {
-                g.fillRect (labelArea);
-            }
-            else if (shape == IndicatorShape::Ellipse)
-            {
-                g.fillEllipse (labelArea.toFloat());
-            
-            }
-            else if (shape == IndicatorShape::Triangle)
-            {
-                /** I need to know the direction and the pivot point. */
-                
-            }
-            
+            gradient = std::make_unique<juce::ColourGradient>
+            ( innerColour,
+             pivot,
+             gradientOuterColour,
+             outerPoint,
+             (shape == IndicatorShape::Ellipse) ? true : false
+             );
         }
         
+        g.setColour (innerColour);
+        if (shape == IndicatorShape::RoundedRectangle)
+        {
+            g.fillRoundedRectangle (labelArea.toFloat(), 5.0f);
+        }
+        else if (shape == IndicatorShape::Rectangle)
+        {
+            g.fillRect (labelArea);
+        }
+        else if (shape == IndicatorShape::Ellipse)
+        {
+            if (isGradientOn)
+            {
+                g.setGradientFill (*gradient);
+            }
+            g.fillEllipse (labelArea.toFloat());
+        }
+        else if (shape == IndicatorShape::Triangle)
+        {
+            /** I need to know the direction and the pivot point.
+             I need to know how to fit it in label bounds when rotated. */
+            
+        }
+    
         g.setColour (textColour);
         auto textArea = getLabelBorderSize (label).subtractedFrom (labelArea);
         g.drawFittedText (label.getText(), textArea, label.getJustificationType(), 1, label.getMinimumHorizontalScale());
