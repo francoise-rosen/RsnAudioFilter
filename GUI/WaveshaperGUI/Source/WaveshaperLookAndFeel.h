@@ -682,6 +682,7 @@ public:
     {
         auto innerColour = label.findColour (juce::Label::backgroundColourId);
         auto labelArea = label.getLocalBounds();
+        juce::Point<float> pivot { labelArea.getWidth() * 0.5f, labelArea.getHeight() * 0.5f };
         
         g.fillAll (fillColour);
         if (isGradientOn)
@@ -693,20 +694,21 @@ public:
             g.setColour (innerColour);
             if (shape == IndicatorShape::RoundedRectangle)
             {
-                g.fillRoundedRectangle(labelArea.toFloat(), 5.0f);
+                g.fillRoundedRectangle (labelArea.toFloat(), 5.0f);
             }
             else if (shape == IndicatorShape::Rectangle)
             {
-                
+                g.fillRect (labelArea);
             }
             else if (shape == IndicatorShape::Ellipse)
             {
-                
+                g.fillEllipse (labelArea.toFloat());
             
             }
             else if (shape == IndicatorShape::Triangle)
             {
                 /** I need to know the direction and the pivot point. */
+                
             }
             
         }
@@ -717,7 +719,7 @@ public:
     }
     
 private:
-    IndicatorShape shape { IndicatorShape::RoundedRectangle };
+    IndicatorShape shape { IndicatorShape::Ellipse };
     bool isGradientOn { false };
     
     /** How do I set these? */
