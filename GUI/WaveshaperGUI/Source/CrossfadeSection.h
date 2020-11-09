@@ -71,6 +71,7 @@ public:
         negative.setColour (juce::Label::backgroundColourId, juce::Colours::orange.withAlpha (0.5f));
         positive.setColour (juce::Label::backgroundColourId, juce::Colours::orange.withAlpha(0.5f));
         
+        
         addAndMakeVisible (&symmetrySlider);
         addAndMakeVisible (&crossfadeSlider);
         addAndMakeVisible (&functionA_box);

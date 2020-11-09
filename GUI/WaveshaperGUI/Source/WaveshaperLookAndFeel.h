@@ -38,7 +38,9 @@ class WaveshaperLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
     WaveshaperLookAndFeel()
-    {}
+    {
+        setColour (juce::ComboBox::backgroundColourId, juce::Colours::black);
+    }
     virtual ~WaveshaperLookAndFeel() override
     {}
     
@@ -86,6 +88,9 @@ public:
     
     //================================================================================
     /** ComboBox, Text etc. */
+    
+    void drawComboBox (juce::Graphics& g, int width, int height, bool down, int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox& box) override;
+    
     
     //================================================================================
     /** Labels */
@@ -184,6 +189,27 @@ inline void WaveshaperLookAndFeel::drawLinearSlider (juce::Graphics &, int x, in
 {
     /** At first only Horizonal and Vertical Linear sliders. */
     
+    
+}
+
+inline void WaveshaperLookAndFeel::drawComboBox (juce::Graphics& g, int width, int height, bool down, int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox& box)
+{
+    /* box properties */
+    auto cornerSize = box.findParentComponentOfClass<juce::ChoicePropertyComponent>() != nullptr ? 0.0f : 3.0f;
+    juce::Rectangle<int> area (0, 0, width, height);
+    g.setColour (box.findColour (juce::ComboBox::backgroundColourId));
+    g.fillRoundedRectangle (area.toFloat(), cornerSize);
+    g.setColour (box.findColour (juce::ComboBox::outlineColourId));
+    g.drawRoundedRectangle (area.reduced(1.5f).toFloat(), cornerSize, 1.0f);
+    
+    /* an arrow */
+    juce::Path arrow;
+    juce::Point<float> point1 {width * 0.85f, height * 0.4f};
+    juce::Point<float> point3 {width * 0.95f, height * 0.4f};
+    juce::Point<float> point2 {width * 0.9f, height * 0.6f};
+    g.setColour (box.findColour (juce::ComboBox::arrowColourId).withAlpha ((box.isEnabled() ? 0.59f : 0.2f )));
+    arrow.addTriangle (point1, point2, point3);
+    g.fillPath (arrow);
     
 }
 
