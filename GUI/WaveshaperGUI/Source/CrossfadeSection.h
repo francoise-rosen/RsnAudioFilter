@@ -16,7 +16,9 @@
 //==============================================================================
 /*
 */
-class CrossfadeSection  : public juce::Component
+class CrossfadeSection  : public juce::Component,
+                          public juce::Slider::Listener
+
 {
 public:
     CrossfadeSection (juce::Colour parentBackground)
@@ -34,6 +36,7 @@ public:
         /** Symmetrical Rotary Slider. */
         symmetrySlider.setRange (0.0, 1.0);
         symmetrySlider.setValue (0.5);
+        symmetrySlider.addListener (this);
         symmetrySlider.setNumDecimalPlacesToDisplay (2);
         symmetrySlider.setColour (juce::Slider::thumbColourId, parentBackground);
         symmetrySlider.setColour (juce::Slider::textBoxOutlineColourId, parentBackground.withAlpha (0.01f));
@@ -65,8 +68,8 @@ public:
         // both labels will have their fill colours set according
         // to the position of the symmerySlider
         // if gradient set the default outerColour == thisBackgroud and inner == labelBackground
-        negative.setColour (juce::Label::backgroundColourId, juce::Colours::black);
-        positive.setColour (juce::Label::backgroundColourId, juce::Colours::orange);
+        negative.setColour (juce::Label::backgroundColourId, juce::Colours::orange.withAlpha (0.5f));
+        positive.setColour (juce::Label::backgroundColourId, juce::Colours::orange.withAlpha(0.5f));
         
         addAndMakeVisible (&symmetrySlider);
         addAndMakeVisible (&crossfadeSlider);
@@ -166,6 +169,17 @@ public:
     void setFont (juce::Font f)
     {
         defaultFont = f;
+    }
+    
+    void sliderValueChanged (juce::Slider* slider) override
+    {
+        if (slider == &symmetrySlider)
+        {
+            float val = static_cast<float> (symmetrySlider.getValue());
+            negative.setColour (juce::Label::backgroundColourId, juce::Colours::orange.withAlpha (1.0f - val));
+            positive.setColour (juce::Label::backgroundColourId, juce::Colours::orange.withAlpha (val));
+        }
+        //repaint();
     }
 
 private:
