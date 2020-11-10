@@ -40,6 +40,7 @@ public:
     WaveshaperLookAndFeel()
     {
         setColour (juce::ComboBox::backgroundColourId, juce::Colours::black);
+        setColour (juce::PopupMenu::backgroundColourId, juce::Colours::black.withAlpha (0.5f));
     }
     virtual ~WaveshaperLookAndFeel() override
     {}
