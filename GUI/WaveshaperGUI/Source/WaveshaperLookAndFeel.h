@@ -39,8 +39,17 @@ class WaveshaperLookAndFeel : public juce::LookAndFeel_V4
 public:
     WaveshaperLookAndFeel()
     {
+        /** Slider default colours */
+        setColour (juce::Slider::backgroundColourId, juce::Colours::darkcyan);
+        setColour (juce::Slider::trackColourId, juce::Colours::cyan);
+        setColour (juce::Slider::thumbColourId, juce::Colours::orange);
+        setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::white);
+        setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::blue);
+    
         setColour (juce::ComboBox::backgroundColourId, juce::Colours::black);
         setColour (juce::PopupMenu::backgroundColourId, juce::Colours::black.withAlpha (0.5f));
+        
+        
     }
     virtual ~WaveshaperLookAndFeel() override
     {}
@@ -88,10 +97,15 @@ public:
     
     
     //================================================================================
-    /** ComboBox, Text etc. */
-    
+    /** ComboBox, PopupMenu etc. */
     void drawComboBox (juce::Graphics& g, int width, int height, bool down, int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox& box) override;
-    
+    juce::Font getComboBoxFont (juce::ComboBox& box) override;
+    void drawPopupMenuBackground (juce::Graphics& g, int width, int height) override;
+    void positionComboBoxText (juce::ComboBox& box, juce::Label& label) override;
+    juce::Font getFont() const
+    {
+        return defaultFont;
+    }
     
     //================================================================================
     /** Labels */
@@ -113,14 +127,13 @@ protected:
         g.fillPath (p);
     }
 
-
 private:
     const float edge {5.0f};
     const float sliderOuterRimScaleFactor {0.92f};
+    float fontHeight {14.0f};
     bool outlineVisible {true};
     OutlineType localOutlineType {OutlineType::arcNormal};
-
-    
+    juce::Font defaultFont  {"Monaco", "Plain", fontHeight};;
     /** Draw Linear Slider thumb. */
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveshaperLookAndFeel)
 };
@@ -193,6 +206,8 @@ inline void WaveshaperLookAndFeel::drawLinearSlider (juce::Graphics &, int x, in
     
 }
 
+/** ComboBox methods. */
+
 inline void WaveshaperLookAndFeel::drawComboBox (juce::Graphics& g, int width, int height, bool down, int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox& box)
 {
     /* box properties */
@@ -205,13 +220,36 @@ inline void WaveshaperLookAndFeel::drawComboBox (juce::Graphics& g, int width, i
     
     /* an arrow */
     juce::Path arrow;
-    juce::Point<float> point1 {width * 0.85f, height * 0.4f};
+    juce::Point<float> point1 {width * 0.75f, height * 0.4f};
     juce::Point<float> point3 {width * 0.95f, height * 0.4f};
-    juce::Point<float> point2 {width * 0.9f, height * 0.6f};
+    juce::Point<float> point2 {width * 0.85f, height * 0.6f};
     g.setColour (box.findColour (juce::ComboBox::arrowColourId).withAlpha ((box.isEnabled() ? 0.59f : 0.2f )));
     arrow.addTriangle (point1, point2, point3);
     g.fillPath (arrow);
     
+}
+
+inline juce::Font WaveshaperLookAndFeel::getComboBoxFont (juce::ComboBox& box)
+{
+    return defaultFont.withHeight (juce::jmin (fontHeight, box.getHeight() * 0.72f));
+}
+
+inline void WaveshaperLookAndFeel::positionComboBoxText (juce::ComboBox& box, juce::Label& label)
+{
+    label.setBounds (1, 1,
+                     box.getWidth() - 10,
+                     box.getHeight() - 2);
+    label.setFont (getComboBoxFont (box));
+}
+
+inline void WaveshaperLookAndFeel::drawPopupMenuBackground (juce::Graphics& g, int width, int height)
+{
+    g.fillAll (findColour (juce::PopupMenu::backgroundColourId));
+    
+#if ! JUCE_MAC
+    g.setColour (findColour (PopupMenu::textColourId).withAlpha (0.6f));
+    g.drawRect (0, 0, width, height);
+#endif
 }
 
 //================================================================================

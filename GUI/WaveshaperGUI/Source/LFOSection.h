@@ -28,5 +28,6 @@ public:
 private:
     juce::Slider lfoRateSlider { juce::Slider::SliderStyle::Rotary, juce::Slider::TextEntryBoxPosition::TextBoxBelow };
     juce::Label label_A;
+    WaveshaperLookAndFeel waveshaperLookAndFeel;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFOSection)
 };

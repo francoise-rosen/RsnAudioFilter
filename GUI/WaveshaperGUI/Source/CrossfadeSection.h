@@ -16,6 +16,15 @@
 //==============================================================================
 /*
 */
+
+namespace WaveshaperConstants
+{
+    const juce::StringArray functions
+    {
+        "SiNe", "TaNH", "2TaNh"
+    };
+}
+
 class CrossfadeSection  : public juce::Component,
                           public juce::Slider::Listener
 
@@ -70,6 +79,8 @@ public:
         // if gradient set the default outerColour == thisBackgroud and inner == labelBackground
         negative.setColour (juce::Label::backgroundColourId, juce::Colours::orange.withAlpha (0.5f));
         positive.setColour (juce::Label::backgroundColourId, juce::Colours::orange.withAlpha(0.5f));
+        
+        fillBoxes (WaveshaperConstants::functions);
         
         
         addAndMakeVisible (&symmetrySlider);
@@ -180,7 +191,6 @@ public:
             negative.setColour (juce::Label::backgroundColourId, juce::Colours::orange.withAlpha (1.0f - val));
             positive.setColour (juce::Label::backgroundColourId, juce::Colours::orange.withAlpha (val));
         }
-        //repaint();
     }
 
 private:
@@ -204,5 +214,16 @@ private:
     /** coordinates. */
     std::unique_ptr<juce::Rectangle<float>> sliderArea {nullptr};
     std::unique_ptr<juce::Rectangle<float>> comboArea {nullptr};
+    
+    void fillBoxes (const juce::StringArray functions)
+    {
+        functionA_box.addItemList (WaveshaperConstants::functions, 100);
+        functionB_box.addItemList (WaveshaperConstants::functions, 100);
+        /** Set defaults.. */
+        functionA_box.setSelectedItemIndex (0);
+        functionB_box.setSelectedItemIndex (0);
+    }
+    
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CrossfadeSection)
 };

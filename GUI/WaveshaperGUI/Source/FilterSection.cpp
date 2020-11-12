@@ -15,11 +15,15 @@
 FilterSection::FilterSection(juce::Colour parentBackground)
 {
     localBackground = parentBackground;
+    setLookAndFeel (&waveshaperLookAndFeel);
+    intialiseFilterControls (inputFilter);
+    intialiseFilterControls (outputFilter);
 
 }
 
 FilterSection::~FilterSection()
 {
+    setLookAndFeel (nullptr);
 }
 
 void FilterSection::paint (juce::Graphics& g)
@@ -51,7 +55,28 @@ void FilterSection::paint (juce::Graphics& g)
 
 void FilterSection::resized()
 {
+    auto area = getLocalBounds().reduced (edge) ;
+    /** Input filter. */
+    
+    auto freqSliderSide = juce::jmin (getHeight() * 0.4f, getWidth() * 0.5f);
+    inputFilter.frequency.setBounds(area.withTop(getHeight() - freqSliderSide).withRight(freqSliderSide).reduced (edge));
+    inputFilter.algorithm.setBounds(area.withLeft (freqSliderSide).withTop (getHeight() * 0.9f).withRight(getWidth() * 0.9f).reduced (edge));
+    
 
     
 
+}
+
+void FilterSection::intialiseFilterControls (FilterControls &filterControls)
+{
+    addAndMakeVisible (& (filterControls.frequency) );
+    addAndMakeVisible (& (filterControls.q) );
+    addAndMakeVisible (& (filterControls.boost) );
+    addAndMakeVisible (& (filterControls.algorithm) );
+    addAndMakeVisible (& (filterControls.amount));
+    
+    filterControls.frequency.setRange (20.0, 20000.0);
+    filterControls.frequency.setSkewFactorFromMidPoint (1000.0);
+    filterControls.frequency.setValue (1000.0);
+    filterControls.frequency.setNumDecimalPlacesToDisplay (1);
 }
