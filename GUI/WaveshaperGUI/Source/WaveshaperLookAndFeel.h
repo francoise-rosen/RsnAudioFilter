@@ -78,6 +78,11 @@ public:
         localOutlineType = outlineType;
     }
     
+    void setThumbPosition (bool isOnTop)
+    {
+        isThumbOnTop = isOnTop;
+    }
+    
     /** If outline is not visible, only sliderFill and sliderThumb
      are visible, but outer body (outline is still drown, it's just transparent.
      */
@@ -132,6 +137,8 @@ private:
     const float sliderOuterRimScaleFactor {0.92f};
     float fontHeight {14.0f};
     bool outlineVisible {true};
+    bool isThumbOnTop {true};
+    bool isTrackVisible {false};
     OutlineType localOutlineType {OutlineType::arcNormal};
     juce::Font defaultFont  {"Monaco", "Plain", fontHeight};;
     /** Draw Linear Slider thumb. */
@@ -180,13 +187,20 @@ inline void WaveshaperLookAndFeel::drawRotarySlider (juce::Graphics &g, int x, i
         g.strokePath (outerArc, juce::PathStrokeType (rimWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
     }
     
-    g.setColour (fill);
-    g.fillEllipse (innerRimXY.getX(), innerRimXY.getY(), innerRadius * 2.0f, innerRadius * 2.0f);
-    
-    g.setColour (slider.findColour (juce::Slider::thumbColourId));
-    drawRotaryThumb (g, centre, outerRadius, angle);
-    
-
+    if (isThumbOnTop)
+    {
+        g.setColour (fill);
+        g.fillEllipse (innerRimXY.getX(), innerRimXY.getY(), innerRadius * 2.0f, innerRadius * 2.0f);
+        g.setColour (slider.findColour (juce::Slider::thumbColourId));
+        drawRotaryThumb (g, centre, outerRadius, angle);
+    }
+    else
+    {
+        g.setColour (slider.findColour (juce::Slider::thumbColourId));
+        drawRotaryThumb (g, centre, outerRadius, angle);
+        g.setColour (fill);
+        g.fillEllipse (innerRimXY.getX(), innerRimXY.getY(), innerRadius * 2.0f, innerRadius * 2.0f);
+    }
 }
 
 inline int WaveshaperLookAndFeel::getSliderThumbRadius (juce::Slider& slider)

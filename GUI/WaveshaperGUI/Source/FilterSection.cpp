@@ -51,6 +51,12 @@ void FilterSection::paint (juce::Graphics& g)
     rightTri.closeSubPath();
     rightTri = rightTri.createPathWithRoundedCorners (edge * 3.0f);
     g.strokePath(rightTri, juce::PathStrokeType (2.0f));
+    
+    if (iFilterFreqKnobRect != nullptr)
+    {
+        g.setColour (juce::Colours::orange);
+        g.drawRect(*iFilterFreqKnobRect);
+    }
 }
 
 void FilterSection::resized()
@@ -61,9 +67,7 @@ void FilterSection::resized()
     auto freqSliderSide = juce::jmin (getHeight() * 0.4f, getWidth() * 0.5f);
     inputFilter.frequency.setBounds(area.withTop(getHeight() - freqSliderSide).withRight(freqSliderSide).reduced (edge));
     inputFilter.algorithm.setBounds(area.withLeft (freqSliderSide).withTop (getHeight() * 0.9f).withRight(getWidth() * 0.9f).reduced (edge));
-    
-
-    
+    iFilterFreqKnobRect = std::make_unique<juce::Rectangle<int>> (area.withTop(getHeight() - freqSliderSide).withRight(freqSliderSide).reduced (edge));
 
 }
 
