@@ -59,6 +59,11 @@ public:
         setColour (juce::ComboBox::backgroundColourId, juce::Colours::black);
         setColour (juce::PopupMenu::backgroundColourId, juce::Colours::black.withAlpha (0.5f));
         
+        /** Label. */
+        setColour (juce::Label::backgroundColourId, juce::Colours::black);
+        setColour (juce::Label::textColourId, juce::Colours::white);
+        setColour (juce::Label::outlineColourId, juce::Colours::black.withAlpha(0.2f));
+        
         
     }
     virtual ~WaveshaperLookAndFeel() override
@@ -125,6 +130,9 @@ public:
     
     //================================================================================
     /** Labels */
+    juce::Font getLabelFont (juce::Label& l) override;
+    juce::BorderSize<int> getLabelBorderSize (juce::Label& l) override;
+    void drawLabel (juce::Graphics& g, juce::Label& j) override;
     
 protected:
     /**  Draw Rotary Slider thumb.
@@ -236,6 +244,7 @@ inline void WaveshaperLookAndFeel::drawLinearSlider (juce::Graphics &, int x, in
 inline juce::Label* WaveshaperLookAndFeel::createSliderTextBox (juce::Slider& slider)
 {
     auto* l = juce::LookAndFeel_V2::createSliderTextBox (slider);
+    /** For linear slider / bar. */
     return l;
 }
 
@@ -273,6 +282,26 @@ inline void WaveshaperLookAndFeel::positionComboBoxText (juce::ComboBox& box, ju
                      box.getWidth() - 10,
                      box.getHeight() - 2);
     label.setFont (getComboBoxFont (box));
+}
+
+/** Label. */
+inline juce::Font WaveshaperLookAndFeel::getLabelFont (juce::Label& l)
+{
+    return l.getFont();
+}
+
+inline juce::BorderSize<int> WaveshaperLookAndFeel::getLabelBorderSize(juce::Label& l)
+{
+    return l.getBorderSize();
+}
+
+inline void WaveshaperLookAndFeel::drawLabel (juce::Graphics& g, juce::Label& l)
+{
+    // fill the area
+    
+    // set the text properties
+    
+    // draw a rounded rectangle
 }
 
 inline void WaveshaperLookAndFeel::drawPopupMenuBackground (juce::Graphics& g, int width, int height)
