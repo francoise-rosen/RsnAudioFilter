@@ -21,15 +21,25 @@
  
  
  TO DO:
- - draw ComboBox
- - draw TextButton with A/B labels
+ - draw ComboBox - done
  - draw TextButton On/OFF
- - draw + / - labels
+ - draw + / - labels - done
  - draw labels for gui (names)
  - draw custom labels for gui (text boxes for linear sliders and gain sliders
  - draw arrows
  - add all the params
+ - define default Font
+ 
+ Colours:
+ - set default colours for Components
+ - set default colours for L+F
+ - getters and setters for L+F colours
+ - ColourScheme ?
+ 
  - make a plugin
+ 
+ Git:
+ - make different branches for trying colour palette / default colours
  */
 
 //================================================================================
@@ -62,6 +72,7 @@ public:
     
     int getSliderThumbRadius (juce::Slider& slider) override;
     void drawLinearSlider (juce::Graphics &, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider &) override;
+    juce::Label* createSliderTextBox (juce::Slider& slider) override;
     
 //    void drawLinearSliderBackground
     void setThumbGradientTargetColour (const juce::Colour& colour);
@@ -131,16 +142,18 @@ protected:
         p.applyTransform (juce::AffineTransform::rotation (angle).translated (centre));
         g.fillPath (p);
     }
-
+    
+    // set default font here
+    float fontHeight {14.0f};
+    juce::Font defaultFont  {"Monaco", "Plain", fontHeight};
 private:
     const float edge {5.0f};
     const float sliderOuterRimScaleFactor {0.92f};
-    float fontHeight {14.0f};
     bool outlineVisible {true};
     bool isThumbOnTop {true};
     bool isTrackVisible {false};
     OutlineType localOutlineType {OutlineType::arcNormal};
-    juce::Font defaultFont  {"Monaco", "Plain", fontHeight};;
+    
     /** Draw Linear Slider thumb. */
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveshaperLookAndFeel)
 };
@@ -218,6 +231,12 @@ inline void WaveshaperLookAndFeel::drawLinearSlider (juce::Graphics &, int x, in
     /** At first only Horizonal and Vertical Linear sliders. */
     
     
+}
+
+inline juce::Label* WaveshaperLookAndFeel::createSliderTextBox (juce::Slider& slider)
+{
+    auto* l = juce::LookAndFeel_V2::createSliderTextBox (slider);
+    return l;
 }
 
 /** ComboBox methods. */

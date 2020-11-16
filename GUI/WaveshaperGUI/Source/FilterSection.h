@@ -42,6 +42,9 @@ private:
     WaveshaperLookAndFeel waveshaperLookAndFeel;
     FilterControls inputFilter;
     FilterControls outputFilter;
+    
     std::unique_ptr<juce::Rectangle<int>> iFilterFreqKnobRect;
+    std::unique_ptr<juce::Rectangle<int>> iFilterQKnobRect;
+    std::unique_ptr<juce::Rectangle<int>> iFilterMixKnobRect;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterSection)
 };

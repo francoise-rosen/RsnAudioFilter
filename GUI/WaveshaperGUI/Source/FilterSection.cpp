@@ -57,6 +57,19 @@ void FilterSection::paint (juce::Graphics& g)
         g.setColour (juce::Colours::orange);
         g.drawRect(*iFilterFreqKnobRect);
     }
+    
+    if (iFilterQKnobRect != nullptr)
+    {
+        g.setColour (juce::Colours::orange);
+        g.drawRect (*iFilterQKnobRect);
+    }
+    
+    if (iFilterMixKnobRect != nullptr)
+    {
+        g.setColour (juce::Colours::orange);
+        g.drawRect (*iFilterMixKnobRect);
+    }
+    
 }
 
 void FilterSection::resized()
@@ -65,9 +78,13 @@ void FilterSection::resized()
     /** Input filter. */
     
     auto freqSliderSide = juce::jmin (getHeight() * 0.4f, getWidth() * 0.5f);
+    iFilterFreqKnobRect = std::make_unique<juce::Rectangle<int>> (area.withTop(getHeight() - freqSliderSide).withRight(freqSliderSide).reduced (edge));
+    iFilterQKnobRect = std::make_unique<juce::Rectangle<int>> (area.withBottom (getHeight() - freqSliderSide).withTop(getHeight() - freqSliderSide - freqSliderSide * 0.7f).withRight(freqSliderSide * 0.75f).reduced (edge));
+    iFilterMixKnobRect = std::make_unique<juce::Rectangle<int>> (area.withBottom (iFilterQKnobRect->getY()).withRight (freqSliderSide * 0.5f).reduced(edge));
+    
     inputFilter.frequency.setBounds(area.withTop(getHeight() - freqSliderSide).withRight(freqSliderSide).reduced (edge));
     inputFilter.algorithm.setBounds(area.withLeft (freqSliderSide).withTop (getHeight() * 0.9f).withRight(getWidth() * 0.9f).reduced (edge));
-    iFilterFreqKnobRect = std::make_unique<juce::Rectangle<int>> (area.withTop(getHeight() - freqSliderSide).withRight(freqSliderSide).reduced (edge));
+    inputFilter.q.setBounds (*iFilterQKnobRect);
 
 }
 
