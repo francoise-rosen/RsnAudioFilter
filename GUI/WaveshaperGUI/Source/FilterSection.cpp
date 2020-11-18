@@ -24,6 +24,7 @@ FilterSection::FilterSection(juce::Colour parentBackground)
 FilterSection::~FilterSection()
 {
     setLookAndFeel (nullptr);
+    inputFilter.boost.setLookAndFeel (nullptr);
 }
 
 void FilterSection::paint (juce::Graphics& g)
@@ -64,10 +65,10 @@ void FilterSection::paint (juce::Graphics& g)
         g.drawRect (*iFilterQKnobRect);
     }
     
-    if (iFilterMixKnobRect != nullptr)
+    if (iFilterBoostKnobRect != nullptr)
     {
         g.setColour (juce::Colours::orange);
-        g.drawRect (*iFilterMixKnobRect);
+        g.drawRect (*iFilterBoostKnobRect);
     }
     
 }
@@ -78,13 +79,18 @@ void FilterSection::resized()
     /** Input filter. */
     
     auto freqSliderSide = juce::jmin (getHeight() * 0.4f, getWidth() * 0.5f);
+    auto midSliderSide = freqSliderSide * 0.67f;
+    auto smallSliderSide = midSliderSide * 0.67f;
+    
     iFilterFreqKnobRect = std::make_unique<juce::Rectangle<int>> (area.withTop(getHeight() - freqSliderSide).withRight(freqSliderSide).reduced (edge));
-    iFilterQKnobRect = std::make_unique<juce::Rectangle<int>> (area.withBottom (getHeight() - freqSliderSide).withTop(getHeight() - freqSliderSide - freqSliderSide * 0.7f).withRight(freqSliderSide * 0.75f).reduced (edge));
-    iFilterMixKnobRect = std::make_unique<juce::Rectangle<int>> (area.withBottom (iFilterQKnobRect->getY()).withRight (freqSliderSide * 0.5f).reduced(edge));
+    iFilterQKnobRect = std::make_unique<juce::Rectangle<int>> (area.withBottom (getHeight() - freqSliderSide).withTop(getHeight() - freqSliderSide - midSliderSide).withRight(midSliderSide).reduced (edge));
+    iFilterBoostKnobRect = std::make_unique<juce::Rectangle<int>> (area.withBottom (iFilterQKnobRect->getY()).withTop (iFilterQKnobRect->getY() - smallSliderSide).withRight (smallSliderSide).reduced (edge));
     
     inputFilter.frequency.setBounds(area.withTop(getHeight() - freqSliderSide).withRight(freqSliderSide).reduced (edge));
     inputFilter.algorithm.setBounds(area.withLeft (freqSliderSide).withTop (getHeight() * 0.9f).withRight(getWidth() * 0.9f).reduced (edge));
     inputFilter.q.setBounds (*iFilterQKnobRect);
+    inputFilter.boost.setBounds(*iFilterBoostKnobRect);
+    
 
 }
 
@@ -100,4 +106,7 @@ void FilterSection::intialiseFilterControls (FilterControls &filterControls)
     filterControls.frequency.setSkewFactorFromMidPoint (1000.0);
     filterControls.frequency.setValue (1000.0);
     filterControls.frequency.setNumDecimalPlacesToDisplay (1);
+    
+    filterControls.boost.setLookAndFeel (&smallSliderLookAndFeel);
 }
+

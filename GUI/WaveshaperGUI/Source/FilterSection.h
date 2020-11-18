@@ -40,11 +40,13 @@ private:
     const float edge {5.0f};
     juce::Colour localBackground;
     WaveshaperLookAndFeel waveshaperLookAndFeel;
+    SmallRotaryLookAndFeel smallSliderLookAndFeel;
     FilterControls inputFilter;
     FilterControls outputFilter;
     
     std::unique_ptr<juce::Rectangle<int>> iFilterFreqKnobRect;
     std::unique_ptr<juce::Rectangle<int>> iFilterQKnobRect;
     std::unique_ptr<juce::Rectangle<int>> iFilterMixKnobRect;
+    std::unique_ptr<juce::Rectangle<int>> iFilterBoostKnobRect;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterSection)
 };
