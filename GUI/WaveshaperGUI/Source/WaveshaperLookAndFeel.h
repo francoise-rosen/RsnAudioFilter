@@ -182,7 +182,7 @@ inline void WaveshaperLookAndFeel::drawRotarySlider (juce::Graphics &g, int x, i
     auto fill = slider.findColour (juce::Slider::rotarySliderFillColourId);
     auto outline = slider.findColour (juce::Slider::rotarySliderOutlineColourId);
     juce::Point<float> centre {x + width * 0.5f, y + height * 0.5f};
-    auto area = juce::Rectangle<int> (x, y, width, height).toFloat().reduced (1.0f);
+    auto area = juce::Rectangle<int> (x, y, width, height).toFloat().reduced (5.0f);
     //=========================================
     /** TEMP. */
     g.drawRect (area);
@@ -406,8 +406,9 @@ public:
     SmallRotaryLookAndFeel()
     {
         //setColour (juce::Slider::backgroundColourId, juce::Colours::silver.withAlpha (0.3f));
-        setColour (juce::Slider::backgroundColourId, juce::Colours::darkorange);
-        setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::black);
+        //setColour (juce::Slider::backgroundColourId, juce::Colours::darkorange);
+        setColour (juce::Slider::backgroundColourId, juce::Colours::darkgrey);
+        setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::darkcyan.darker());
         setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::silver);
         setColour (juce::Slider::thumbColourId, juce::Colours::black);
         setColour (juce::Slider::trackColourId, juce::Colours::purple);
@@ -449,7 +450,7 @@ public:
         g.setColour (thumb);
         g.drawEllipse (innerRimXY.getX(), innerRimXY.getY(), innerRadius * 2.0f, innerRadius * 2.0f, juce::jmin (2.0f, outerRadius * 0.25f));
         
-        g.setColour (background);
+        g.setColour (background.withAlpha(0.85f));
         drawThumbShadow (g, centre, innerRadius, juce::jmin (2.0f, outerRadius * 0.25f), angle);
         g.setColour (thumb);
         drawSliderThumb(g, centre, innerRadius, angle);
@@ -461,7 +462,7 @@ private:
     void drawThumbShadow (juce::Graphics& g, const juce::Point<float>& centre, const float& trackRadius, const float& radius, const float& angle)
     {
         juce::Point<float> thumbPoint { centre.getX() + trackRadius * std::cos (angle - juce::MathConstants<float>::halfPi), centre.getY() + trackRadius * std::sin (angle - juce::MathConstants<float>::halfPi) };
-        g.fillEllipse (juce::Rectangle<float> (radius * 2.0f, radius * 2.0f).withCentre(thumbPoint));
+        g.fillEllipse (juce::Rectangle<float> (radius * 3.0f, radius * 3.0f).withCentre(thumbPoint));
     }
     
     void drawSliderThumb (juce::Graphics& g, juce::Point<float>& centre, const float& radius, const float& angle)
