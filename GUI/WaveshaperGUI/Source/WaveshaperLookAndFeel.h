@@ -418,7 +418,6 @@ public:
     {
         // get area
         auto area = juce::Rectangle<int> (x, y, width, height).toFloat().reduced (5.0f);
-        auto innerArea {area.reduced (5.0f)};
         juce::Point<float> centre {area.getCentre()};
         auto angle = rotaryStartAngle + sliderPosProportional * (rotaryEndAngle - rotaryStartAngle);
         auto outerRadius { juce::jmin (area.getWidth() * 0.5f, area.getHeight()) * 0.5f };
@@ -442,21 +441,29 @@ public:
         };
         g.setColour (background);
         g.drawEllipse(outerRimXY.getX(), outerRimXY.getY(), outerRadius * 2.0f, outerRadius * 2.0f, juce::jmin (5.0f, outerRadius * 0.5f));
-        
         g.setGradientFill(gradient);
         g.fillEllipse (innerRimXY.getX(), innerRimXY.getY(), innerRadius * 2.0f, innerRadius * 2.0f);
         
         auto thumb = slider.findColour (juce::Slider::thumbColourId);
         g.setColour (thumb);
         g.drawEllipse (innerRimXY.getX(), innerRimXY.getY(), innerRadius * 2.0f, innerRadius * 2.0f, juce::jmin (2.0f, outerRadius * 0.25f));
+        g.setColour (background);
         
+        drawThumbShadow (g, centre, innerRadius, juce::jmin (2.0f, outerRadius * 0.25f), angle);
+        g.setColour (thumb);
         drawSliderThumb(g, centre, innerRadius, angle);
     
         
     }
 private:
     
-    void drawSliderThumb(juce::Graphics& g, juce::Point<float>& centre, const float& radius, const float& angle)
+    void drawThumbShadow (juce::Graphics& g, const juce::Point<float>& centre, const float& trackRadius, const float& radius, const float& angle)
+    {
+        juce::Point<float> thumbPoint { centre.getX() + trackRadius * std::cos (angle - juce::MathConstants<float>::halfPi), centre.getY() + trackRadius * std::sin (angle - juce::MathConstants<float>::halfPi) };
+        g.fillEllipse (juce::Rectangle<float> (radius * 2.0f, radius * 2.0f).withCentre(thumbPoint));
+    }
+    
+    void drawSliderThumb (juce::Graphics& g, juce::Point<float>& centre, const float& radius, const float& angle)
     {
         const float thumbWidth = juce::jmin (4.0f, radius * 0.15f);
         juce::Path p;
@@ -464,9 +471,7 @@ private:
         p.lineTo (centre.withY (centre.getY() - radius + thumbWidth * 0.5f));
         //p.applyTransform (juce::AffineTransform::rotation (angle).translated (centre));
         p.applyTransform (juce::AffineTransform::rotation (angle, centre.getX(), centre.getY()));
-        g.strokePath (p, {thumbWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
-        
-        
+        g.strokePath (p, {2.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
         //g.fillPath(p);
     }
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SmallRotaryLookAndFeel)
