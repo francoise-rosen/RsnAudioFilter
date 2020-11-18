@@ -405,7 +405,8 @@ class SmallRotaryLookAndFeel : public WaveshaperLookAndFeel
 public:
     SmallRotaryLookAndFeel()
     {
-        setColour (juce::Slider::backgroundColourId, juce::Colours::silver.withAlpha (0.3f));
+        //setColour (juce::Slider::backgroundColourId, juce::Colours::silver.withAlpha (0.3f));
+        setColour (juce::Slider::backgroundColourId, juce::Colours::darkorange);
         setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::black);
         setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::silver);
         setColour (juce::Slider::thumbColourId, juce::Colours::black);
@@ -447,8 +448,8 @@ public:
         auto thumb = slider.findColour (juce::Slider::thumbColourId);
         g.setColour (thumb);
         g.drawEllipse (innerRimXY.getX(), innerRimXY.getY(), innerRadius * 2.0f, innerRadius * 2.0f, juce::jmin (2.0f, outerRadius * 0.25f));
-        g.setColour (background);
         
+        g.setColour (background);
         drawThumbShadow (g, centre, innerRadius, juce::jmin (2.0f, outerRadius * 0.25f), angle);
         g.setColour (thumb);
         drawSliderThumb(g, centre, innerRadius, angle);
@@ -468,7 +469,7 @@ private:
         const float thumbWidth = juce::jmin (4.0f, radius * 0.15f);
         juce::Path p;
         p.startNewSubPath (centre.withY (centre.getY() - radius * 0.33f));
-        p.lineTo (centre.withY (centre.getY() - radius + thumbWidth * 0.5f));
+        p.lineTo (centre.withY (centre.getY() - radius));
         //p.applyTransform (juce::AffineTransform::rotation (angle).translated (centre));
         p.applyTransform (juce::AffineTransform::rotation (angle, centre.getX(), centre.getY()));
         g.strokePath (p, {2.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});

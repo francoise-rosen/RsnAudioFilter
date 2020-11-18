@@ -108,5 +108,6 @@ void FilterSection::intialiseFilterControls (FilterControls &filterControls)
     filterControls.frequency.setNumDecimalPlacesToDisplay (1);
     
     filterControls.boost.setLookAndFeel (&smallSliderLookAndFeel);
+//    filterControls.boost.setColour(juce::Slider::backgroundColourId, juce::Colours::silver);
 }
 
