@@ -407,7 +407,7 @@ class SmallRotaryLookAndFeel : public WaveshaperLookAndFeel
 {
 public:
     SmallRotaryLookAndFeel(const bool& b = false)
-    : symmetry {b}
+    : symmetric {b}
     {
         //setColour (juce::Slider::backgroundColourId, juce::Colours::silver.withAlpha (0.3f));
         //setColour (juce::Slider::backgroundColourId, juce::Colours::darkorange);
@@ -445,19 +445,45 @@ public:
         };
         g.setColour (background);
         g.drawEllipse(outerRimXY.getX(), outerRimXY.getY(), outerRadius * 2.0f, outerRadius * 2.0f, juce::jmin (5.0f, outerRadius * 0.5f));
+        
+        if (symmetric)
+        {
+            const float length = juce::jmin (5.0f, outerRadius * 0.2f);
+            juce::Path pointer;
+            pointer.startNewSubPath (centre.withY (centre.getY() - outerRadius));
+            pointer.lineTo (centre.withY (centre.getY() - outerRadius - length));
+            g.strokePath (pointer, juce::PathStrokeType {3.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
+        }
+        
         g.setGradientFill(gradient);
         g.fillEllipse (innerRimXY.getX(), innerRimXY.getY(), innerRadius * 2.0f, innerRadius * 2.0f);
         
         /** draw a track. */
         juce::Path track;
-        track.addCentredArc(centre.getX(),
-                            centre.getY(),
-                            outerRadius,
-                            outerRadius,
-                            0.0f,
-                            rotaryStartAngle,
-                            angle,
-                            true);
+        
+        if (symmetric)
+        {
+            float mid = (rotaryStartAngle + rotaryEndAngle) * 0.5f;
+            track.addCentredArc(centre.getX(),
+                               centre.getY(),
+                               outerRadius,
+                               outerRadius,
+                               0.0f,
+                               (mid > angle) ? angle : mid,
+                               (angle > mid) ? angle : mid,
+                               true);
+        }
+        else
+        {
+            track.addCentredArc(centre.getX(),
+                                centre.getY(),
+                                outerRadius,
+                                outerRadius,
+                                0.0f,
+                                rotaryStartAngle,
+                                angle,
+                                true);
+        }
         g.setColour (slider.findColour (juce::Slider::trackColourId));
         g.strokePath (track, juce::PathStrokeType {3.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
         
@@ -471,14 +497,14 @@ public:
     }
     bool isSymmetrical() const
     {
-        return symmetry;
+        return symmetric;
     }
     void setSymmetrical (bool b)
     {
-        symmetry = b;
+        symmetric = b;
     }
 private:
-    bool symmetry;
+    bool symmetric;
     void drawThumbShadow (juce::Graphics& g, const juce::Point<float>& centre, const float& trackRadius, const float& radius, const float& angle)
     {
         juce::Point<float> thumbPoint { centre.getX() + trackRadius * std::cos (angle - juce::MathConstants<float>::halfPi), centre.getY() + trackRadius * std::sin (angle - juce::MathConstants<float>::halfPi) };

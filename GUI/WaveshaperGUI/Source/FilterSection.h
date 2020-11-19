@@ -40,7 +40,7 @@ private:
     const float edge {5.0f};
     juce::Colour localBackground;
     WaveshaperLookAndFeel waveshaperLookAndFeel;
-    SmallRotaryLookAndFeel smallSliderLookAndFeel;
+    SmallRotaryLookAndFeel smallSliderLookAndFeel {true};
     FilterControls inputFilter;
     FilterControls outputFilter;
     
