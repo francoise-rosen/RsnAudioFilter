@@ -331,7 +331,10 @@ inline void WaveshaperLookAndFeel::drawPopupMenuBackground (juce::Graphics& g, i
 class SymmetricalRotaryLookAndFeel : public WaveshaperLookAndFeel
 {
 public:
-    SymmetricalRotaryLookAndFeel() {}
+    SymmetricalRotaryLookAndFeel()
+    {
+        setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::white);
+    }
     virtual ~SymmetricalRotaryLookAndFeel() {}
     
     void drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height,
@@ -354,8 +357,6 @@ public:
         const float innerRadius = outerRadius * 0.69f;
         juce::Point<float> innerRimXY {centre.getX() - innerRadius, centre.getY() - innerRadius};
         
-        g.setColour (outline);
-        // g.drawEllipse(outerRimXY.getX(), outerRimXY.getY(), outerRadius * 2, outerRadius * 2, 3.0f);
         juce::Path outerArc;
         outerArc.addCentredArc (centre.getX(),
                                 centre.getY(),
@@ -365,10 +366,12 @@ public:
                                 rotaryStartAngle,
                                 rotaryEndAngle,
                                 true);
+        g.setColour (outline);
         g.strokePath (outerArc, juce::PathStrokeType (rimWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
         juce::Path middleLine;
         middleLine.startNewSubPath (centre.getX(), centre.getY() - outerRadius);
         middleLine.lineTo (centre.getX(), y);
+        g.setColour (outline);
         g.strokePath (middleLine, juce::PathStrokeType (rimWidth));
         
         g.setColour (fill);
@@ -403,22 +406,24 @@ class RotaryBigLookAndFeel : public WaveshaperLookAndFeel
 class SmallRotaryLookAndFeel : public WaveshaperLookAndFeel
 {
 public:
-    SmallRotaryLookAndFeel()
+    SmallRotaryLookAndFeel(const bool& b = false)
+    : symmetry {b}
     {
         //setColour (juce::Slider::backgroundColourId, juce::Colours::silver.withAlpha (0.3f));
         //setColour (juce::Slider::backgroundColourId, juce::Colours::darkorange);
         setColour (juce::Slider::backgroundColourId, juce::Colours::darkgrey);
         setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::darkcyan.darker());
-        setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::silver);
+        setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::black);
         setColour (juce::Slider::thumbColourId, juce::Colours::black);
         setColour (juce::Slider::trackColourId, juce::Colours::purple);
     }
     virtual ~SmallRotaryLookAndFeel()
     {}
     
+    /** Update this to draw arc for the rim,
+     instead of having to draw a shadow around the thumb point. */
     void drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider& slider) override
     {
-        // get area
         auto area = juce::Rectangle<int> (x, y, width, height).toFloat().reduced (5.0f);
         juce::Point<float> centre {area.getCentre()};
         auto angle = rotaryStartAngle + sliderPosProportional * (rotaryEndAngle - rotaryStartAngle);
@@ -426,19 +431,16 @@ public:
         juce::Point<float> outerRimXY {centre.getX() - outerRadius, centre.getY() - outerRadius};
         auto innerRadius {outerRadius * 0.95f};
         juce::Point<float> innerRimXY {centre.getX() - innerRadius, centre.getY() - innerRadius};
-        
+        /** This is the colour that will be more present closer
+         to the outer rim. */
         auto fillColour = slider.findColour (juce::Slider::rotarySliderFillColourId);
         auto background = slider.findColour (juce::Slider::backgroundColourId);
-        g.setColour (fillColour);
-        g.fillEllipse (outerRimXY.getX(), outerRimXY.getY(), outerRadius * 2.0f, outerRadius * 2.0f);
-        
         juce::ColourGradient gradient
         {
             background.withMultipliedAlpha(0.93f),
             centre,
             fillColour,
             outerRimXY,
-            //centre.withX(centre.getX() - innerRadius),
             true
         };
         g.setColour (background);
@@ -446,19 +448,37 @@ public:
         g.setGradientFill(gradient);
         g.fillEllipse (innerRimXY.getX(), innerRimXY.getY(), innerRadius * 2.0f, innerRadius * 2.0f);
         
-        auto thumb = slider.findColour (juce::Slider::thumbColourId);
-        g.setColour (thumb);
+        /** draw a track. */
+        juce::Path track;
+        track.addCentredArc(centre.getX(),
+                            centre.getY(),
+                            outerRadius,
+                            outerRadius,
+                            0.0f,
+                            rotaryStartAngle,
+                            angle,
+                            true);
+        g.setColour (slider.findColour (juce::Slider::trackColourId));
+        g.strokePath (track, juce::PathStrokeType {3.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
+        
+        g.setColour (slider.findColour (juce::Slider::rotarySliderOutlineColourId));
         g.drawEllipse (innerRimXY.getX(), innerRimXY.getY(), innerRadius * 2.0f, innerRadius * 2.0f, juce::jmin (2.0f, outerRadius * 0.25f));
         
         g.setColour (background.withAlpha(0.85f));
         drawThumbShadow (g, centre, innerRadius, juce::jmin (2.0f, outerRadius * 0.25f), angle);
-        g.setColour (thumb);
+        g.setColour (slider.findColour (juce::Slider::thumbColourId));
         drawSliderThumb(g, centre, innerRadius, angle);
-    
-        
+    }
+    bool isSymmetrical() const
+    {
+        return symmetry;
+    }
+    void setSymmetrical (bool b)
+    {
+        symmetry = b;
     }
 private:
-    
+    bool symmetry;
     void drawThumbShadow (juce::Graphics& g, const juce::Point<float>& centre, const float& trackRadius, const float& radius, const float& angle)
     {
         juce::Point<float> thumbPoint { centre.getX() + trackRadius * std::cos (angle - juce::MathConstants<float>::halfPi), centre.getY() + trackRadius * std::sin (angle - juce::MathConstants<float>::halfPi) };
@@ -467,14 +487,13 @@ private:
     
     void drawSliderThumb (juce::Graphics& g, juce::Point<float>& centre, const float& radius, const float& angle)
     {
-        const float thumbWidth = juce::jmin (4.0f, radius * 0.15f);
         juce::Path p;
         p.startNewSubPath (centre.withY (centre.getY() - radius * 0.33f));
         p.lineTo (centre.withY (centre.getY() - radius));
         //p.applyTransform (juce::AffineTransform::rotation (angle).translated (centre));
         p.applyTransform (juce::AffineTransform::rotation (angle, centre.getX(), centre.getY()));
         g.strokePath (p, {2.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
-        //g.fillPath(p);
+
     }
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SmallRotaryLookAndFeel)
 };
