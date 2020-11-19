@@ -48,5 +48,10 @@ private:
     std::unique_ptr<juce::Rectangle<int>> iFilterQKnobRect;
     std::unique_ptr<juce::Rectangle<int>> iFilterMixKnobRect;
     std::unique_ptr<juce::Rectangle<int>> iFilterBoostKnobRect;
+    std::unique_ptr<juce::Rectangle<int>> oFilterFreqKnobRect;
+    std::unique_ptr<juce::Rectangle<int>> oFilterQKnobRect;
+    std::unique_ptr<juce::Rectangle<int>> oFilterMixKnobRect;
+    std::unique_ptr<juce::Rectangle<int>> oFilterBoostKnobRect;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterSection)
 };

@@ -53,22 +53,25 @@ void FilterSection::paint (juce::Graphics& g)
     rightTri = rightTri.createPathWithRoundedCorners (edge * 3.0f);
     g.strokePath(rightTri, juce::PathStrokeType (2.0f));
     
+    g.setColour (juce::Colours::orange);
     if (iFilterFreqKnobRect != nullptr)
     {
-        g.setColour (juce::Colours::orange);
         g.drawRect(*iFilterFreqKnobRect);
     }
     
     if (iFilterQKnobRect != nullptr)
     {
-        g.setColour (juce::Colours::orange);
         g.drawRect (*iFilterQKnobRect);
     }
     
     if (iFilterBoostKnobRect != nullptr)
     {
-        g.setColour (juce::Colours::orange);
         g.drawRect (*iFilterBoostKnobRect);
+    }
+    
+    if (oFilterQKnobRect != nullptr)
+    {
+        g.drawRect(*oFilterQKnobRect);
     }
     
 }
@@ -77,13 +80,12 @@ void FilterSection::resized()
 {
     auto area = getLocalBounds().reduced (edge) ;
     /** Input filter. */
-    
     auto freqSliderSide = juce::jmin (getHeight() * 0.4f, getWidth() * 0.5f);
     auto midSliderSide = freqSliderSide * 0.67f;
     auto smallSliderSide = midSliderSide * 0.67f;
     
     iFilterFreqKnobRect = std::make_unique<juce::Rectangle<int>> (area.withTop(getHeight() - freqSliderSide).withRight(freqSliderSide).reduced (edge));
-    iFilterQKnobRect = std::make_unique<juce::Rectangle<int>> (area.withBottom (getHeight() - freqSliderSide).withTop(getHeight() - freqSliderSide - midSliderSide).withRight(midSliderSide).reduced (edge));
+    iFilterQKnobRect = std::make_unique<juce::Rectangle<int>> (area.withBottom (getHeight() - freqSliderSide).withTop(getHeight() - freqSliderSide - midSliderSide).withRight(area.getX() + midSliderSide).reduced (edge));
     iFilterBoostKnobRect = std::make_unique<juce::Rectangle<int>> (area.withBottom (iFilterQKnobRect->getY()).withTop (iFilterQKnobRect->getY() - smallSliderSide).withRight (smallSliderSide).reduced (edge));
     
     inputFilter.frequency.setBounds(area.withTop(getHeight() - freqSliderSide).withRight(freqSliderSide).reduced (edge));
@@ -91,6 +93,8 @@ void FilterSection::resized()
     inputFilter.q.setBounds (*iFilterQKnobRect);
     inputFilter.boost.setBounds(*iFilterBoostKnobRect);
     
+    /** Output filter. */
+    oFilterQKnobRect = std::make_unique<juce::Rectangle<int>> (area.getWidth() * 0.27f + edge, area.getY() + edge, midSliderSide - edge, midSliderSide - edge);
 
 }
 

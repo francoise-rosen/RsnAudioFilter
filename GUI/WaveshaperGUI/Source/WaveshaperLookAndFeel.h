@@ -412,10 +412,10 @@ public:
         //setColour (juce::Slider::backgroundColourId, juce::Colours::silver.withAlpha (0.3f));
         //setColour (juce::Slider::backgroundColourId, juce::Colours::darkorange);
         setColour (juce::Slider::backgroundColourId, juce::Colours::darkgrey);
-        setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::darkcyan.darker());
+        setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::darkcyan.withBrightness (0.25f));
         setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::black);
         setColour (juce::Slider::thumbColourId, juce::Colours::black);
-        setColour (juce::Slider::trackColourId, juce::Colours::purple);
+        setColour (juce::Slider::trackColourId, juce::Colours::blue.withBrightness(0.2f));
     }
     virtual ~SmallRotaryLookAndFeel()
     {}
@@ -466,8 +466,8 @@ public:
             float mid = (rotaryStartAngle + rotaryEndAngle) * 0.5f;
             track.addCentredArc(centre.getX(),
                                centre.getY(),
-                               outerRadius,
-                               outerRadius,
+                               outerRadius + 1.0f,
+                               outerRadius + 1.0f,
                                0.0f,
                                (mid > angle) ? angle : mid,
                                (angle > mid) ? angle : mid,
@@ -477,15 +477,15 @@ public:
         {
             track.addCentredArc(centre.getX(),
                                 centre.getY(),
-                                outerRadius,
-                                outerRadius,
+                                outerRadius + 1.0f,
+                                outerRadius + 1.0f,
                                 0.0f,
                                 rotaryStartAngle,
                                 angle,
                                 true);
         }
         g.setColour (slider.findColour (juce::Slider::trackColourId));
-        g.strokePath (track, juce::PathStrokeType {3.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded});
+        g.strokePath (track, juce::PathStrokeType { juce::jmin (4.0f, outerRadius * 0.4f), juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
         
         g.setColour (slider.findColour (juce::Slider::rotarySliderOutlineColourId));
         g.drawEllipse (innerRimXY.getX(), innerRimXY.getY(), innerRadius * 2.0f, innerRadius * 2.0f, juce::jmin (2.0f, outerRadius * 0.25f));
