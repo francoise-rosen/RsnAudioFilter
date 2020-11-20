@@ -129,10 +129,15 @@ void FilterSection::resized()
     
     //=====================================================================
     /** Output filter. */
-    oFilterQKnobRect = std::make_unique<juce::Rectangle<int>> (area.getWidth() * 0.27f + edge, area.getY() + edge, midSliderSide - edge, midSliderSide - edge);
+    oFilterQKnobRect = std::make_unique<juce::Rectangle<int>> (area.getWidth() * 0.3f + edge, area.getY() + edge + edge, midSliderSide - edge, midSliderSide - edge);
     oFilterFreqKnobRect = std::make_unique<juce::Rectangle<int>> ((*iFilterFreqKnobRect).withCentre({area.getRight() - (int)(freqSliderSide * 0.5f - edge * 0.5f), (int)(area.getY() + midSliderSide * 0.75f + freqSliderSide * 0.5f)}));
     oFilterBoostKnobRect = std::make_unique<juce::Rectangle<int>> ((*iFilterBoostKnobRect).withCentre ({area.getRight() - (int)(smallSliderSide * 0.5f - edge * 0.5f), (int)(area.getY() + midSliderSide * 0.75f + freqSliderSide + smallSliderSide * 0.5f) }));
     oFilterButtonRect = std::make_unique<juce::Rectangle<int>>((*iFilterButtonRect).withCentre({static_cast<int>(area.getRight() - (int)(buttonSide * 0.5f)), (int)(oFilterBoostKnobRect->getBottom() + buttonSide * 0.5f) }));
+    
+    outputFilter.frequency.setBounds (*oFilterFreqKnobRect);
+    outputFilter.q.setBounds (*oFilterQKnobRect);
+    outputFilter.boost.setBounds (*oFilterBoostKnobRect);
+
 
 }
 
@@ -148,6 +153,25 @@ void FilterSection::intialiseFilterControls (FilterControls &filterControls)
     filterControls.frequency.setSkewFactorFromMidPoint (1000.0);
     filterControls.frequency.setValue (1000.0);
     filterControls.frequency.setNumDecimalPlacesToDisplay (1);
+    if (&filterControls == &inputFilter)
+    {
+        filterControls.frequency.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::silver.brighter());
+        filterControls.frequency.setColour(juce::Slider::thumbColourId, juce::Colours::silver.brighter());
+        filterControls.frequency.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::silver.brighter());
+        filterControls.q.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::silver.brighter());
+        filterControls.q.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::silver.brighter());
+        filterControls.q.setColour(juce::Slider::thumbColourId, juce::Colours::silver.brighter());
+    }
+    
+    if (&filterControls == &outputFilter)
+    {
+        filterControls.frequency.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::blue.withBrightness(0.2f));
+        filterControls.frequency.setColour(juce::Slider::thumbColourId, juce::Colours::blue.withBrightness(0.2f));
+        filterControls.frequency.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::blue.withBrightness(0.2f));
+        filterControls.q.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::blue.withBrightness(0.2f));
+        filterControls.q.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::blue.withBrightness(0.2f));
+        filterControls.q.setColour(juce::Slider::thumbColourId, juce::Colours::blue.withBrightness(0.2f));
+    }
     
     filterControls.boost.setLookAndFeel (&smallSliderLookAndFeel);
 //    filterControls.boost.setColour(juce::Slider::backgroundColourId, juce::Colours::silver);

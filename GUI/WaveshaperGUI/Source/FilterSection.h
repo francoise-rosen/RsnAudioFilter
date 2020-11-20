@@ -23,6 +23,15 @@ struct FilterControls
     juce::Slider boost {juce::Slider::SliderStyle::Rotary, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     juce::Slider amount {juce::Slider::SliderStyle::LinearHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     juce::ComboBox algorithm;
+    // overload does not work, maybe better to wrap components in unique_ptr ?
+//    bool operator==(FilterControls& a)
+//    {
+//        return ( (&frequency == &(a.frequency)) && (q == a.q) && (boost == a.boost) && (amount == a.amount) && (algorithm == a.algorithm));
+//    }
+//    bool operator!=(FilterControls& a)
+//    {
+//        return !(*this == a);
+//    }
 };
 
 class FilterSection  : public juce::Component
