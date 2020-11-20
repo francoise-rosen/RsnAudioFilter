@@ -91,9 +91,21 @@ void FilterSection::paint (juce::Graphics& g)
     {
         g.drawRect(*oFilterBoostKnobRect);
     }
+    if (iFilterButtonRect != nullptr)
+    {
+        g.drawRect(*iFilterButtonRect);
+    }
+    
+    if (oFilterButtonRect != nullptr)
+    {
+        g.drawRect(*oFilterButtonRect);
+    }
+    
     
 }
-
+/** Work on proper geometry (angles, edges and stuff.
+ This concepts has some vague calculatons and rounding errors!.
+ */
 void FilterSection::resized()
 {
     auto area = getLocalBounds().reduced (edge) ;
@@ -103,12 +115,12 @@ void FilterSection::resized()
     auto freqSliderSide = juce::jmin (getHeight() * 0.4f, getWidth() * 0.5f);
     auto midSliderSide = freqSliderSide * 0.67f;
     auto smallSliderSide = midSliderSide * 0.67f;
-    auto buttonSide = smallSliderSide * 0.67f;
+    auto buttonSide = smallSliderSide * 0.5f;
     
     iFilterFreqKnobRect = std::make_unique<juce::Rectangle<int>> (area.withTop(getHeight() - freqSliderSide).withRight (freqSliderSide).reduced (edge));
     iFilterQKnobRect = std::make_unique<juce::Rectangle<int>> (area.withBottom (getHeight() - freqSliderSide).withTop (getHeight() - freqSliderSide - midSliderSide).withRight(area.getX() + midSliderSide).reduced (edge));
     iFilterBoostKnobRect = std::make_unique<juce::Rectangle<int>> (area.withBottom (iFilterQKnobRect->getY()).withTop (iFilterQKnobRect->getY() - smallSliderSide).withRight (smallSliderSide).reduced (edge));
-    iFilterButtonRect = std::make_unique<juce::Rectangle<int>>();
+    iFilterButtonRect = std::make_unique<juce::Rectangle<int>>(area.withBottom (iFilterBoostKnobRect->getY()).withRight (area.getX() + buttonSide).withTop (iFilterBoostKnobRect->getY() - buttonSide).reduced (edge));
     
     inputFilter.frequency.setBounds (area.withTop(getHeight() - freqSliderSide).withRight (freqSliderSide).reduced (edge));
     inputFilter.algorithm.setBounds (area.withLeft (freqSliderSide).withTop (getHeight() * 0.9f).withRight (getWidth() * 0.9f).reduced (edge));
@@ -118,8 +130,9 @@ void FilterSection::resized()
     //=====================================================================
     /** Output filter. */
     oFilterQKnobRect = std::make_unique<juce::Rectangle<int>> (area.getWidth() * 0.27f + edge, area.getY() + edge, midSliderSide - edge, midSliderSide - edge);
-    oFilterFreqKnobRect = std::make_unique<juce::Rectangle<int>> ((*iFilterFreqKnobRect).withCentre({area.getRight() - (int)(freqSliderSide * 0.5f), (int)(area.getY() + midSliderSide * 0.75f + freqSliderSide * 0.5f)}));
-    oFilterBoostKnobRect = std::make_unique<juce::Rectangle<int>> ((*iFilterBoostKnobRect).withCentre ({area.getRight() - (int)(smallSliderSide * 0.5f), (int)(area.getY() + midSliderSide * 0.75f + freqSliderSide + smallSliderSide * 0.5f) }));
+    oFilterFreqKnobRect = std::make_unique<juce::Rectangle<int>> ((*iFilterFreqKnobRect).withCentre({area.getRight() - (int)(freqSliderSide * 0.5f - edge * 0.5f), (int)(area.getY() + midSliderSide * 0.75f + freqSliderSide * 0.5f)}));
+    oFilterBoostKnobRect = std::make_unique<juce::Rectangle<int>> ((*iFilterBoostKnobRect).withCentre ({area.getRight() - (int)(smallSliderSide * 0.5f - edge * 0.5f), (int)(area.getY() + midSliderSide * 0.75f + freqSliderSide + smallSliderSide * 0.5f) }));
+    oFilterButtonRect = std::make_unique<juce::Rectangle<int>>((*iFilterButtonRect).withCentre({static_cast<int>(area.getRight() - (int)(buttonSide * 0.5f)), (int)(oFilterBoostKnobRect->getBottom() + buttonSide * 0.5f) }));
 
 }
 

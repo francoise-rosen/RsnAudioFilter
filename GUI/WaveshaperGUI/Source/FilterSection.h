@@ -37,7 +37,7 @@ public:
     void intialiseFilterControls (FilterControls& filterControls);
 
 private:
-    const float edge {5.0f};
+    const float edge {4.0f};
     juce::Colour localBackground;
     WaveshaperLookAndFeel waveshaperLookAndFeel;
     SmallRotaryLookAndFeel smallSliderLookAndFeel {true};
