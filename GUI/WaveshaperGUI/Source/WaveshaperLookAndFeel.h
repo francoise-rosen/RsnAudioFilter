@@ -21,7 +21,8 @@
  
  
  TO DO:
- - draw ComboBox - done
+ CRITICAL: Popup (combobox) throws a leak error upon closing the window!
+ - draw ComboBox, fix
  - draw TextButton On/OFF
  - draw + / - labels - done
  - draw labels for gui (names)
@@ -272,13 +273,17 @@ inline void WaveshaperLookAndFeel::drawComboBox (juce::Graphics& g, int width, i
     g.drawRoundedRectangle (area.reduced(1.5f).toFloat(), cornerSize, 1.0f);
     
     /* an arrow */
-    juce::Path arrow;
-    juce::Point<float> point1 {width * 0.75f, height * 0.4f};
-    juce::Point<float> point3 {width * 0.95f, height * 0.4f};
-    juce::Point<float> point2 {width * 0.85f, height * 0.6f};
-    g.setColour (box.findColour (juce::ComboBox::arrowColourId).withAlpha ((box.isEnabled() ? 0.59f : 0.2f )));
-    arrow.addTriangle (point1, point2, point3);
-    g.fillPath (arrow);
+//    float side = juce::jmin (area.getWidth() * 0.25f, area.getHeight() * 0.6f);
+//    juce::Point<float> arrowCentre ;
+    float side = juce::jmin (area.getWidth() * 0.1f, area.getHeight() * 0.2f);
+    juce::Rectangle<float> arrowBox {(juce::Rectangle<float>{side, side}).withCentre ({width - edge - side * 0.5f, (float)area.getCentreY()})};
+    juce::Path p;
+    p.startNewSubPath (arrowBox.getX(), arrowBox.getY());
+    p.lineTo (arrowBox.getCentreX(), arrowBox.getBottom());
+    p.lineTo (arrowBox.getRight(), arrowBox.getY());
+    p.closeSubPath();
+    g.strokePath (p, juce::PathStrokeType {2.0f});
+    //g.drawRect((juce::Rectangle<float>{side, side}).withCentre (arrowCentre));
     
 }
 
