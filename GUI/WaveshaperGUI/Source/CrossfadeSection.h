@@ -98,6 +98,8 @@ public:
         crossfadeSlider.setLookAndFeel (nullptr);
         negative.setLookAndFeel (nullptr);
         positive.setLookAndFeel (nullptr);
+        functionA_box.setLookAndFeel (nullptr);
+        functionB_box.setLookAndFeel (nullptr);
     }
 
     void paint (juce::Graphics& g) override
@@ -204,10 +206,11 @@ private:
     SymmetricalRotaryLookAndFeel symmetricalRotaryLookAndFeel;
     SymmetricalLinearLookAndFeel symmetricalLinearLookAndFeel;
     IndicatorLookAndFeel indicatorLabelLookAndFeel;
+    juce::LookAndFeel_V4 defaultLF;
     
     juce::Label negative {"negative", "-"};
     juce::Label positive {"positive", "+"};
-    juce::Font defaultFont;
+    juce::Font defaultFont {"Monaco", "Plain", 14.0f};
     
     /** coordinates. */
     std::unique_ptr<juce::Rectangle<float>> sliderArea {nullptr};
@@ -225,6 +228,8 @@ private:
         /** Set defaults.. */
         functionA_box.setSelectedItemIndex (0);
         functionB_box.setSelectedItemIndex (0);
+        functionA_box.setLookAndFeel (&defaultLF);
+        functionB_box.setLookAndFeel (&defaultLF);
     }
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CrossfadeSection)

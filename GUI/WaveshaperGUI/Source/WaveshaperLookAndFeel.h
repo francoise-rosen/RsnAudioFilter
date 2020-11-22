@@ -21,7 +21,7 @@
  
  
  TO DO:
- CRITICAL: Popup (combobox) throws a leak error upon closing the window!
+ CRITICAL: Popup (combobox) throws a leak error upon closing the window! It appears to be the problem with CrossfadeSection's comboboxes' PopupMenu
  - draw ComboBox, fix
  - draw TextButton On/OFF
  - draw + / - labels - done
@@ -121,7 +121,7 @@ public:
     //================================================================================
     /** ComboBox, PopupMenu etc. */
     void drawComboBox (juce::Graphics& g, int width, int height, bool down, int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox& box) override;
-    juce::Font getComboBoxFont (juce::ComboBox& box) override;
+    //juce::Font getComboBoxFont (juce::ComboBox& box) override;
     void drawPopupMenuBackground (juce::Graphics& g, int width, int height) override;
     void positionComboBoxText (juce::ComboBox& box, juce::Label& label) override;
     juce::Font getFont() const
@@ -287,10 +287,10 @@ inline void WaveshaperLookAndFeel::drawComboBox (juce::Graphics& g, int width, i
     
 }
 
-inline juce::Font WaveshaperLookAndFeel::getComboBoxFont (juce::ComboBox& box)
-{
-    return defaultFont.withHeight (juce::jmin (fontHeight, box.getHeight() * 0.72f));
-}
+//inline juce::Font WaveshaperLookAndFeel::getComboBoxFont (juce::ComboBox& box)
+//{
+//    return defaultFont.withHeight (juce::jmin (fontHeight, box.getHeight() * 0.72f));
+//}
 
 inline void WaveshaperLookAndFeel::positionComboBoxText (juce::ComboBox& box, juce::Label& label)
 {

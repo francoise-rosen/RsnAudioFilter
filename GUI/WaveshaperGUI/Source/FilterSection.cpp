@@ -19,13 +19,15 @@ FilterSection::FilterSection(juce::Colour parentBackground)
     intialiseFilterControls (inputFilter);
     intialiseFilterControls (outputFilter);
     inputFilter.algorithm.addItemList({"LPF", "HPF", "BPF"}, 100);
+    inputFilter.algorithm.setSelectedItemIndex(0);
+    outputFilter.algorithm.addItemList({"LPF", "HPF", "BPF"}, 100);
 
 }
 
 FilterSection::~FilterSection()
 {
     setLookAndFeel (nullptr);
-    inputFilter.boost.setLookAndFeel (nullptr);
+    //inputFilter.boost.setLookAndFeel (nullptr);
     outputFilter.boost.setLookAndFeel (nullptr);
 }
 
