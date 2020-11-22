@@ -17,13 +17,13 @@
 /*
 */
 
-namespace WaveshaperConstants
-{
-    const juce::StringArray functions
-    {
-        "SiNe", "TaNH", "2TaNh"
-    };
-}
+//namespace WaveshaperConstants
+//{
+//    const juce::StringArray functions
+//    {
+//        "SiNe", "TaNH", "2TaNh"
+//    };
+//}
 
 class CrossfadeSection  : public juce::Component,
                           public juce::Slider::Listener
@@ -80,8 +80,7 @@ public:
         negative.setColour (juce::Label::backgroundColourId, juce::Colours::orange.withAlpha (0.5f));
         positive.setColour (juce::Label::backgroundColourId, juce::Colours::orange.withAlpha(0.5f));
         
-        fillBoxes (WaveshaperConstants::functions);
-        
+        fillBoxes ();
         
         addAndMakeVisible (&symmetrySlider);
         addAndMakeVisible (&crossfadeSlider);
@@ -94,12 +93,11 @@ public:
 
     virtual ~CrossfadeSection() override
     {
+        setLookAndFeel (nullptr);
         symmetrySlider.setLookAndFeel (nullptr);
         crossfadeSlider.setLookAndFeel (nullptr);
         negative.setLookAndFeel (nullptr);
         positive.setLookAndFeel (nullptr);
-        setLookAndFeel (nullptr);
-        
     }
 
     void paint (juce::Graphics& g) override
@@ -215,15 +213,19 @@ private:
     std::unique_ptr<juce::Rectangle<float>> sliderArea {nullptr};
     std::unique_ptr<juce::Rectangle<float>> comboArea {nullptr};
     
-    void fillBoxes (const juce::StringArray functions)
+    const juce::StringArray functions
     {
-        functionA_box.addItemList (WaveshaperConstants::functions, 100);
-        functionB_box.addItemList (WaveshaperConstants::functions, 100);
+        "SiNe", "TaNH", "2TaNh"
+    };
+
+    void fillBoxes ()
+    {
+        functionA_box.addItemList (functions, 100);
+        functionB_box.addItemList (functions, 100);
         /** Set defaults.. */
         functionA_box.setSelectedItemIndex (0);
         functionB_box.setSelectedItemIndex (0);
     }
-    
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CrossfadeSection)
 };

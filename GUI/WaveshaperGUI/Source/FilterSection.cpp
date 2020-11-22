@@ -18,6 +18,7 @@ FilterSection::FilterSection(juce::Colour parentBackground)
     setLookAndFeel (&waveshaperLookAndFeel);
     intialiseFilterControls (inputFilter);
     intialiseFilterControls (outputFilter);
+    inputFilter.algorithm.addItemList({"LPF", "HPF", "BPF"}, 100);
 
 }
 
