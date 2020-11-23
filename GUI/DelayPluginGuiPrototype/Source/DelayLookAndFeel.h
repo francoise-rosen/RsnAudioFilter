@@ -99,9 +99,10 @@ public:
         if (getCurrentColourScheme() == LookAndFeel_V4::getGreyColourScheme() && (slider.getSliderStyle() == juce::Slider::LinearBar
                                                                                   || slider.getSliderStyle() == juce::Slider::LinearBarVertical))
         {
-            l->setColour (juce::Label::textColourId, juce::Colours::black.withAlpha (0.7f));
+            l->setColour (juce::Label::textColourId, juce::Colours::black.withAlpha (0.17f));
         }
-        l->setFont(juce::Font("Monaco", "Italic", 4.0f));
+        l->setFont (getLabelFont (*l));
+        l->setColour (juce::Label::backgroundColourId, juce::Colours::red);
 
         return l;
     }

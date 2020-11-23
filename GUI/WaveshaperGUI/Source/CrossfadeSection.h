@@ -17,14 +17,6 @@
 /*
 */
 
-//namespace WaveshaperConstants
-//{
-//    const juce::StringArray functions
-//    {
-//        "SiNe", "TaNH", "2TaNh"
-//    };
-//}
-
 class CrossfadeSection  : public juce::Component,
                           public juce::Slider::Listener
 
@@ -80,14 +72,17 @@ public:
         negative.setColour (juce::Label::backgroundColourId, juce::Colours::orange.withAlpha (0.5f));
         positive.setColour (juce::Label::backgroundColourId, juce::Colours::orange.withAlpha(0.5f));
         
-        fillBoxes ();
+        leftBox.addItemList(waveforms, 1);
+        leftBox.setSelectedItemIndex(0);
+        rightBox.addItemList(waveforms, 1);
+        rightBox.setSelectedItemIndex(0);
         
         addAndMakeVisible (&symmetrySlider);
         addAndMakeVisible (&crossfadeSlider);
-        addAndMakeVisible (&functionA_box);
-        addAndMakeVisible (&functionB_box);
         addAndMakeVisible (&negative);
         addAndMakeVisible (&positive);
+        addAndMakeVisible (&leftBox);
+        addAndMakeVisible (&rightBox);
 
     }
 
@@ -98,8 +93,6 @@ public:
         crossfadeSlider.setLookAndFeel (nullptr);
         negative.setLookAndFeel (nullptr);
         positive.setLookAndFeel (nullptr);
-        functionA_box.setLookAndFeel (nullptr);
-        functionB_box.setLookAndFeel (nullptr);
     }
 
     void paint (juce::Graphics& g) override
@@ -154,7 +147,6 @@ public:
         g.drawFittedText ("A", juce::Rectangle<float> {arrowXLeft, arrowXLeft}.withCentre (juce::Point<float>{ arrowXLeft * 0.5f, arrowY }).toNearestInt(), juce::Justification::centred, 1);
         g.drawFittedText ("B", juce::Rectangle<float> {arrowXLeft, arrowXLeft}.withCentre (juce::Point<float>{ getWidth() - arrowXLeft * 0.5f, arrowY }).toNearestInt(), juce::Justification::centred, 1);
     
-
     }
 
     void resized() override
@@ -171,10 +163,9 @@ public:
         crossfadeSlider.setBounds (area.removeFromBottom (area.getHeight() * 0.5f));
         sliderArea = std::make_unique<juce::Rectangle<float>> (crossfadeSlider.getBounds().toFloat());
         auto buttonArea = area.removeFromTop (area.getHeight() * 0.5f);
-        auto comboBoxArea = buttonArea;
-        comboArea = std::make_unique<juce::Rectangle<float>> (comboBoxArea.toFloat());
-        functionA_box.setBounds (buttonArea.removeFromLeft (area.getWidth() * 0.5).reduced (edge, edge));
-        functionB_box.setBounds (buttonArea.reduced (edge, edge));
+        comboArea = std::make_unique<juce::Rectangle<float>> (buttonArea.toFloat());
+        leftBox.setBounds (buttonArea.removeFromLeft (area.getWidth() * 0.5).reduced (edge, edge));
+        rightBox.setBounds (buttonArea.reduced (edge, edge));
         
     }
     
@@ -199,38 +190,25 @@ private:
     
     juce::Slider symmetrySlider {juce::Slider::SliderStyle::Rotary, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     juce::Slider crossfadeSlider {juce::Slider::SliderStyle::LinearHorizontal, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
-    juce::ComboBox functionA_box;
-    juce::ComboBox functionB_box;
     
     WaveshaperLookAndFeel crossfadeLookAndFeel;
     SymmetricalRotaryLookAndFeel symmetricalRotaryLookAndFeel;
     SymmetricalLinearLookAndFeel symmetricalLinearLookAndFeel;
     IndicatorLookAndFeel indicatorLabelLookAndFeel;
-    juce::LookAndFeel_V4 defaultLF;
     
     juce::Label negative {"negative", "-"};
     juce::Label positive {"positive", "+"};
     juce::Font defaultFont {"Monaco", "Plain", 14.0f};
+    const juce::StringArray waveforms {"SINe", "CoS", "TaNH"};
     
     /** coordinates. */
     std::unique_ptr<juce::Rectangle<float>> sliderArea {nullptr};
     std::unique_ptr<juce::Rectangle<float>> comboArea {nullptr};
     
-    const juce::StringArray functions
-    {
-        "SiNe", "TaNH", "2TaNh"
-    };
-
-    void fillBoxes ()
-    {
-        functionA_box.addItemList (functions, 100);
-        functionB_box.addItemList (functions, 100);
-        /** Set defaults.. */
-        functionA_box.setSelectedItemIndex (0);
-        functionB_box.setSelectedItemIndex (0);
-        functionA_box.setLookAndFeel (&defaultLF);
-        functionB_box.setLookAndFeel (&defaultLF);
-    }
+    juce::ComboBox leftBox;
+    juce::ComboBox rightBox;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CrossfadeSection)
 };
+
+

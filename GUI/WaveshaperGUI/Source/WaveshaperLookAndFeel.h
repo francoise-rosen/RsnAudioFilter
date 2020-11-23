@@ -21,7 +21,7 @@
  
  
  TO DO:
- CRITICAL: Popup (combobox) throws a leak error upon closing the window! It appears to be the problem with CrossfadeSection's comboboxes' PopupMenu
+ CRITICAL: Popup (combobox) throws a leak error upon closing the window! It appears to be the problem with CrossfadeSection's comboboxes' PopupMenu. Solve by rewriting the comboboxes part of the code (simpified)
  - draw ComboBox, fix
  - draw TextButton On/OFF
  - draw + / - labels - done
@@ -56,13 +56,16 @@ public:
         setColour (juce::Slider::thumbColourId, juce::Colours::orange);
         setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::white);
         setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::blue);
+        setColour (juce::Slider::textBoxTextColourId, juce::Colours::silver.withBrightness (0.75f));
+        setColour (juce::Slider::textBoxBackgroundColourId, juce::Colours::darkcyan.withBrightness (0.5f));
+        setColour (juce::Slider::textBoxOutlineColourId, juce::Colours::red.withBrightness (0.2f));
     
         setColour (juce::ComboBox::backgroundColourId, juce::Colours::black);
         setColour (juce::PopupMenu::backgroundColourId, juce::Colours::black.withAlpha (0.5f));
         
         /** Label. */
-        setColour (juce::Label::backgroundColourId, juce::Colours::black);
-        setColour (juce::Label::textColourId, juce::Colours::white);
+        setColour (juce::Label::backgroundColourId, juce::Colours::darkblue);
+        setColour (juce::Label::textColourId, juce::Colours::silver.withBrightness (0.5f));
         setColour (juce::Label::outlineColourId, juce::Colours::black.withAlpha(0.2f));
         
         
@@ -128,6 +131,7 @@ public:
     {
         return defaultFont;
     }
+    juce::Font getComboBoxFont (juce::ComboBox& box) override;
     
     //================================================================================
     /** Labels */
@@ -257,6 +261,11 @@ inline juce::Label* WaveshaperLookAndFeel::createSliderTextBox (juce::Slider& sl
 {
     auto* l = juce::LookAndFeel_V2::createSliderTextBox (slider);
     /** For linear slider / bar. */
+    //l->setColour (juce::Label::outlineColourId, juce::Colours::red);
+    auto colour = l->findColour (juce::Label::backgroundColourId).withMultipliedAlpha(0.1f);
+    l->setColour (juce::Label::backgroundColourId, colour);
+    l->setColour (juce::Label::outlineColourId, juce::Colours::red);
+    l->setMinimumHorizontalScale (1.0f);
     return l;
 }
 
@@ -287,10 +296,10 @@ inline void WaveshaperLookAndFeel::drawComboBox (juce::Graphics& g, int width, i
     
 }
 
-//inline juce::Font WaveshaperLookAndFeel::getComboBoxFont (juce::ComboBox& box)
-//{
-//    return defaultFont.withHeight (juce::jmin (fontHeight, box.getHeight() * 0.72f));
-//}
+inline juce::Font WaveshaperLookAndFeel::getComboBoxFont (juce::ComboBox& box)
+{
+    return defaultFont.withHeight (juce::jmin (fontHeight, box.getHeight() * 0.72f));
+}
 
 inline void WaveshaperLookAndFeel::positionComboBoxText (juce::ComboBox& box, juce::Label& label)
 {
@@ -311,13 +320,31 @@ inline juce::BorderSize<int> WaveshaperLookAndFeel::getLabelBorderSize(juce::Lab
     return l.getBorderSize();
 }
 
-inline void WaveshaperLookAndFeel::drawLabel (juce::Graphics& g, juce::Label& l)
+inline void WaveshaperLookAndFeel::drawLabel (juce::Graphics& g, juce::Label& label)
 {
     // fill the area
-    
+    g.fillAll (label.findColour (juce::Label::backgroundColourId));
+
     // set the text properties
-    
+    if (! label.isBeingEdited())
+    {
+        auto alpha = (label.isEnabled()) ? 1.0f: 0.2f;
+        const juce::Font font {getLabelFont (label)};
+        g.setColour (label.findColour (juce::Label::textColourId).withMultipliedAlpha (alpha));
+        g.setFont (font);
+        /** Draw the text. */
+        auto textArea = getLabelBorderSize (label).subtractedFrom     (label.getLocalBounds());
+        g.drawFittedText (label.getText(), textArea, label.getJustificationType(), juce::jmax (1, static_cast<int> (static_cast<float>(textArea.getHeight()) / font.getHeight())), label.getMinimumHorizontalScale() );
+        g.setColour (label.findColour (juce::Label::outlineColourId).withMultipliedAlpha (alpha));
+    }
+    else if (label.isEnabled())
+    {
+        g.setColour (label.findColour (juce::Label::outlineColourId));
+    }
+
     // draw a rounded rectangle
+    //g.setColour (label.findColour (juce::Label::outlineColourId));
+    g.drawRect (label.getLocalBounds());
 }
 
 inline void WaveshaperLookAndFeel::drawPopupMenuBackground (juce::Graphics& g, int width, int height)
