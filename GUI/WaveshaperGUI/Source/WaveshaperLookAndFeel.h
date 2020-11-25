@@ -53,7 +53,7 @@ public:
         /** Slider default colours */
         setColour (juce::Slider::backgroundColourId, juce::Colours::darkcyan);
         setColour (juce::Slider::trackColourId, juce::Colours::cyan);
-        setColour (juce::Slider::thumbColourId, juce::Colours::orange);
+        setColour (juce::Slider::thumbColourId, juce::Colours::darkcyan);
         setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::white);
         setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::blue);
         setColour (juce::Slider::textBoxTextColourId, juce::Colours::silver.withBrightness (0.75f));
@@ -274,9 +274,12 @@ inline juce::Label* WaveshaperLookAndFeel::createSliderTextBox (juce::Slider& sl
 //    }
     
     /** User must be able to change these! */
-    auto colour = l->findColour (juce::Label::backgroundColourId).withMultipliedAlpha (0.1f);
-    l->setColour (juce::Label::backgroundColourId, slider.findColour (juce::Slider::thumbColourId).withMultipliedAlpha (0.5f));
+//    auto colour = l->findColour (juce::Label::backgroundColourId).withMultipliedAlpha (0.1f);
+//    l->setColour (juce::Label::backgroundColourId, slider.findColour (juce::Slider::thumbColourId).withMultipliedAlpha (0.5f));
+//    l->setColour (juce::Label::outlineColourId, slider.findColour (juce::Slider::textBoxOutlineColourId));
+    l->setColour (juce::Label::backgroundColourId, slider.findColour (juce::Slider::textBoxBackgroundColourId));
     l->setColour (juce::Label::outlineColourId, slider.findColour (juce::Slider::textBoxOutlineColourId));
+    l->setColour (juce::Label::textColourId, slider.findColour (juce::Slider::textBoxTextColourId));
     l->setFont (defaultFont);
     l->setMinimumHorizontalScale (1.0f);
     return l;
