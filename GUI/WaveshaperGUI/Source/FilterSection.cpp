@@ -167,7 +167,7 @@ void FilterSection::intialiseFilterControls (FilterControls &filterControls)
         filterControls.q.setColour(juce::Slider::thumbColourId, juce::Colours::silver.brighter());
     }
     
-    if (&filterControls == &outputFilter)
+    else if (&filterControls == &outputFilter)
     {
         filterControls.frequency.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::blue.withBrightness(0.2f));
         filterControls.frequency.setColour(juce::Slider::thumbColourId, juce::Colours::blue.withBrightness(0.2f));

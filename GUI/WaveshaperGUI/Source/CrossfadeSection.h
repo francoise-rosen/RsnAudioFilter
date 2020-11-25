@@ -48,6 +48,10 @@ public:
         symmetricalRotaryLookAndFeel.setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::white);
         symmetricalRotaryLookAndFeel.setColour (juce::Slider::thumbColourId, juce::Colours::silver.brighter());
         
+        /** THESE DON'T WORK! WHY? */
+        symmetrySlider.setColour (juce::Slider::textBoxBackgroundColourId, juce::Colours::black.withMultipliedAlpha (0.5f));
+        symmetrySlider.setColour (juce::Slider::textBoxOutlineColourId, juce::Colours::black.withAlpha (0.0f));
+        
         symmetricalLinearLookAndFeel.setColour (juce::Slider::trackColourId, juce::Colours::silver.darker());
         symmetricalLinearLookAndFeel.setThumbTriColour (juce::Colours::white);
         symmetricalLinearLookAndFeel.setColour (juce::Slider::backgroundColourId, juce::Colours::blue.withBrightness(0.25f));

@@ -61,12 +61,14 @@ public:
         setColour (juce::Slider::textBoxOutlineColourId, juce::Colours::red.withBrightness (0.2f));
     
         setColour (juce::ComboBox::backgroundColourId, juce::Colours::black);
+        setColour (juce::ComboBox::outlineColourId, juce::Colours::white.withAlpha (0.75f));
         setColour (juce::PopupMenu::backgroundColourId, juce::Colours::black.withAlpha (0.5f));
         
         /** Label. */
         setColour (juce::Label::backgroundColourId, juce::Colours::darkblue);
         setColour (juce::Label::textColourId, juce::Colours::silver.withBrightness (0.5f));
         setColour (juce::Label::outlineColourId, juce::Colours::black.withAlpha(0.2f));
+        setColour (juce::Label::backgroundWhenEditingColourId, juce::Colours::blue.withAlpha (0.5f));
         
         
     }
@@ -82,6 +84,7 @@ public:
     int getSliderThumbRadius (juce::Slider& slider) override;
     void drawLinearSlider (juce::Graphics &, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider &) override;
     juce::Label* createSliderTextBox (juce::Slider& slider) override;
+    juce::Slider::SliderLayout getSliderLayout (juce::Slider& slider) override;
     
 //    void drawLinearSliderBackground
     void setThumbGradientTargetColour (const juce::Colour& colour);
@@ -262,11 +265,73 @@ inline juce::Label* WaveshaperLookAndFeel::createSliderTextBox (juce::Slider& sl
     auto* l = juce::LookAndFeel_V2::createSliderTextBox (slider);
     /** For linear slider / bar. */
     //l->setColour (juce::Label::outlineColourId, juce::Colours::red);
-    auto colour = l->findColour (juce::Label::backgroundColourId).withMultipliedAlpha(0.1f);
-    l->setColour (juce::Label::backgroundColourId, colour);
-    l->setColour (juce::Label::outlineColourId, juce::Colours::red);
+    /** The following does not work. */
+//    auto textBoxPos = slider.getTextBoxPosition();
+//    if (textBoxPos == juce::Slider::TextBoxBelow || textBoxPos == juce::Slider::TextBoxAbove)
+//    {
+//        juce::Font font = defaultFont.withHeight (juce::jmin (14.0f, slider.getHeight() * 0.1f));
+//        l->setFont (font);
+//    }
+    
+    /** User must be able to change these! */
+    auto colour = l->findColour (juce::Label::backgroundColourId).withMultipliedAlpha (0.1f);
+    l->setColour (juce::Label::backgroundColourId, slider.findColour (juce::Slider::thumbColourId).withMultipliedAlpha (0.5f));
+    l->setColour (juce::Label::outlineColourId, slider.findColour (juce::Slider::textBoxOutlineColourId));
+    l->setFont (defaultFont);
     l->setMinimumHorizontalScale (1.0f);
     return l;
+}
+
+inline juce::Slider::SliderLayout WaveshaperLookAndFeel::getSliderLayout (juce::Slider& slider)
+{
+    // 1. compute the actually visible textBox size from the slider textBox size and some additional constraints
+    int minXSpace = 0;
+    int minYSpace = 0;
+    auto textBoxPos = slider.getTextBoxPosition();
+    if (textBoxPos == juce::Slider::TextBoxLeft || textBoxPos == juce::Slider::TextBoxRight)
+        minXSpace = 20;
+    else
+        minYSpace = 15;
+    auto localBounds = slider.getLocalBounds();
+    auto textBoxWidth  = juce::jmax (0, juce::jmin (slider.getTextBoxWidth(),  localBounds.getWidth() - minXSpace));
+    auto textBoxHeight = juce::jmax (0, juce::jmin (slider.getTextBoxHeight(), localBounds.getHeight() - minYSpace));
+    juce::Slider::SliderLayout layout;
+    // 2. set the textBox bounds
+    if (textBoxPos != juce::Slider::NoTextBox)
+    {
+        if (slider.isBar())
+        {
+            layout.textBoxBounds = localBounds;
+        }
+        else
+        {
+            layout.textBoxBounds.setWidth (textBoxWidth);
+            layout.textBoxBounds.setHeight (textBoxHeight);
+            if (textBoxPos == juce::Slider::TextBoxLeft)           layout.textBoxBounds.setX (0);
+            else if (textBoxPos == juce::Slider::TextBoxRight)     layout.textBoxBounds.setX (localBounds.getWidth() - textBoxWidth);
+            else /* above or below -> centre horizontally */ layout.textBoxBounds.setX ((localBounds.getWidth() - textBoxWidth) / 2);
+            if (textBoxPos == juce::Slider::TextBoxAbove)          layout.textBoxBounds.setY (0);
+            else if (textBoxPos == juce::Slider::TextBoxBelow)     layout.textBoxBounds.setY (localBounds.getHeight() - textBoxHeight);
+            else /* left or right -> centre vertically */    layout.textBoxBounds.setY ((localBounds.getHeight() - textBoxHeight) / 2);
+        }
+    }
+    // 3. set the slider bounds
+    layout.sliderBounds = localBounds;
+    if (slider.isBar())
+    {
+        layout.sliderBounds.reduce (1, 1);   // bar border
+    }
+    else
+    {
+        if (textBoxPos == juce::Slider::TextBoxLeft)       layout.sliderBounds.removeFromLeft (textBoxWidth);
+        else if (textBoxPos == juce::Slider::TextBoxRight) layout.sliderBounds.removeFromRight (textBoxWidth);
+        else if (textBoxPos == juce::Slider::TextBoxAbove) layout.sliderBounds.removeFromTop (textBoxHeight);
+        else if (textBoxPos == juce::Slider::TextBoxBelow) layout.sliderBounds.removeFromBottom (textBoxHeight);
+        const int thumbIndent = getSliderThumbRadius (slider);
+        if (slider.isHorizontal())    layout.sliderBounds.reduce (thumbIndent, 0);
+        else if (slider.isVertical()) layout.sliderBounds.reduce (0, thumbIndent);
+    }
+    return layout;
 }
 
 /** ComboBox methods. */
@@ -274,12 +339,13 @@ inline juce::Label* WaveshaperLookAndFeel::createSliderTextBox (juce::Slider& sl
 inline void WaveshaperLookAndFeel::drawComboBox (juce::Graphics& g, int width, int height, bool down, int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox& box)
 {
     /* box properties */
-    auto cornerSize = box.findParentComponentOfClass<juce::ChoicePropertyComponent>() != nullptr ? 0.0f : 3.0f;
+    auto cornerSize = box.findParentComponentOfClass<juce::ChoicePropertyComponent>() != nullptr ? 0.0f : juce::jmax (height * 0.1f, 3.0f);
     juce::Rectangle<int> area (0, 0, width, height);
     g.setColour (box.findColour (juce::ComboBox::backgroundColourId));
     g.fillRoundedRectangle (area.toFloat(), cornerSize);
     g.setColour (box.findColour (juce::ComboBox::outlineColourId));
-    g.drawRoundedRectangle (area.reduced(1.5f).toFloat(), cornerSize, 1.0f);
+    g.drawRoundedRectangle (area.toFloat(), cornerSize, 1.0f);
+    //g.drawRect (area);
     
     /* an arrow */
 //    float side = juce::jmin (area.getWidth() * 0.25f, area.getHeight() * 0.6f);
@@ -303,6 +369,7 @@ inline juce::Font WaveshaperLookAndFeel::getComboBoxFont (juce::ComboBox& box)
 
 inline void WaveshaperLookAndFeel::positionComboBoxText (juce::ComboBox& box, juce::Label& label)
 {
+    label.setColour (juce::Label::outlineColourId, box.findColour (juce::ComboBox::backgroundColourId).withMultipliedAlpha(0.0f));
     label.setBounds (1, 1,
                      box.getWidth() - 10,
                      box.getHeight() - 2);

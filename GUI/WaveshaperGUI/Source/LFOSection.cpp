@@ -16,9 +16,10 @@ LFOSection::LFOSection()
 {
     addAndMakeVisible(&lfoRateSlider);
     addAndMakeVisible(&label_A);
-    label_A.setText ("A", juce::NotificationType::dontSendNotification);
+    label_A.setText ("LFO", juce::NotificationType::dontSendNotification);
     label_A.setJustificationType (juce::Justification::centred);
     label_A.setColour (juce::Label::outlineColourId, juce::Colours::darkblue);
+    label_A.setColour (juce::Label::backgroundColourId, juce::Colours::darkcyan.darker());
     
     setLookAndFeel (&waveshaperLookAndFeel);
 }
