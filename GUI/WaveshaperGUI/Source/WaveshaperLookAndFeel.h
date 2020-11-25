@@ -21,7 +21,7 @@
  
  
  TO DO:
- CRITICAL: Popup (combobox) throws a leak error upon closing the window! It appears to be the problem with CrossfadeSection's comboboxes' PopupMenu. Solve by rewriting the comboboxes part of the code (simpified)
+ CRITICAL: Popup (combobox) throws a leak error upon closing the window! It appears to be the problem with CrossfadeSection's comboboxes' PopupMenu. Solved by rewriting the comboboxes part of the code (simpified)
  - draw ComboBox, fix
  - draw TextButton On/OFF
  - draw + / - labels - done
@@ -55,7 +55,7 @@ public:
         setColour (juce::Slider::trackColourId, juce::Colours::cyan);
         setColour (juce::Slider::thumbColourId, juce::Colours::darkcyan);
         setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::white);
-        setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::blue);
+        setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::white);
         setColour (juce::Slider::textBoxTextColourId, juce::Colours::silver.withBrightness (0.75f));
         setColour (juce::Slider::textBoxBackgroundColourId, juce::Colours::darkcyan.withBrightness (0.5f));
         setColour (juce::Slider::textBoxOutlineColourId, juce::Colours::red.withBrightness (0.2f));
@@ -147,7 +147,7 @@ protected:
      Make it protected? a virtual? or make it helper, unless I want to use
      different thumbs in derived looks
      */
-    virtual void drawRotaryThumb (juce::Graphics& g, const juce::Point<float> centre, const float& radius, const float& angle)
+    virtual void drawRotaryThumb (juce::Graphics& g, const juce::Point<float> centre, const float& radius, const float& angle) noexcept
     {
         /** Thumb dimentions (rectangle). */
         const float thumbWidth = radius * 0.27f;
@@ -456,7 +456,7 @@ public:
         juce::Point<float> outerRimXY {centre.getX() - outerRadius, centre.getY() - outerRadius};
         
         /** Inner body. */
-        const float innerRadius = outerRadius * 0.69f;
+        const float innerRadius = outerRadius * knobToArcScaleFactor;
         juce::Point<float> innerRimXY {centre.getX() - innerRadius, centre.getY() - innerRadius};
         
         juce::Path outerArc;
@@ -488,6 +488,7 @@ private:
     const float edge {5.0f};
     OutlineType localOutlineType {OutlineType::arcNormal};
     float sliderOuterRimScaleFactor {0.92f};
+    float knobToArcScaleFactor {0.69f};
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SymmetricalRotaryLookAndFeel)
 };
@@ -496,8 +497,99 @@ private:
 //================================================================================
 /** Custom L+F for the big rotary slider. */
 
-class RotaryBigLookAndFeel : public WaveshaperLookAndFeel
+class RotarySliderBigLookAndFeel : public WaveshaperLookAndFeel
 {
+public:
+    RotarySliderBigLookAndFeel()
+    {
+        setColour (juce::Slider::backgroundColourId, juce::Colours::blue.withBrightness (0.2f));
+        setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::blue.withBrightness (0.2f));
+        setColour (juce::Slider::rotarySliderOutlineColourId, juce::Colours::darkcyan);
+    }
+    virtual ~RotarySliderBigLookAndFeel() override
+    {}
+    
+    enum class RotaryBackgroundFillShape
+    {
+        Circular,
+        Rectangular,
+        Ellipse
+    };
+    
+    void drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height,
+                           float sliderPosProportional, float rotaryStartAngle,
+                           float rotaryEndAngle, juce::Slider& slider) override
+    {
+        
+        auto background = slider.findColour (juce::Slider::backgroundColourId);
+        auto fill = slider.findColour (juce::Slider::rotarySliderFillColourId);
+        auto outline = slider.findColour (juce::Slider::rotarySliderOutlineColourId);
+        auto thumb = slider.findColour (juce::Slider::thumbColourId);
+        juce::Point<float> centre {x + width * 0.5f, y + height * 0.5f};
+        auto area = juce::Rectangle<int> (x, y, width, height).toFloat().reduced (edge);
+        auto angle = rotaryStartAngle + sliderPosProportional * (rotaryEndAngle - rotaryStartAngle);
+        
+        /** Knob area and slider area test drawing. */
+        g.setColour (juce::Colours::orange);
+        g.drawRect (area);
+        g.setColour (slider.findColour (juce::Slider::backgroundColourId));
+        g.drawRect (slider.getLocalBounds());
+        /** End of the test. */
+        
+        /** Outer body. */
+        float outerRimArcWidth {3.0f};
+        float outerRimRadius {juce::jmin (area.getWidth() * 0.5f, area.getHeight() * 0.5f) - ((outerRimArcWidth > edge - 1.0f) ? outerRimArcWidth - edge - 1.0f : 0.0f)};
+        juce::Point<float> outerRimXY {centre.getX() - outerRimRadius, centre.getY() - outerRimRadius};
+        
+        g.setColour (background);
+        g.drawRect (juce::Rectangle<int> (x, y, width, height));
+        if (backgroundFill == RotaryBackgroundFillShape::Circular)
+        {
+            g.fillEllipse (outerRimXY.getX(), outerRimXY.getY(), outerRimRadius * 2.0f, outerRimRadius * 2.0f);
+        }
+        else if (backgroundFill == RotaryBackgroundFillShape::Rectangular)
+        {
+            g.fillRect (area);
+        }
+        
+        /** Arc section. */
+//        float arcRadius = outerRimRadius - ( (edge > outerRimArcWidth) ? edge : outerRimArcWidth + edge);
+        float arcRadius = outerRimRadius * 0.92f;
+        juce::Point<float> arcXY { centre.getX() - arcRadius, centre.getY() - arcRadius };
+        juce::Path arc;
+        arc.addCentredArc (centre.getX(),
+                           centre.getY(),
+                           arcRadius,
+                           arcRadius,
+                           0.0f,
+                           rotaryStartAngle,
+                           rotaryEndAngle,
+                           true);
+        g.setColour (outline);
+        g.strokePath (arc, { outerRimArcWidth, juce::PathStrokeType::curved, juce::PathStrokeType::rounded });
+        /** The thumb. */
+        g.setColour (thumb);
+        drawRotaryThumb(g, centre, arcRadius, angle);
+        
+        /** The knob. */
+        const float knobRadius = arcRadius * knobToArcScaleFactor;
+        juce::Point<float> knobXY { centre.getX() - knobRadius, centre.getY() - knobRadius };
+        juce::ColourGradient gradient {
+            fill,
+            centre,
+            thumb,
+            centre.withX (centre.getX() - knobRadius),
+            true
+        };
+        g.setGradientFill (gradient);
+        g.fillEllipse (knobXY.getX(), knobXY.getY(), knobRadius * 2.0f, knobRadius * 2.0f);
+    }
+    
+private:
+    const float edge {5.0f};
+    const float knobToArcScaleFactor {0.72f};
+    RotaryBackgroundFillShape backgroundFill {RotaryBackgroundFillShape::Circular};
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RotarySliderBigLookAndFeel)
     
 };
 

@@ -25,12 +25,14 @@ public:
         customLookAndFeel.setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::orange);
         customLookAndFeel.setColour (juce::Slider::thumbColourId, juce::Colours::orange.darker());
         localBackground = parentBackground;
+        saturationSlider.setLookAndFeel (&rotaryLookAndFeel);
         addAndMakeVisible (&saturationSlider);
     }
 
     virtual ~SaturationSection() override
     {
         setLookAndFeel (nullptr);
+        saturationSlider.setLookAndFeel (nullptr);
     }
 
     void paint (juce::Graphics& g) override
@@ -67,5 +69,7 @@ private:
     juce::Slider saturationSlider {juce::Slider::SliderStyle::Rotary, juce::Slider::TextEntryBoxPosition::TextBoxBelow};
     juce::Colour localBackground;
     WaveshaperLookAndFeel customLookAndFeel;
+    RotarySliderBigLookAndFeel rotaryLookAndFeel;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SaturationSection)
 };
