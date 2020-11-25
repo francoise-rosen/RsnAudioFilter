@@ -26,6 +26,8 @@ public:
         customLookAndFeel.setColour (juce::Slider::thumbColourId, juce::Colours::orange.darker());
         localBackground = parentBackground;
         saturationSlider.setLookAndFeel (&rotaryLookAndFeel);
+        saturationSlider.setColour (juce::Slider::backgroundColourId, juce::Colours::black);
+        saturationSlider.setColour (juce::Slider::rotarySliderFillColourId, juce::Colours::black);
         addAndMakeVisible (&saturationSlider);
     }
 

@@ -200,7 +200,7 @@ inline void WaveshaperLookAndFeel::drawRotarySlider (juce::Graphics &g, int x, i
     /** Outer body and outline. */
     const float outerRadius = juce::jmin (area.getWidth() * 0.5f, area.getHeight() * 0.5f) * sliderOuterRimScaleFactor;
      //const float outerRadius = juce::jmin (area.getWidth() * 0.5f, area.getHeight() * 0.5f) - 5.0f;
-    const float rimWidth = 2.0f;
+    const float rimWidth {2.0f};
     juce::Point<float> outerRimXY {centre.getX() - outerRadius, centre.getY() - outerRadius};
     
     /** Inner body. */
@@ -583,6 +583,11 @@ public:
         };
         g.setGradientFill (gradient);
         g.fillEllipse (knobXY.getX(), knobXY.getY(), knobRadius * 2.0f, knobRadius * 2.0f);
+    }
+    
+    void setRotaryBackgroundFeelShape (const RotaryBackgroundFillShape shape)
+    {
+        backgroundFill = shape;
     }
     
 private:
