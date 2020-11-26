@@ -349,29 +349,34 @@ inline juce::Slider::SliderLayout WaveshaperLookAndFeel::getSliderLayout (juce::
 }
 
 /** Button methods. */
+
 inline void WaveshaperLookAndFeel::drawButtonBackground (juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour, bool isButtonHighlighted, bool isButtonDown)
 {
     auto area = button.getLocalBounds().toFloat().reduced (0.5f);
     auto cornerSize = juce::jmin (6.0f, juce::jmin (area.getWidth(), area.getHeight()) * 0.25f);
     auto buttonOn = button.findColour (juce::TextButton::buttonOnColourId);
+    const float rimWidth {2.0f};
+    const float shadowWidth {3.0f};
     if (buttonShape == ButtonShape::Circle)
     {
-        const float radius = juce::jmin (area.getWidth() * 0.5f, area.getHeight() * 0.5f);
-        juce::Point<float> rimXY {area.getCentreX() - radius, area.getCentreY() - radius};
+        const float maxRadius = juce::jmin (area.getWidth() * 0.5f, area.getHeight() * 0.5f);
+        const float rimRadius = maxRadius - rimWidth;
+        const float shadowRadius = rimRadius - shadowWidth;
+        juce::Point<float> rimXY {area.getCentreX() - maxRadius, area.getCentreY() - maxRadius};
         if (isButtonDown)
         {
             g.setColour (buttonOn);
-            g.fillEllipse(rimXY.getX(), rimXY.getY(), radius * 2.0f, radius * 2.0f);
-            g.setColour (juce::Colours::cyan.withMultipliedAlpha (0.5f));
-            g.drawEllipse (rimXY.getX(), rimXY.getY(), radius * 2.0f, radius * 2.0f, 6.0f);
+            g.fillEllipse(rimXY.getX(), rimXY.getY(), maxRadius * 2.0f, maxRadius * 2.0f);
+            g.setColour (backgroundColour.withMultipliedAlpha (0.5f));
+            g.drawEllipse (rimXY.getX() + shadowWidth + rimWidth , rimXY.getY() + shadowWidth + rimWidth, shadowRadius * 2.0f, shadowRadius * 2.0f, shadowWidth);
         }
         else
         {
             g.setColour (backgroundColour);
-            g.fillEllipse(rimXY.getX(), rimXY.getY(), radius * 2.0f, radius * 2.0f);
+            g.fillEllipse(rimXY.getX(), rimXY.getY(), maxRadius * 2.0f, maxRadius * 2.0f);
         }
-        g.setColour (juce::Colours::darkcyan);
-        g.drawEllipse (rimXY.getX(), rimXY.getY(), radius * 2.0f, radius * 2.0f, 5.0f);
+        g.setColour (juce::Colours::black);
+        g.drawEllipse (rimXY.getX() + rimWidth, rimXY.getY() + rimWidth , rimRadius * 2.0f, rimRadius * 2.0f, rimWidth);
     }
 }
 
