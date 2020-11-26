@@ -70,12 +70,17 @@ public:
         setColour (juce::Label::outlineColourId, juce::Colours::black.withAlpha(0.2f));
         setColour (juce::Label::backgroundWhenEditingColourId, juce::Colours::blue.withAlpha (0.5f));
         
+        /** Button. */
+        setColour (juce::TextButton::buttonColourId, juce::Colours::silver.darker());
+        setColour (juce::TextButton::buttonOnColourId, juce::Colours::orange);
+        
         
     }
     virtual ~WaveshaperLookAndFeel() override
     {}
     
     enum class OutlineType {ellipse, arcNormal, arcWithArrows, arcWithCornersOut, arcWithCornersIn, arcThreePointerEmpty, arcThreePointerFilled, noOutline};
+    enum class ButtonShape { RoundedRect, Circle, Custom };
 
     /** Slider functions. */
     //================================================================================
@@ -115,14 +120,19 @@ public:
         return outlineVisible;
     }
     
-    void setOutlineVisibile (bool isVisible)
+    void setOutlineVisibility (bool isVisible)
     {
         outlineVisible = isVisible;
     }
     
+    void setTrackVisibility (bool isVisible)
+    {
+        isTrackVisible = isVisible;
+    }
+    
     //================================================================================
     /** Buttons. */
-    
+    void drawButtonBackground (juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour, bool isButtonHighlighted, bool isButtonDown) override;
     
     //================================================================================
     /** ComboBox, PopupMenu etc. */
@@ -169,6 +179,7 @@ private:
     bool isThumbOnTop {true};
     bool isTrackVisible {false};
     OutlineType localOutlineType {OutlineType::arcNormal};
+    ButtonShape buttonShape { ButtonShape::Circle };
     
     /** Draw Linear Slider thumb. */
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveshaperLookAndFeel)
@@ -335,6 +346,33 @@ inline juce::Slider::SliderLayout WaveshaperLookAndFeel::getSliderLayout (juce::
         else if (slider.isVertical()) layout.sliderBounds.reduce (0, thumbIndent);
     }
     return layout;
+}
+
+/** Button methods. */
+inline void WaveshaperLookAndFeel::drawButtonBackground (juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour, bool isButtonHighlighted, bool isButtonDown)
+{
+    auto area = button.getLocalBounds().toFloat().reduced (0.5f);
+    auto cornerSize = juce::jmin (6.0f, juce::jmin (area.getWidth(), area.getHeight()) * 0.25f);
+    auto buttonOn = button.findColour (juce::TextButton::buttonOnColourId);
+    if (buttonShape == ButtonShape::Circle)
+    {
+        const float radius = juce::jmin (area.getWidth() * 0.5f, area.getHeight() * 0.5f);
+        juce::Point<float> rimXY {area.getCentreX() - radius, area.getCentreY() - radius};
+        if (isButtonDown)
+        {
+            g.setColour (buttonOn);
+            g.fillEllipse(rimXY.getX(), rimXY.getY(), radius * 2.0f, radius * 2.0f);
+            g.setColour (juce::Colours::cyan.withMultipliedAlpha (0.5f));
+            g.drawEllipse (rimXY.getX(), rimXY.getY(), radius * 2.0f, radius * 2.0f, 6.0f);
+        }
+        else
+        {
+            g.setColour (backgroundColour);
+            g.fillEllipse(rimXY.getX(), rimXY.getY(), radius * 2.0f, radius * 2.0f);
+        }
+        g.setColour (juce::Colours::darkcyan);
+        g.drawEllipse (rimXY.getX(), rimXY.getY(), radius * 2.0f, radius * 2.0f, 5.0f);
+    }
 }
 
 /** ComboBox methods. */

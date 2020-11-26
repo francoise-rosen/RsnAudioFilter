@@ -130,6 +130,7 @@ void FilterSection::resized()
     inputFilter.algorithm.setBounds (area.withLeft (freqSliderSide).withTop (getHeight() * 0.9f).withRight (getWidth() * 0.9f).reduced (edge));
     inputFilter.q.setBounds (*iFilterQKnobRect);
     inputFilter.boost.setBounds (*iFilterBoostKnobRect);
+    inputFilter.toggleButton.setBounds (*iFilterButtonRect);
     
     //=====================================================================
     /** Output filter. */
@@ -141,6 +142,7 @@ void FilterSection::resized()
     outputFilter.frequency.setBounds (*oFilterFreqKnobRect);
     outputFilter.q.setBounds (*oFilterQKnobRect);
     outputFilter.boost.setBounds (*oFilterBoostKnobRect);
+    outputFilter.toggleButton.setBounds (*oFilterButtonRect);
 
 
 }
@@ -152,6 +154,7 @@ void FilterSection::intialiseFilterControls (FilterControls &filterControls)
     addAndMakeVisible (& (filterControls.boost) );
     addAndMakeVisible (& (filterControls.algorithm) );
     addAndMakeVisible (& (filterControls.amount));
+    addAndMakeVisible (& (filterControls.toggleButton));
     
     filterControls.frequency.setRange (20.0, 20000.0);
     filterControls.frequency.setSkewFactorFromMidPoint (1000.0);
