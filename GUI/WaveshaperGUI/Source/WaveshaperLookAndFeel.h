@@ -80,7 +80,7 @@ public:
     {}
     
     enum class OutlineType {ellipse, arcNormal, arcWithArrows, arcWithCornersOut, arcWithCornersIn, arcThreePointerEmpty, arcThreePointerFilled, noOutline};
-    enum class ButtonShape { RoundedRect, Circle, Custom };
+    enum class ButtonShape { RoundedRect, Rect, Circle, Custom };
 
     /** Slider functions. */
     //================================================================================
@@ -352,23 +352,24 @@ inline juce::Slider::SliderLayout WaveshaperLookAndFeel::getSliderLayout (juce::
 
 inline void WaveshaperLookAndFeel::drawButtonBackground (juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour, bool isButtonHighlighted, bool isButtonDown)
 {
-    auto area = button.getLocalBounds().toFloat().reduced (0.5f);
+    auto area = button.getLocalBounds().toFloat().reduced (1.0f);
     auto cornerSize = juce::jmin (6.0f, juce::jmin (area.getWidth(), area.getHeight()) * 0.25f);
     auto buttonOn = button.findColour (juce::TextButton::buttonOnColourId);
-    const float rimWidth {2.0f};
-    const float shadowWidth {3.0f};
+    const float maxRadius = juce::jmin (area.getWidth() * 0.5f, area.getHeight() * 0.5f);
+    const float rimWidth { 2.0f };
+    //const float shadowWidth { 4.0f };
+    const float shadowWidth { juce::jmin (maxRadius * 0.25f, 4.0f) };
     if (buttonShape == ButtonShape::Circle)
     {
-        const float maxRadius = juce::jmin (area.getWidth() * 0.5f, area.getHeight() * 0.5f);
         const float rimRadius = maxRadius - rimWidth;
-        const float shadowRadius = rimRadius - shadowWidth;
+        const float shadowRadius = maxRadius - shadowWidth;
         juce::Point<float> rimXY {area.getCentreX() - maxRadius, area.getCentreY() - maxRadius};
         if (isButtonDown)
         {
             g.setColour (buttonOn);
             g.fillEllipse(rimXY.getX(), rimXY.getY(), maxRadius * 2.0f, maxRadius * 2.0f);
-            g.setColour (backgroundColour.withMultipliedAlpha (0.5f));
-            g.drawEllipse (rimXY.getX() + shadowWidth + rimWidth , rimXY.getY() + shadowWidth + rimWidth, shadowRadius * 2.0f, shadowRadius * 2.0f, shadowWidth);
+            g.setColour (juce::Colours::black.withMultipliedAlpha (0.5f));
+            g.drawEllipse (rimXY.getX() + shadowWidth , rimXY.getY() + shadowWidth, shadowRadius * 2.0f, shadowRadius * 2.0f, shadowWidth);
         }
         else
         {

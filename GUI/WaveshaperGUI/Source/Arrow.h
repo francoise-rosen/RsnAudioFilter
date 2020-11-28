@@ -34,6 +34,9 @@
 
 /** Arrow class prototype. */
 /** Rebuild it to Curve. */
+/** Rebuld this to arrowhead class, that will accept an arrow dimentions,
+ colour, shape, and direction and attach it to the path passed from somewhere else
+ (no need to draw a line or a curve here, just an arrowhead of custom shape. */
 template <typename T>
 class Arrow
 {
