@@ -6,8 +6,6 @@
 
 //==============================================================================
 
-
-
 class MainComponent  : public juce::Component,
 public juce::Button::Listener,
 public juce::TextEditor::Listener

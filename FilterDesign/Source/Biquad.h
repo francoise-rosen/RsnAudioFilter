@@ -32,7 +32,6 @@ namespace rosen
     enum state {x_z1, x_z2, y_z1, y_z2, numStates};
     enum biquadCoeff {a0, a1, a2, b1, b2, c0, d0, numCoeffs};
     
-
     template <typename Type>
     class Biquad
     {
@@ -94,8 +93,7 @@ namespace rosen
     {
         // biquad algorithm - direct forms
         Type outputSample = coeffArray[a0] * inputSample + coeffArray[a1] * zArray[x_z1] + coeffArray[a2] * zArray[x_z2] - coeffArray[b1] * zArray[y_z1] - coeffArray[b2] * zArray[y_z2];
-        
-        
+    
         // update registers
         zArray[x_z2] = zArray[x_z1];
         zArray[x_z1] = inputSample;

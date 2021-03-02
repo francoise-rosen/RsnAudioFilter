@@ -9,13 +9,13 @@ MainComponent::MainComponent()
     stream.reset();
     makeOperators();
     makeOpVisible();
+    textEntryScreen.setFont (juce::Font {"Monaco", 36.0f, juce::Font::bold});
     textEntryScreen.setText(juce::String(0));
     addAndMakeVisible(&textEntryScreen);
     textEntryScreen.addListener(this);
     textEntryScreen.setCaretVisible(false);
     setSize (250, 400);
 }
-
 
 MainComponent::~MainComponent()
 {
@@ -75,33 +75,33 @@ void MainComponent::makeOpVisible()
     }
 }
 
-void MainComponent::buttonClicked(juce::Button* button)
+void MainComponent::buttonClicked (juce::Button* button)
 {
     double valueOnScreen = textEntryScreen.getText().getDoubleValue();
     
     if (button == arithmetic[plus])
     {
-        updateStream(&stream, plus, valueOnScreen);
+        updateStream (&stream, plus, valueOnScreen);
     }
     
     else if (button == arithmetic[minus])
     {
-        updateStream(&stream, minus, valueOnScreen);
+        updateStream (&stream, minus, valueOnScreen);
     }
     
     else if (button == arithmetic[multiply])
     {
-        updateStream(&stream, multiply, valueOnScreen);
+        updateStream (&stream, multiply, valueOnScreen);
     }
     
     else if (button == arithmetic[divide])
     {
-        updateStream(&stream, divide, valueOnScreen);
+        updateStream (&stream, divide, valueOnScreen);
     }
     
     else if (button == arithmetic[cosine])
     {
-        updateStreamUn(&stream, cosine, valueOnScreen);
+        updateStreamUn (&stream, cosine, valueOnScreen);
     }
     
     else if (button == arithmetic[sine])

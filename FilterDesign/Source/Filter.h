@@ -128,7 +128,7 @@ namespace rosen
     template <typename Type>
     inline bool FilterParameters<Type>::operator!=(const FilterParameters& params)
     {
-        return !(this == params);
+        return !(*this == params);
     }
     
     

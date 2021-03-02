@@ -132,6 +132,7 @@ public:
     
     //================================================================================
     /** Buttons. */
+    juce::Font getTextButtonFont (juce::TextButton& t, int buttonHeight) override;
     void drawButtonBackground (juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour, bool isButtonHighlighted, bool isButtonDown) override;
     
     //================================================================================
@@ -349,11 +350,18 @@ inline juce::Slider::SliderLayout WaveshaperLookAndFeel::getSliderLayout (juce::
 }
 
 /** Button methods. */
+inline juce::Font WaveshaperLookAndFeel::getTextButtonFont (juce::TextButton& tb, int height)
+{
+    return defaultFont.withHeight(juce::jmin (16.0f, tb.getHeight() * 0.5f));
+}
 
 inline void WaveshaperLookAndFeel::drawButtonBackground (juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour, bool isButtonHighlighted, bool isButtonDown)
 {
     auto area = button.getLocalBounds().toFloat().reduced (1.0f);
     auto cornerSize = juce::jmin (6.0f, juce::jmin (area.getWidth(), area.getHeight()) * 0.25f);
+    auto baseColour = backgroundColour.withMultipliedSaturation ((button.hasKeyboardFocus (true) ? 1.3f : 0.9f)).withMultipliedAlpha((button.isEnabled()) ? 1.0f : 0.5f);
+    if (isButtonDown || isButtonHighlighted)
+        baseColour = baseColour.contrasting (isButtonDown ? 0.2f : 0.05f);
     auto buttonOn = button.findColour (juce::TextButton::buttonOnColourId);
     const float maxRadius = juce::jmin (area.getWidth() * 0.5f, area.getHeight() * 0.5f);
     const float rimWidth { 2.0f };
@@ -373,13 +381,15 @@ inline void WaveshaperLookAndFeel::drawButtonBackground (juce::Graphics& g, juce
         }
         else
         {
-            g.setColour (backgroundColour);
+            g.setColour (baseColour);
             g.fillEllipse(rimXY.getX(), rimXY.getY(), maxRadius * 2.0f, maxRadius * 2.0f);
         }
         g.setColour (juce::Colours::black);
         g.drawEllipse (rimXY.getX() + rimWidth, rimXY.getY() + rimWidth , rimRadius * 2.0f, rimRadius * 2.0f, rimWidth);
     }
 }
+
+
 
 /** ComboBox methods. */
 

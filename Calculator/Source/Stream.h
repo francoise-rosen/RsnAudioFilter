@@ -20,7 +20,7 @@
 
 
 // PROBLEMS:
-// division by 0
+// division by 0- returns inf instead of NAN
 
 
 enum Operation {plus, minus, multiply, divide, squareRoot, cosine, sine, tangent, equals, flush, numOfOperators};
@@ -164,15 +164,18 @@ template <typename T>
 juce::String binaryOp(const T& val1, const T& val2, Operation op)
 {
     T result = 0;
-    if (op == Operation::plus) result = val1 + val2;
-    else if (op == Operation::minus) result = val1 - val2;
-    else if (op == Operation::multiply) result = val1 * val2;
+    if (op == Operation::plus)
+        result = val1 + val2;
+    else if (op == Operation::minus)
+        result = val1 - val2;
+    else if (op == Operation::multiply)
+        result = val1 * val2;
     else if (op == Operation::divide)
     {
-        if (val2 == 0) return "NAN";
+        if (val2 == 0)
+            return "NAN";
         result = val1 / val2;
     }
-
     return juce::String(result);
 }
 
