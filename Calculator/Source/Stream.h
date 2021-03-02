@@ -9,6 +9,7 @@
 */
 
 #pragma once
+#include <string>
 
 // rewrite everything using other logic:
 // after +,-,/,*,cos,sin,tan pressed the value off the screen will be
@@ -21,6 +22,25 @@
 
 // PROBLEMS:
 // division by 0- returns inf instead of NAN
+
+class Error
+{
+public:
+    Error (const std::string& message, const std::string& display = "")
+    :m {message}, d{display} {}
+    ~Error() {}
+    std::string what() const
+    {
+        return m;
+    }
+    std::string show() const
+    {
+        return d;
+    }
+private:
+    std::string m;
+    std::string d;
+};
 
 
 enum Operation {plus, minus, multiply, divide, squareRoot, cosine, sine, tangent, equals, flush, numOfOperators};
@@ -110,6 +130,10 @@ T Stream<T>::computeBinary(const T& t)
     
     else if (operation == Operation::divide)
     {
+        if (t == 0)
+        {
+            throw Error ("Division by zero", "NAN");
+        }
         output = storedValue / t;
         storedValue = t;
     }
@@ -122,17 +146,17 @@ T Stream<T>::computeBinary(const T& t)
 template <typename T>
 juce::String Stream<T>::computeUnary(const T& val, Operation uOp)
 {
-    juce::String output = unaryOp(val, uOp);
+    juce::String output = unaryOp (val, uOp);
     operation = uOp;
     
     return output;
 }
 
 template <typename T>
-T Stream<T>::result(const T& t)
+T Stream<T>::result (const T& t)
 {
     T output = t;
-   
+    std::cout << "HERE!\n";
     if (loop == true)
     {
         if (operation == divide)
@@ -144,7 +168,7 @@ T Stream<T>::result(const T& t)
         else if (operation == plus) output = t + storedValue;
         else if (operation == multiply) output = t * storedValue;
     }
-    else output = computeBinary(t);
+    else output = computeBinary (t);
     loop = true;
     
     return output;
@@ -163,6 +187,7 @@ void Stream<T>::reset()
 template <typename T>
 juce::String binaryOp(const T& val1, const T& val2, Operation op)
 {
+    
     T result = 0;
     if (op == Operation::plus)
         result = val1 + val2;

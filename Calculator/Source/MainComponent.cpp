@@ -77,66 +77,75 @@ void MainComponent::makeOpVisible()
 
 void MainComponent::buttonClicked (juce::Button* button)
 {
-    double valueOnScreen = textEntryScreen.getText().getDoubleValue();
-    
-    if (button == arithmetic[plus])
+    try
     {
-        updateStream (&stream, plus, valueOnScreen);
+        double valueOnScreen = textEntryScreen.getText().getDoubleValue();
+        
+        if (button == arithmetic[plus])
+        {
+            updateStream (&stream, plus, valueOnScreen);
+        }
+        
+        else if (button == arithmetic[minus])
+        {
+            updateStream (&stream, minus, valueOnScreen);
+        }
+        
+        else if (button == arithmetic[multiply])
+        {
+            updateStream (&stream, multiply, valueOnScreen);
+        }
+        
+        else if (button == arithmetic[divide])
+        {
+            updateStream (&stream, divide, valueOnScreen);
+        }
+        
+        else if (button == arithmetic[cosine])
+        {
+            updateStreamUn (&stream, cosine, valueOnScreen);
+        }
+        
+        else if (button == arithmetic[sine])
+        {
+            updateStreamUn(&stream, sine, valueOnScreen);
+        }
+        
+        else if (button == arithmetic[tangent])
+        {
+            updateStreamUn(&stream, tangent, valueOnScreen);
+        }
+        
+        else if (button == arithmetic[squareRoot])
+        {
+            updateStreamUn(&stream, squareRoot, valueOnScreen);
+        }
+        
+        else if (button == arithmetic[equals])
+        {
+            
+            double valueToDisplay = stream.result (valueOnScreen);
+            
+            bool opOverride = (stream.isFull()) ? false : true;
+            stream.updateBuffer (valueOnScreen, equals, true, opOverride);
+            textEntryScreen.setText (juce::String (valueToDisplay), true);
+            textEntered = true;
+            
+        }
+        
+        else if (button == arithmetic[flush])
+        {
+            stream.reset();
+            textEntryScreen.setText(juce::String(0), false);
+            textEntered = false;
+            
+        }
     }
-    
-    else if (button == arithmetic[minus])
+    catch (const Error& e)
     {
-        updateStream (&stream, minus, valueOnScreen);
-    }
-    
-    else if (button == arithmetic[multiply])
-    {
-        updateStream (&stream, multiply, valueOnScreen);
-    }
-    
-    else if (button == arithmetic[divide])
-    {
-        updateStream (&stream, divide, valueOnScreen);
-    }
-    
-    else if (button == arithmetic[cosine])
-    {
-        updateStreamUn (&stream, cosine, valueOnScreen);
-    }
-    
-    else if (button == arithmetic[sine])
-    {
-        updateStreamUn(&stream, sine, valueOnScreen);
-    }
-    
-    else if (button == arithmetic[tangent])
-    {
-        updateStreamUn(&stream, tangent, valueOnScreen);
-    }
-    
-    else if (button == arithmetic[squareRoot])
-    {
-        updateStreamUn(&stream, squareRoot, valueOnScreen);
-    }
-    
-    else if (button == arithmetic[equals])
-    {
-   
-        double valueToDisplay = stream.result(valueOnScreen);
-    
-        bool opOverride = (stream.isFull()) ? false : true;
-        stream.updateBuffer(valueOnScreen, equals, true, opOverride);
-        textEntryScreen.setText(juce::String(valueToDisplay), true);
-        textEntered = true;
-
-    }
-    
-    else if (button == arithmetic[flush])
-    {
+        std::cout << e.what() << '\n';
+        textEntryScreen.setText (e.show());
         stream.reset();
-        textEntryScreen.setText(juce::String(0), false);
-        textEntered = false;
-
     }
 }
 
