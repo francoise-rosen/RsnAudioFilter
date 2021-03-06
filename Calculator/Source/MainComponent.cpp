@@ -1,4 +1,5 @@
 #include "MainComponent.h"
+#include <type_traits>
 
 
 std::vector<std::string> MainComponent::operators {"+", "-", "*", "/", "sqrt", "cos", "sin", "tan", "=", "C"};
@@ -80,6 +81,7 @@ void MainComponent::buttonClicked (juce::Button* button)
     try
     {
         double valueOnScreen = textEntryScreen.getText().getDoubleValue();
+        // validate double value
         
         if (button == arithmetic[plus])
         {
